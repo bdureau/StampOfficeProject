@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-24 00:15+0200\n"
+"POT-Creation-Date: 2026-10-24 21:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,333 +15,367 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: MainWindow.py:147
+#: MainWindow.py:163
 msgid "&File"
 msgstr ""
 
-#: MainWindow.py:160
+#: MainWindow.py:176
 msgid "&Edit"
 msgstr ""
 
-#: MainWindow.py:170
+#: MainWindow.py:186
 msgid "&Stamp"
 msgstr ""
 
-#: MainWindow.py:175
+#: MainWindow.py:194
 msgid "Align"
 msgstr ""
 
-#: MainWindow.py:188
-msgid "Page"
+#: MainWindow.py:207
+msgid "Pages"
 msgstr ""
 
-#: MainWindow.py:200
+#: MainWindow.py:221
 msgid "Objects"
 msgstr ""
 
-#: MainWindow.py:213
+#: MainWindow.py:234
 msgid "&Config"
 msgstr ""
 
-#: MainWindow.py:217
+#: MainWindow.py:238
 msgid "&Help"
 msgstr ""
 
-#: MainWindow.py:286
-msgid "&New"
+#: MainWindow.py:249 MainWindow.py:684
+msgid "No album loaded"
 msgstr ""
 
-#: MainWindow.py:289
-msgid "&Open..."
+#: MainWindow.py:267
+msgid "Landscape"
 msgstr ""
 
-#: MainWindow.py:293
-msgid "&Save"
-msgstr ""
-
-#: MainWindow.py:297
-msgid "&Print all pages..."
-msgstr ""
-
-#: MainWindow.py:301
-msgid "&Print preview all pages..."
-msgstr ""
-
-#: MainWindow.py:305
-msgid "&Print preview current page..."
-msgstr ""
-
-#: MainWindow.py:309
-msgid "&Print current to PDF..."
-msgstr ""
-
-#: MainWindow.py:313
-msgid "&Exit"
-msgstr ""
-
-#: MainWindow.py:317
-msgid "&Copy"
-msgstr ""
-
-#: MainWindow.py:320
-msgid "&Paste"
-msgstr ""
-
-#: MainWindow.py:323
-msgid "C&ut"
-msgstr ""
-
-#: MainWindow.py:326
-msgid "New Stamp ..."
-msgstr ""
-
-#: MainWindow.py:327
-msgid "Edit Current Stamp ..."
-msgstr ""
-
-#: MainWindow.py:330
-msgid "New Page ..."
-msgstr ""
-
-#: MainWindow.py:333
-msgid "Delete Page ..."
-msgstr ""
-
-#: MainWindow.py:336
-msgid "Delete Page Objects..."
-msgstr ""
-
-#: MainWindow.py:339
-msgid "Grid on/off"
-msgstr ""
-
-#: MainWindow.py:342
-msgid "Delete Album ..."
-msgstr ""
-
-#: MainWindow.py:345
-msgid "New text ..."
-msgstr ""
-
-#: MainWindow.py:348
-msgid "New Rich Text ..."
-msgstr ""
-
-#: MainWindow.py:351
-msgid "New Image ..."
-msgstr ""
-
-#: MainWindow.py:354
-msgid "New copyright"
-msgstr ""
-
-#: MainWindow.py:357
-msgid "New copyright all pages"
+#: MainWindow.py:267
+msgid "Portrait"
 msgstr ""
 
 #: MainWindow.py:360
-msgid "New Page border"
+msgid "&New"
 msgstr ""
 
 #: MainWindow.py:363
-msgid "New page nbr"
+msgid "&Open..."
 msgstr ""
 
-#: MainWindow.py:366
-msgid "New page nbr all pages"
+#: MainWindow.py:367
+msgid "&Save"
 msgstr ""
 
-#: MainWindow.py:369
-msgid "Add year to page"
+#: MainWindow.py:371
+msgid "&Print all pages..."
 msgstr ""
 
-#: MainWindow.py:372
-msgid "Add year to all pages"
+#: MainWindow.py:375
+msgid "&Print preview all pages..."
 msgstr ""
 
-#: MainWindow.py:374
-msgid "Align Left"
-msgstr ""
-
-#: MainWindow.py:377
-msgid "Align Right"
-msgstr ""
-
-#: MainWindow.py:380
-msgid "Align Top"
+#: MainWindow.py:379
+msgid "&Print preview current page..."
 msgstr ""
 
 #: MainWindow.py:383
-msgid "Align Bottom"
+msgid "&Print current to PDF..."
 msgstr ""
 
-#: MainWindow.py:386
-msgid "Distribute Vertically"
+#: MainWindow.py:387
+msgid "&Exit"
 msgstr ""
 
-#: MainWindow.py:389
-msgid "Distribute Horizontally"
+#: MainWindow.py:391
+msgid "&Copy"
 msgstr ""
 
-#: MainWindow.py:392
-msgid "Center Horizontally"
+#: MainWindow.py:394
+msgid "&Paste"
 msgstr ""
 
-#: MainWindow.py:395
-msgid "Center Vertically"
+#: MainWindow.py:397
+msgid "C&ut"
 msgstr ""
 
-#: MainWindow.py:398
-msgid "Setup application"
+#: MainWindow.py:400
+msgid "New Stamp ..."
 msgstr ""
 
 #: MainWindow.py:401
-msgid "&Help Content"
+msgid "New Custom Stamp ..."
 msgstr ""
 
-#: MainWindow.py:404
-msgid "&About"
+#: MainWindow.py:403
+msgid "Edit Current Stamp ..."
 msgstr ""
 
-#: MainWindow.py:407
-msgid "&Undo"
+#: MainWindow.py:406
+msgid "New Page ..."
+msgstr ""
+
+#: MainWindow.py:409
+msgid "Delete Page ..."
 msgstr ""
 
 #: MainWindow.py:412
-msgid "&Redo"
+msgid "Delete Page Objects..."
 msgstr ""
 
-#: MainWindow.py:417
-msgid "Auto-arrange Stamps"
+#: MainWindow.py:415
+msgid "Grid on/off"
 msgstr ""
 
-#: MainWindow.py:420
-msgid "Select &All"
+#: MainWindow.py:418
+msgid "Delete Album ..."
+msgstr ""
+
+#: MainWindow.py:421
+msgid "New text ..."
 msgstr ""
 
 #: MainWindow.py:424
+msgid "New Rich Text ..."
+msgstr ""
+
+#: MainWindow.py:427
+msgid "New Image ..."
+msgstr ""
+
+#: MainWindow.py:430
+msgid "New copyright"
+msgstr ""
+
+#: MainWindow.py:433
+msgid "New copyright all pages"
+msgstr ""
+
+#: MainWindow.py:436
+msgid "Current album info..."
+msgstr ""
+
+#: MainWindow.py:443
+msgid "New page nbr"
+msgstr ""
+
+#: MainWindow.py:446
+msgid "New page nbr all pages"
+msgstr ""
+
+#: MainWindow.py:449
+msgid "Add year to page"
+msgstr ""
+
+#: MainWindow.py:452
+msgid "Add year to all pages"
+msgstr ""
+
+#: MainWindow.py:454
+msgid "Align Left"
+msgstr ""
+
+#: MainWindow.py:457
+msgid "Align Right"
+msgstr ""
+
+#: MainWindow.py:460
+msgid "Align Top"
+msgstr ""
+
+#: MainWindow.py:463
+msgid "Align Bottom"
+msgstr ""
+
+#: MainWindow.py:466
+msgid "Distribute Vertically"
+msgstr ""
+
+#: MainWindow.py:469
+msgid "Distribute Horizontally"
+msgstr ""
+
+#: MainWindow.py:472
+msgid "Center Horizontally"
+msgstr ""
+
+#: MainWindow.py:475
+msgid "Center Vertically"
+msgstr ""
+
+#: MainWindow.py:478
+msgid "Setup application"
+msgstr ""
+
+#: MainWindow.py:481
+msgid "&Help Content"
+msgstr ""
+
+#: MainWindow.py:484
+msgid "&About"
+msgstr ""
+
+#: MainWindow.py:487
+msgid "&Undo"
+msgstr ""
+
+#: MainWindow.py:492
+msgid "&Redo"
+msgstr ""
+
+#: MainWindow.py:497
+msgid "Auto-arrange Stamps"
+msgstr ""
+
+#: MainWindow.py:500
+msgid "Select &All"
+msgstr ""
+
+#: MainWindow.py:504
 msgid "Thundnails..."
 msgstr ""
 
-#: MainWindow.py:428
+#: MainWindow.py:508
 msgid "Change current page border"
 msgstr ""
 
-#: MainWindow.py:431
+#: MainWindow.py:511
 msgid "Change page bordure (all pages)"
 msgstr ""
 
-#: MainWindow.py:434
+#: MainWindow.py:514
 msgid "Import AlbumEasy..."
 msgstr ""
 
-#: MainWindow.py:559 MainWindow.py:571
+#: MainWindow.py:517
+msgid "Current page setup..."
+msgstr ""
+
+#: MainWindow.py:521
+msgid "New Rich Text Stamp ..."
+msgstr ""
+
+#: MainWindow.py:525
+msgid "New Catalog Rich Text Stamp..."
+msgstr ""
+
+#: MainWindow.py:656
 msgid "Exit"
 msgstr ""
 
-#: MainWindow.py:559 MainWindow.py:572
+#: MainWindow.py:657
 msgid "Are you sure you want to exit the application?"
 msgstr ""
 
-#: MainWindow.py:578
+#: MainWindow.py:663 MainWindow.py:821 MainWindow.py:845 MainWindow.py:881
+#: MainWindow.py:906 MainWindow.py:1010
 msgid "&Yes"
 msgstr ""
 
-#: MainWindow.py:582
+#: MainWindow.py:667 MainWindow.py:825 MainWindow.py:849 MainWindow.py:885
+#: MainWindow.py:910 MainWindow.py:1014
 msgid "&No"
 msgstr ""
 
-#: MainWindow.py:653
-msgid "Effacer les guides"
+#: MainWindow.py:681
+msgid "Album:"
 msgstr ""
 
-#: MainWindow.py:686
-msgid "Are you sure you want clear the current page?"
+#: MainWindow.py:781
+msgid "Clear guides"
 msgstr ""
 
-#: MainWindow.py:686
+#: MainWindow.py:814
 msgid "Delete all objects"
 msgstr ""
 
-#: MainWindow.py:697
-msgid "Are you sure you want to delete the current page?"
+#: MainWindow.py:815
+msgid "Are you sure you want clear the current page?"
 msgstr ""
 
-#: MainWindow.py:697
+#: MainWindow.py:838
 msgid "Delete current page"
 msgstr ""
 
-#: MainWindow.py:719
-msgid "Are you sure you want to delete the entire album?"
+#: MainWindow.py:839
+msgid "Are you sure you want to delete the current page?"
 msgstr ""
 
-#: MainWindow.py:719
+#: MainWindow.py:874
 msgid "Delete album"
 msgstr ""
 
-#: MainWindow.py:755 MainWindow.py:826
-msgid "Are you sure you want to delete all the pages?"
+#: MainWindow.py:875
+msgid "Are you sure you want to delete the entire album?"
 msgstr ""
 
-#: MainWindow.py:755 MainWindow.py:826
+#: MainWindow.py:899 MainWindow.py:1003
 msgid "Delete all pages"
 msgstr ""
 
-#: MainWindow.py:837
+#: MainWindow.py:900 MainWindow.py:1004
+msgid "Are you sure you want to delete all the pages?"
+msgstr ""
+
+#: MainWindow.py:1025
 msgid "Open Album file"
 msgstr ""
 
-#: MainWindow.py:837 MainWindow.py:1179
+#: MainWindow.py:1025 MainWindow.py:1446
 msgid "Album Files (*.sta)"
 msgstr ""
 
-#: MainWindow.py:1179
+#: MainWindow.py:1446
 msgid "Save Album"
 msgstr ""
 
-#: MainWindow.py:1306
+#: MainWindow.py:1612
 msgid "Save album as PDF"
 msgstr ""
 
-#: MainWindow.py:1356
+#: MainWindow.py:1662
 msgid "Save current page"
 msgstr ""
 
-#: MainWindow.py:1427
+#: MainWindow.py:1740
 msgid "Help"
 msgstr ""
 
-#: MainWindow.py:1427
+#: MainWindow.py:1740
 msgid "Help file not found:"
 msgstr ""
 
-#: MainWindow.py:1571
+#: MainWindow.py:1884
 msgid "Are you sure you want to delete those objects?"
 msgstr ""
 
-#: MainWindow.py:1571
+#: MainWindow.py:1884
 msgid "Delete Object"
 msgstr ""
 
-#: MainWindow.py:1597
+#: MainWindow.py:1910
 msgid "Select picture"
 msgstr ""
 
-#: MainWindow.py:1709
+#: MainWindow.py:2022
 msgid "Import from AlbumEasy"
 msgstr ""
 
-#: MainWindow.py:1716
+#: MainWindow.py:2029
 msgid "Import AlbumEasy"
 msgstr ""
 
-#: MainWindow.py:1717
+#: MainWindow.py:2030
 msgid ""
 "Do you want to replace the actual album ?\n"
 "(Choose 'No' to append it)"
 msgstr ""
 
-#: MainWindow.py:1894
+#: MainWindow.py:2207
 msgid "Import Error"
 msgstr ""
 

@@ -5,8 +5,10 @@ Dialog window for selecting and creating stamp items from catalog Databases.
 
 Author: Boris du Reau
 """
-
+import sys
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from pathlib import Path
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import (
     QMessageBox,
@@ -32,6 +34,16 @@ class StampDlg(QDialog):
     def __init__(self, lastStampObj=None, scene=None, parent=None):
         super(StampDlg, self).__init__(parent)
         self.setWindowTitle(_("Create new stamp"))
+
+        self.base_dir = self._get_app_dir()
+        self.images_dir = self._get_resource_dir("Images")
+
+        icon_path = self.images_dir / "stamp_book.png"
+        if icon_path.exists():
+            self.setWindowIcon(QtGui.QIcon(str(icon_path)))
+        else:
+            self.setWindowIcon(QtGui.QIcon('stamp_book.png'))
+
         self.currentStampNbr = ""
         self.fullPhotoPath = None
         self.db = None
@@ -46,6 +58,32 @@ class StampDlg(QDialog):
             print(lastStampObj['type'])
             print(lastStampObj['nbr'])
 
+    def _get_app_dir(self) -> Path:
+        """
+        Détermine le répertoire racine de l'application.
+
+        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
+        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
+          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+        """
+        if getattr(sys, 'frozen', False):
+            return Path(sys.executable).resolve().parent
+        else:
+            script_dir = Path(__file__).resolve().parent
+            parent_dir = script_dir.parent
+
+            if any((parent_dir / folder).exists() for folder in ["Databases", "Images", "Photos", "docs", "Help", "locale"]):
+                return parent_dir
+
+            return script_dir
+
+    def _get_resource_dir(self, folder_name: str) -> Path:
+        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        res_dir = self.base_dir / folder_name
+        if res_dir.exists():
+            return res_dir
+        return Path(__file__).resolve().parent / folder_name
+
     def get_configured_country(self) -> str:
         """Read default country setting from stamp_album.cfg configuration file."""
         return get_config_value('default country', "France")
@@ -58,16 +96,6 @@ class StampDlg(QDialog):
     def keyPressEvent(self, e):
         """Laisse Qt gérer nativement la navigation au clavier via le selectionModel."""
         super().keyPressEvent(e)
-    # def keyPressEvent(self, e):
-    #     """Handle keyboard arrow navigation for stamp list selection."""
-    #     print(e.key())
-    #
-    #     if e.key() == Qt.Key.Key_Down:
-    #         #print("down")
-    #         self.stampClicked(self.stampNbrList.currentIndex())
-    #     if e.key() == Qt.Key.Key_Up:
-    #         #print("up")
-    #         self.stampClicked(self.stampNbrList.currentIndex())
 
     def createDlg(self, lastStampObj):
         """Initialize dialog layout, widgets, and form controls."""

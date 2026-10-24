@@ -28,6 +28,7 @@ from CustomStampDlg import CustomStampDlg
 
 from Page import Page
 from ConfigDlg import ConfigDlg
+from CatalogRichTextStampDlg import CatalogRichTextStampDlg
 
 import xml.etree.ElementTree as ET
 
@@ -41,6 +42,12 @@ import gettext
 from AppLanguage import get_language
 from PyQt6.QtGui import QAction, QIcon, QKeySequence, QDesktopServices
 from PyQt6.QtCore import QUrl
+
+import platform
+from datetime import datetime
+from AlbumInfoDlg import AlbumInfoDlg
+
+from RichTextStampDlg import RichTextStampDlg
 
 # Set up gettext localization
 gettext.find("MainWindow")
@@ -59,6 +66,15 @@ class Window(QMainWindow):
         """Initialize the main window and UI components."""
         super().__init__(parent)
         self.setWindowTitle("Stamp album")
+
+        # Album metadata storage
+        self.album_metadata = {
+            "creation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "author": "",
+            "os": f"{platform.system()} {platform.release()}",
+            "page_count": 0,
+            "stamp_count": 0
+        }
 
         self.base_dir = self._get_app_dir()
         self.images_dir = self._get_resource_dir("Images")
@@ -99,7 +115,6 @@ class Window(QMainWindow):
         self._connectActions()
 
         # Create an initial default page
-        print("before self.newPage(None, True)")
         self.newPage(None, True)
 
         self.tabs.setMovable(True)
@@ -170,6 +185,8 @@ class Window(QMainWindow):
         # Stamp Menu
         stampMenu = menuBar.addMenu(_("&Stamp"))
         stampMenu.addAction(self.newStampAction)
+        stampMenu.addAction(self.newCatalogRichTextStampAction)
+        stampMenu.addAction(self.newRichTextStampAction)
         stampMenu.addAction(self.newCustomStampAction)
         stampMenu.addAction(self.editStampAction)
 
@@ -187,8 +204,10 @@ class Window(QMainWindow):
         alignMenu.addAction(self.autoArrangeAction)
 
         # Page Menu
-        pageMenu = menuBar.addMenu(_("Page"))
+        pageMenu = menuBar.addMenu(_("Pages"))
         pageMenu.addAction(self.newPageAction)
+        pageMenu.addAction(self.changePageSetupAction)
+        pageMenu.addAction(self.albumInfoAction)
         pageMenu.addAction(self.deletePageAction)
         pageMenu.addAction(self.deletePageObjectsAction)
         pageMenu.addAction(self.drawGridAction)
@@ -203,7 +222,7 @@ class Window(QMainWindow):
         objectMenu.addAction(self.newTextAction)
         objectMenu.addAction(self.newRichTextAction)
         objectMenu.addAction(self.newImageAction)
-        objectMenu.addAction(self.newBorderAction)
+        #objectMenu.addAction(self.newBorderAction)
         objectMenu.addAction(self.newCopyRightAction)
         objectMenu.addAction(self.newCopyRightAllPagesAction)
         objectMenu.addAction(self.newPageNbrAction)
@@ -228,12 +247,62 @@ class Window(QMainWindow):
 
         # Status bar zoom display widget
         self.statusFileLabel = QLabel(_("No album loaded"), self)
-        #self.statusZoomLabel = QLabel("Zoom: 100%", self.statusBar())
+        self.statusPageFormatLabel = QLabel("", self)
         self.statusZoomLabel = QLabel("Zoom: 100%", self)
+
         # Bottom Left: addWidget() places items on the left side
         self.statusBar().addWidget(self.statusFileLabel, 1)
+
         # Bottom Right: addPermanentWidget() places items on the far right
+        self.statusBar().addPermanentWidget(self.statusPageFormatLabel)
         self.statusBar().addPermanentWidget(self.statusZoomLabel)
+
+    def updatePageFormatStatus(self):
+        """Update the status bar label displaying the current page format and orientation."""
+        scene = self.getCurrentPageScene()
+        if hasattr(self, 'statusPageFormatLabel') and self.statusPageFormatLabel and not sip.isdeleted(
+                self.statusPageFormatLabel):
+            if scene:
+                fmt = getattr(scene, 'paper_format', 'A4')
+                orient = _("Portrait") if scene.pageType == "portrait" else _("Landscape")
+                self.statusPageFormatLabel.setText(f"{fmt} - {orient}")
+            else:
+                self.statusPageFormatLabel.setText("")
+
+    def changeCurrentPageSetup(self):
+        """Open the setup dialog to modify orientation, paper size, and border of the active page."""
+        scene = self.getCurrentPageScene()
+        if not scene:
+            return
+
+        current_border_style = None
+        for it in scene.items():
+            if it.data(0) == "borderGroup":
+                current_border_style = it.data(4)
+                break
+
+        dlg = PageDlg(
+            pageType=scene.pageType,
+            paperFormat=getattr(scene, 'paper_format', 'A4'),
+            borderStyle=current_border_style,
+            marginSize=getattr(scene, 'margin_size_mm', 19.0),
+            marginPosition=getattr(scene, 'margin_position', 'left'),
+            is_edit=True,
+            parent=self
+        )
+
+        if dlg.exec() == 1:
+            #scene.changePageSetup(dlg.pageType, dlg.paperFormat, dlg.borderStyle)
+            scene.changePageSetup(
+                dlg.pageType, dlg.paperFormat, dlg.borderStyle,
+                margin_size_mm=dlg.marginSize, margin_position=dlg.marginPosition
+            )
+            self.updatePageFormatStatus()
+
+            # Refresh view rulers and viewport
+            view = self.getCurrentPage()
+            if view:
+                view.viewport().update()
 
     def selectAll(self):
         """Sélectionne tous les éléments mobiles de la page active."""
@@ -275,16 +344,14 @@ class Window(QMainWindow):
     def onTabChanged(self, index: int):
         """Synchronize status bar and combo box display when switching tabs."""
         # QTimer.singleShot diffère la mise à jour pour laisser Qt stabiliser l'IHM
-        print("QtCore.QTimer.singleShot(10, self._syncZoomUI)")
         QtCore.QTimer.singleShot(10, self._syncZoomUI)
+        self.updatePageFormatStatus()
 
     def _syncZoomUI(self):
         """Helper to synchronize zoom UI after layout is stabilized."""
         view = self.getCurrentPage()
         if view:
-            print("current_pct = int(view.getZoomFactor() * 100)")
             current_pct = int(view.getZoomFactor() * 100)
-            print("self.updateZoomStatus(current_pct)")
             self.updateZoomStatus(current_pct)
 
     def _createActions(self):
@@ -336,6 +403,14 @@ class Window(QMainWindow):
         self.editStampAction = QAction(_("Edit Current Stamp ..."), self)
         self.newStampAction.setIcon(self._get_icon("stamp.png"))
 
+        self.newRichTextStampAction = QAction(_("New Rich Text Stamp ..."), self)
+        self.newRichTextStampAction.setIcon(self._get_icon("stamp_custom.png"))
+        self.newRichTextStampAction.triggered.connect(self.createNewRichTextStamp)
+
+        self.newCatalogRichTextStampAction = QAction(_("New Catalog Rich Text Stamp..."), self)
+        self.newCatalogRichTextStampAction.setIcon(self._get_icon("stamp.png"))
+        self.newCatalogRichTextStampAction.triggered.connect(self.createNewCatalogRichTextStamp)
+
         self.newPageAction = QAction(_("New Page ..."), self)
         self.newPageAction.setIcon(self._get_icon("page.png"))
 
@@ -366,8 +441,9 @@ class Window(QMainWindow):
         self.newCopyRightAllPagesAction = QAction(_("New copyright all pages"), self)
         self.newCopyRightAllPagesAction.setIcon(self._get_icon("page_copyright.png"))
 
-        self.newBorderAction = QAction(_("New Page border"), self)
-        self.newBorderAction.setIcon(self._get_icon("border.png"))
+        self.albumInfoAction = QAction(_("Current album info..."), self)
+        self.albumInfoAction.setIcon(self._get_icon("about.png"))
+        self.albumInfoAction.triggered.connect(self.showAlbumInfo)
 
         self.newPageNbrAction = QAction(_("New page nbr"), self)
         self.newPageNbrAction.setIcon(self._get_icon("number.png"))
@@ -443,6 +519,12 @@ class Window(QMainWindow):
         self.importAlbumEasyAction = QAction(_("Import AlbumEasy..."), self)
         self.importAlbumEasyAction.setIcon(self._get_icon("open.png"))
 
+        self.changePageSetupAction = QAction(_("Current page setup..."), self)
+        self.changePageSetupAction.setIcon(self._get_icon("page.png"))
+        self.changePageSetupAction.triggered.connect(self.changeCurrentPageSetup)
+
+
+
     def _createToolBars(self):
         """Construct application toolbars."""
         fileToolBar = self.addToolBar("File")
@@ -487,7 +569,9 @@ class Window(QMainWindow):
 
         stampToolBar = QToolBar("Stamp", self)
         stampToolBar.addAction(self.newStampAction)
+        stampToolBar.addAction(self.newCatalogRichTextStampAction)
         stampToolBar.addAction(self.newCustomStampAction)
+        stampToolBar.addAction(self.newRichTextStampAction)
         self.addToolBar(stampToolBar)
 
         objectToolBar = QToolBar("Objects", self)
@@ -504,10 +588,6 @@ class Window(QMainWindow):
         zoomToolBar = QToolBar("Zoom", self)
         zoomToolBar.addWidget(self.zoomCombo)
         self.addToolBar(zoomToolBar)
-
-        #statusBar = QStatusBar(self)
-        #statusBar.setObjectName("statusBar")
-        #self.setStatusBar(statusBar)
 
     def _connectActions(self):
         """Connect UI actions to their respective handler functions."""
@@ -550,7 +630,7 @@ class Window(QMainWindow):
         self.newCopyRightAction.triggered.connect(self.newCopyRight)
         self.newCopyRightAllPagesAction.triggered.connect(self.newCopyRightAllPages)
         self.newImageAction.triggered.connect(self.newImage)
-        self.newBorderAction.triggered.connect(self.newBorder)
+        #self.newBorderAction.triggered.connect(self.newBorder)
         self.newPageNbrAction.triggered.connect(self.newPageNbr)
         self.newPageNbrAllPagesAction.triggered.connect(self.newPageNbrAllPages)
         self.newYearToPageAction.triggered.connect(self.addYearToPage)
@@ -563,17 +643,6 @@ class Window(QMainWindow):
         self.changeBorderCurrentAction.triggered.connect(self.changeBorderCurrentPage)
         self.changeBorderAllAction.triggered.connect(self.changeBorderAllPages)
         self.importAlbumEasyAction.triggered.connect(self.importAlbumEasy)
-
-    def closeEvent_old(self, event):
-        """Prompt user confirmation before closing the application window."""
-        qm = QMessageBox()
-        ret = qm.question(self, _('Exit'), _("Are you sure you want to exit the application?"),
-                          qm.StandardButton.Yes | qm.StandardButton.No)
-
-        if ret == qm.StandardButton.Yes:
-            event.accept()
-        else:
-            event.ignore()
 
     def closeEvent(self, event):
         """Prompt user confirmation before closing the application window."""
@@ -610,6 +679,29 @@ class Window(QMainWindow):
                 self.statusFileLabel.setText(_("No album loaded"))
                 self.statusFileLabel.setToolTip("")
 
+    def countTotalStamps(self) -> int:
+        """Count the total number of stamps across all album pages."""
+        total = 0
+        for x in range(self.tabs.count()):
+            widget = self.tabs.widget(x)
+            if hasattr(widget, 'view') and widget.view and widget.view.scene():
+                scene = widget.view.scene()
+                for item in scene.items():
+                    if item.parentItem() is None and item.data(0) == "stampGroup":
+                        total += 1
+        return total
+
+    def showAlbumInfo(self):
+        """Open the Album Info dialog to display and edit metadata."""
+        # Refresh dynamic counters and active OS
+        self.album_metadata["page_count"] = self.tabs.count()
+        self.album_metadata["stamp_count"] = self.countTotalStamps()
+        self.album_metadata["os"] = f"{platform.system()} {platform.release()}"
+
+        dlg = AlbumInfoDlg(self.album_metadata, self)
+        if dlg.exec() == 1:
+            self.album_metadata = dlg.get_metadata()
+
     def undo(self):
         """Annule la dernière action sur la page active."""
         scene = self.getCurrentPageScene()
@@ -626,14 +718,15 @@ class Window(QMainWindow):
         """Close the main window."""
         self.close()
 
-    def newPage(self, _pageType=None, border=None, paper_format=None):
+    def newPage(self, _pageType=None, border=None, paper_format=None, margin_size=None, margin_position=None):
         """Create and append a new album page tab."""
         border_style = None
+
         if _pageType is not None and (_pageType == 'portrait' or _pageType == 'landscape'):
             self.pageType = _pageType
         else:
             self.pageType = "portrait"
-            pDlg = PageDlg()
+            pDlg = PageDlg(parent=self)
             res = pDlg.exec()
             if res == 1:
                 if pDlg.pageType == "portrait":
@@ -643,11 +736,22 @@ class Window(QMainWindow):
                     self.pageType = "landscape"
                     border = True
                 border_style = pDlg.borderStyle
-            if res == 0:
-                return
+                paper_format = pDlg.paperFormat
+                margin_size = pDlg.marginSize
+                margin_position = pDlg.marginPosition
+            else:
+                return None
 
-        page = Page(self.pageType, border, paper_format=paper_format, border_style=border_style)
-        # Connecter le signal d'historique pour afficher/masquer l'étoile dynamiquement
+        # Instanciation sécurisée avec valeurs de secours
+        page = Page(
+            self.pageType,
+            border=border,
+            paper_format=paper_format,
+            border_style=border_style,
+            margin_size_mm=margin_size,
+            margin_position=margin_position
+        )
+
         page.undoStack.cleanChanged.connect(self.renameTabs)
         view = GraphicsView(page)
         view.scrollContentsBy(0, 0)
@@ -656,7 +760,6 @@ class Window(QMainWindow):
         tab1 = QWidget()
         tab1.view = view
 
-        # ------------------ CHANGEMENTS ICI ------------------
         layout = QGridLayout(tab1)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -668,10 +771,9 @@ class Window(QMainWindow):
         view.zoomChanged.connect(lambda x: h_ruler.update())
         view.zoomChanged.connect(lambda x: v_ruler.update())
 
-        # Bouton dans l'angle supérieur gauche pour effacer tous les guides
         btn_clear = QPushButton("×")
         btn_clear.setFixedSize(20, 20)
-        btn_clear.setToolTip(_("Effacer les guides"))
+        btn_clear.setToolTip(_("Clear guides"))
         btn_clear.setStyleSheet("border: 1px solid #ccc; background: #e0e0e0; font-weight: bold; color: #555;")
         btn_clear.clicked.connect(page.clearGuides)
 
@@ -679,7 +781,6 @@ class Window(QMainWindow):
         layout.addWidget(h_ruler, 0, 1)
         layout.addWidget(v_ruler, 1, 0)
         layout.addWidget(view, 1, 1)
-        # -----------------------------------------------------
 
         tab1.setLayout(layout)
         palette = tab1.palette()
@@ -700,17 +801,6 @@ class Window(QMainWindow):
         self.zoomCombo.blockSignals(False)
 
         return page
-
-    def clearPageObjects_old(self):
-        """Clear all graphic items on the current active page."""
-        qm = QMessageBox()
-        ret = qm.question(self, _('Delete all objects'), _("Are you sure you want clear the current page?"),
-                          qm.StandardButton.Yes | qm.StandardButton.No)
-
-        if ret == qm.StandardButton.Yes:
-            scene = self.getCurrentPageScene()
-            if scene:
-                scene.clearPage()
 
     def clearPageObjects(self):
         """Clear all graphic items on the current active page."""
@@ -735,21 +825,6 @@ class Window(QMainWindow):
             scene = self.getCurrentPageScene()
             if scene:
                 scene.clearPage()
-
-    def deleteCurrentPage_old(self):
-        """Remove the active page tab from the album."""
-        qm = QMessageBox()
-        ret = qm.question(self, _('Delete current page'), _("Are you sure you want to delete the current page?"),
-                          qm.StandardButton.Yes | qm.StandardButton.No)
-
-        if ret == qm.StandardButton.No:
-            return
-        if self.tabs.count().real > 0:
-            self.tabs.removeTab(self.tabs.currentIndex())
-
-            for x in range(0, self.tabs.count().real):
-                self.tabs.setCurrentIndex(x)
-                self.tabs.setTabText(self.tabs.currentIndex(), "Page " + str(x + 1))
 
     def deleteCurrentPage(self):
         """Remove the active page tab from the album."""
@@ -787,17 +862,6 @@ class Window(QMainWindow):
         self.currentAlbumName = ""
         self.updateStatusFile("")
 
-    def deleteAlbum_old(self):
-        """Delete the entire album and reset state."""
-        qm = QMessageBox()
-        ret = qm.question(self, _('Delete album'), _("Are you sure you want to delete the entire album?"),
-                          qm.StandardButton.Yes | qm.StandardButton.No)
-
-        if ret == qm.StandardButton.No:
-            return
-        self.deleteAllPages()
-        self.currentAlbumName = ""
-
     def deleteAlbum(self):
         """Delete the entire album and reset state."""
         qm = QMessageBox(self)
@@ -815,44 +879,16 @@ class Window(QMainWindow):
         if no_btn:
             no_btn.setText(_("&No"))
 
-    def newBorder(self):
-        """Add a new page border using the paper size and style configured in settings."""
-        scene = self.getCurrentPageScene()
-        if scene:
-            paper_format = scene.get_configured_paper_format()
-            if paper_format == "Letter":
-                w_mm, h_mm = 215.9, 279.4
-            else:
-                w_mm, h_mm = 210.0, 297.0
-
-            if scene.pageType == "portrait":
-                scene.addBorder(
-                    (w_mm - 33.0) / (25.4 / 96.0),
-                    (h_mm - 25.0) / (25.4 / 96.0),
-                    19 / (25.4 / 96.0),
-                    0, 0, 0
-                )
-            else:
-                scene.addBorder(
-                    (h_mm - 25.0) / (25.4 / 96.0),
-                    (w_mm - 33.0) / (25.4 / 96.0),
-                    (((h_mm / (25.4 / 96.0)) - ((h_mm - 25.0) / (25.4 / 96.0))) / 2),
-                    0, 19 / (25.4 / 96.0), 0
-                )
-
-    def newFile_old(self):
-        """Clear existing pages and start a fresh album file."""
-        qm = QMessageBox()
-        ret = qm.question(self, _('Delete all pages'), _("Are you sure you want to delete all the pages?"),
-                          qm.StandardButton.Yes | qm.StandardButton.No)
-
-        if ret == qm.StandardButton.No:
-            return
-        self.deleteAllPages()
-        self.newPage(None, True)
-
     def newFile(self):
         """Clear existing pages and start a fresh album file."""
+        self.album_metadata = {
+            "creation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "author": "",
+            "os": f"{platform.system()} {platform.release()}",
+            "page_count": 0,
+            "stamp_count": 0
+        }
+
         qm = QMessageBox(self)
         qm.setIcon(QMessageBox.Icon.Question)
         qm.setWindowTitle(_('Delete all pages'))
@@ -881,6 +917,26 @@ class Window(QMainWindow):
         scene = self.getCurrentPageScene()
         if scene and hasattr(scene, "addRichText"):
             scene.addRichText()
+
+    def createNewRichTextStamp(self):
+        """Open the Rich Text Stamp dialog to insert a custom-styled stamp item."""
+        scene = self.getCurrentPageScene()
+        if scene:
+            dlg = RichTextStampDlg(scene=scene, parent=self)
+            dlg.exec()
+
+    def createNewCatalogRichTextStamp(self):
+        """Open catalog rich text stamp dialog to create formatted stamps from database."""
+        scene = self.getCurrentPageScene()
+        if scene:
+            dlg = CatalogRichTextStampDlg(self.lastStampObj, scene, self)
+            if dlg.exec() == 1:
+                # Update lastStampObj for convenience on next insertion
+                if dlg.yearsList.currentItem():
+                    self.lastStampObj['year'] = dlg.yearsList.currentItem().text()
+                self.lastStampObj['type'] = dlg.stampTypeCombo.currentText()
+                self.lastStampObj['country'] = dlg.currentCountry
+                self.lastStampObj['nbr'] = dlg.currentStampNbr
 
     def newPageNbr(self):
         """Add a page number to the current page."""
@@ -937,15 +993,6 @@ class Window(QMainWindow):
 
     def openAlbumFile(self):
         """Open and deserialize a compressed (.sta) album XML file."""
-        # qm = QMessageBox()
-        # ret = qm.question(
-        #     self, _("Delete all pages"), _("Are you sure you want to delete all the pages?"),
-        #     qm.StandardButton.Yes | qm.StandardButton.No
-        # )
-        #
-        # if ret == qm.StandardButton.No:
-        #     return
-
         qm = QMessageBox(self)
         qm.setIcon(QMessageBox.Icon.Question)
         qm.setWindowTitle(_("Delete all pages"))
@@ -989,6 +1036,25 @@ class Window(QMainWindow):
         mytree = ET.parse(f)
         f.close()
         myroot = mytree.getroot()
+
+        # Read album metadata if present; otherwise initialize default values
+        meta_node = myroot.find('metadata')
+        if meta_node is not None:
+            self.album_metadata = {
+                "creation_date": meta_node.findtext("creation_date", ""),
+                "author": meta_node.findtext("author", ""),
+                "os": meta_node.findtext("os", f"{platform.system()} {platform.release()}"),
+                "page_count": int(meta_node.findtext("page_count", str(self.tabs.count()))),
+                "stamp_count": int(meta_node.findtext("stamp_count", "0"))
+            }
+        else:
+            self.album_metadata = {
+                "creation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "author": "",
+                "os": f"{platform.system()} {platform.release()}",
+                "page_count": 0,
+                "stamp_count": 0
+            }
 
         file_version = myroot.attrib.get("version", "0.9")
         print(file_version)
@@ -1168,7 +1234,7 @@ class Window(QMainWindow):
             if not currentPage:
                 continue
 
-            # --- Fonction interne pour recréer un label texte propre ---
+            # --- Internal helper to restore standard text items ---
             def restore_text_item(label_nodes, label_type, default_x, default_y, default_align, default_pt=10):
                 for node in label_nodes:
                     text_str = node.find('label').text or ""
@@ -1186,15 +1252,14 @@ class Window(QMainWindow):
 
                     pos_node = node.find('labelPos')
                     x = float(pos_node.find('x').text) if pos_node is not None and pos_node.find(
-                        'x') is not None else default_x
+                        'x') is not None and pos_node.find('x').text else default_x
                     y = float(pos_node.find('y').text) if pos_node is not None and pos_node.find(
-                        'y') is not None else default_y
+                        'y') is not None and pos_node.find('y').text else default_y
 
                     item = QGraphicsTextItem(text_str)
                     item.setFont(myFont)
                     item.setData(0, label_type)
 
-                    # Configuration indispensable pour l'interaction et le double-clic
                     item.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
                     item.setFlags(
                         QGraphicsTextItem.GraphicsItemFlag.ItemIsMovable |
@@ -1203,7 +1268,6 @@ class Window(QMainWindow):
 
                     item.setTextWidth(item.boundingRect().size().width())
 
-                    # Alignement du texte
                     cursor = item.textCursor()
                     cursor.select(QTextCursor.SelectionType.Document)
                     format = QTextBlockFormat()
@@ -1213,9 +1277,9 @@ class Window(QMainWindow):
                     item.setTextCursor(cursor)
 
                     item.setPos(x, y)
-                    currentPage.addItem(item)  # Ajout direct sans passer par addItemWithUndo
+                    currentPage.addItem(item)
 
-            # --- Restauration via la fonction helper ---
+            # --- Restore all text categories ---
             restore_text_item(it.findall('textLabel'), "textLabel", 20.0, 20.0, Qt.AlignmentFlag.AlignCenter)
             restore_text_item(it.findall('labelCopyRight'), "labelCopyRight", 80.0, 1045.0, Qt.AlignmentFlag.AlignLeft,
                               6)
@@ -1225,11 +1289,13 @@ class Window(QMainWindow):
             # --- Restore Rich Text Labels ---
             for richLabel in it.findall('richTextLabel'):
                 html_element = richLabel.find('html_label')
-                html_content = html_element.text if html_element is not None else ""
+                html_content = html_element.text if html_element is not None and html_element.text else ""
 
                 pos = richLabel.find('labelPos')
-                x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None else 50.0
-                y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None else 50.0
+                x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None and pos.find(
+                    'x').text else 50.0
+                y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None and pos.find(
+                    'y').text else 50.0
 
                 item = QGraphicsTextItem()
                 item.setHtml(html_content)
@@ -1250,9 +1316,12 @@ class Window(QMainWindow):
                     pixmap = self.bytesToPixmap(pixmap_data.text)
                     if not pixmap.isNull():
                         pos = img_node.find('imagePos')
-                        x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None else 50.0
-                        y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None else 50.0
-                        scale_val = float(img_node.find('scale').text) if img_node.find('scale') is not None else 1.0
+                        x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None and pos.find(
+                            'x').text else 50.0
+                        y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None and pos.find(
+                            'y').text else 50.0
+                        scale_node = img_node.find('scale')
+                        scale_val = float(scale_node.text) if scale_node is not None and scale_node.text else 1.0
 
                         pixmap_item = ResizablePixmapItem(pixmap)
                         pixmap_item.setPos(x, y)
@@ -1262,37 +1331,54 @@ class Window(QMainWindow):
             # --- Restore Page Borders ---
             for border in it.findall('borderGroup'):
                 pos = border.find('borderPos')
-                x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None else 0.0
-                y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None else 0.0
-                width1 = border.find('width1').text
-                height1 = border.find('height1').text
+                x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None and pos.find(
+                    'x').text else 0.0
+                y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None and pos.find(
+                    'y').text else 0.0
+
+                width_node = border.find('width1')
+                height_node = border.find('height1')
+                width1 = float(width_node.text) if width_node is not None and width_node.text else 0.0
+                height1 = float(height_node.text) if height_node is not None and height_node.text else 0.0
+
                 border_style = border.attrib.get("style", PageBorder.STYLE_TRIPLE)
 
-                currentPage.addBorder(
-                    float(width1), float(height1),
-                    x, y, 0, 0, style=border_style
-                )
+                # Direct instantiation to preserve exact saved (x, y) coordinates
+                border_item = PageBorder(width1, height1, style=border_style)
+                border_item.setPos(x, y)
+                currentPage.addItem(border_item)
 
-            # --- Restore Stamp Groups ---
+            # --- Restore Stamp Groups (INDENTÉ AU NIVEAU DE LA PAGE) ---
             for stamp in it.findall('stampGroup'):
                 pos = stamp.find('stampPos')
-                x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None else 0.0
-                y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None else 0.0
+                x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None and pos.find(
+                    'x').text else 0.0
+                y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None and pos.find(
+                    'y').text else 0.0
 
                 sizeBox = stamp.find('stampBox')
-                width = sizeBox.find('width').text
-                height = sizeBox.find('height').text
+                width = float(sizeBox.find('width').text) if sizeBox is not None and sizeBox.find(
+                    'width') is not None and sizeBox.find('width').text else 0.0
+                height = float(sizeBox.find('height').text) if sizeBox is not None and sizeBox.find(
+                    'height') is not None and sizeBox.find('height').text else 0.0
                 try:
-                    stampBox_width = sizeBox.find('stampBox_width').text
-                    stampBox_height = sizeBox.find('stampBox_height').text
+                    stampBox_width = float(sizeBox.find('stampBox_width').text)
+                    stampBox_height = float(sizeBox.find('stampBox_height').text)
                     use_new = 1
-                except:
+                except Exception:
                     use_new = 0
 
-                stampDesc = stamp.find('stampDesc').text or ""
-                stampNbr = stamp.find('stampNbr').text or ""
-                stampValue = stamp.find('stampValue').text or ""
-                pixmapItem = stamp.find('pixmapItem').text
+                desc_node = stamp.find('stampDesc')
+                stampDesc = desc_node.text if desc_node is not None and desc_node.text else ""
+
+                nbr_node = stamp.find('stampNbr')
+                stampNbr = nbr_node.text if nbr_node is not None and nbr_node.text else ""
+
+                val_node = stamp.find('stampValue')
+                stampValue = val_node.text if val_node is not None and val_node.text else ""
+
+                pix_node = stamp.find('pixmapItem')
+                pixmapItem = pix_node.text if pix_node is not None and pix_node.text else ""
 
                 stamp_obj = Stamp()
                 pixmap = self.bytesToPixmap(pixmapItem)
@@ -1300,7 +1386,7 @@ class Window(QMainWindow):
                 if use_new == 1:
                     stamp_obj.createStampPix(
                         currentPage, str(stampNbr), str(stampValue), str(stampDesc),
-                        float(stampBox_width), float(stampBox_height),
+                        stampBox_width, stampBox_height,
                         x, y, pixmap
                     )
                 else:
@@ -1309,6 +1395,44 @@ class Window(QMainWindow):
                         float(width) * (25.4 / 96.0), float(height) * (25.4 / 96.0),
                         x, y, pixmap
                     )
+
+            # --- Restore Rich Text Stamp Groups ---
+            for r_stamp in it.findall('richTextStampGroup'):
+                pos = r_stamp.find('stampPos')
+                x = float(pos.find('x').text) if pos is not None and pos.find('x') is not None and pos.find(
+                    'x').text else 50.0
+                y = float(pos.find('y').text) if pos is not None and pos.find('y') is not None and pos.find(
+                    'y').text else 50.0
+
+                desc_node = r_stamp.find('stampDesc')
+                desc_html = desc_node.findtext('html', '') if desc_node is not None else ""
+
+                nbr_node = r_stamp.find('stampNbr')
+                nbr_html = nbr_node.findtext('html', '') if nbr_node is not None else ""
+
+                val_node = r_stamp.find('stampValue')
+                val_html = val_node.findtext('html', '') if val_node is not None else ""
+
+                box_node = r_stamp.find('stampBox')
+                width_mm = float(box_node.findtext('width_mm', '25.0')) if box_node is not None else 25.0
+                height_mm = float(box_node.findtext('height_mm', '30.0')) if box_node is not None else 30.0
+
+                pix_data = r_stamp.findtext('pixmapData', '')
+                pixmap = self.bytesToPixmap(pix_data)
+
+                from Stamp import RichTextStamp
+                stamp_helper = RichTextStamp()
+                stamp_helper.createRichStampPix(
+                    currentPage,
+                    nbr_html=nbr_html,
+                    value_html=val_html,
+                    desc_html=desc_html,
+                    boxWidth=width_mm,
+                    boxHeight=height_mm,
+                    x=x,
+                    y=y,
+                    pixmap=pixmap
+                )
 
     def saveAlbumToFile(self):
         """Serialize album structure into a gzip-compressed XML file (.sta)."""
@@ -1327,6 +1451,25 @@ class Window(QMainWindow):
         self.currentAlbumName = fileName
         self.updateStatusFile(fileName + '.sta')
         root = ET.Element("album", version=FILE_FORMAT_VERSION)
+
+        # Calculate current counts and update active environment
+        total_pages = self.tabs.count()
+        total_stamps = self.countTotalStamps()
+        current_os = f"{platform.system()} {platform.release()}"
+        creation_date = self.album_metadata.get("creation_date") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        self.album_metadata["page_count"] = total_pages
+        self.album_metadata["stamp_count"] = total_stamps
+        self.album_metadata["os"] = current_os
+        self.album_metadata["creation_date"] = creation_date
+
+        # Write metadata block to XML root
+        meta_elem = ET.SubElement(root, "metadata")
+        ET.SubElement(meta_elem, "creation_date").text = str(creation_date)
+        ET.SubElement(meta_elem, "author").text = str(self.album_metadata.get("author", ""))
+        ET.SubElement(meta_elem, "os").text = str(current_os)
+        ET.SubElement(meta_elem, "page_count").text = str(total_pages)
+        ET.SubElement(meta_elem, "stamp_count").text = str(total_stamps)
 
         for x in range(self.tabs.count()):
             self.tabs.setCurrentIndex(x)
@@ -1413,6 +1556,25 @@ class Window(QMainWindow):
                             ET.SubElement(size, "height").text = str(stampItem.boundingRect().height())
                             ET.SubElement(size, "stampBox_width").text = str(int(stampItem.data(1)))
                             ET.SubElement(size, "stampBox_height").text = str(int(stampItem.data(2)))
+
+                elif item.type().real == 10 and item.data(0) == "richTextStampGroup":
+                    r_stamp = ET.SubElement(page, "richTextStampGroup")
+                    pos = ET.SubElement(r_stamp, "stampPos")
+                    ET.SubElement(pos, "x").text = str(item.x())
+                    ET.SubElement(pos, "y").text = str(item.y())
+
+                    for child in item.childItems():
+                        child_key = str(child.data(0))
+                        if child_key in ["stampDesc", "stampNbr", "stampValue"]:
+                            node = ET.SubElement(r_stamp, child_key)
+                            ET.SubElement(node, "html").text = child.toHtml()
+                        elif child_key == "pixmapItem":
+                            pix = child.pixmap()
+                            ET.SubElement(r_stamp, "pixmapData").text = str(self.pixmapToBytes(pix))
+                        elif child_key == "stampBox":
+                            box_elem = ET.SubElement(r_stamp, "stampBox")
+                            ET.SubElement(box_elem, "width_mm").text = str(child.data(1))
+                            ET.SubElement(box_elem, "height_mm").text = str(child.data(2))
 
         tree = ET.ElementTree(root)
         tree.write(fileName)

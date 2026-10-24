@@ -11,7 +11,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QGraphicsRectItem, QGraphicsTextItem, QGraphicsItemGroup, QGraphicsPixmapItem
 )
-from PyQt6.QtGui import QPen, QPixmap, QTextCursor, QTextBlockFormat
+from PyQt6.QtGui import QFont, QPen, QPixmap, QTextCursor, QTextBlockFormat
 from AppLanguage import get_language
 # Set up gettext localization
 
@@ -259,8 +259,6 @@ class Stamp:
         group.setPos(x, y)
         scene.addItem(group)
 
-
-
     def readStamp(self, stampItem):
         """
                 Extract property text, box dimensions, and pixmap data from a stamp group.
@@ -320,18 +318,174 @@ class Stamp:
             scene.removeItem(stampItem)
             self.createStampPix(scene, nbr, value, desc, boxWidth, boxHeight, top_left.x(), top_left.y(), pixmap)
 
-    def updateStamp_old(self, stampItem, stampObj, scene):
-        posX = stampItem.pos().x()
-        posY = stampItem.pos().y()
-        boxWidth = stampObj['stampBox_boxWidth']
-        boxHeight = stampObj['stampBox_boxHeight']
-        nbr = stampObj['stampNbr_text']
-        value = stampObj['stampValue_text']
-        desc = stampObj['stampDesc_text']
-        pixmap = stampObj['pixmapItem_image']
-        scene.removeItem(stampItem)
-        self.createStampPix(scene, nbr, value, desc, boxWidth, boxHeight, posX, posY, pixmap)
+class RichTextStamp(Stamp):
+    """
+    Dedicated graphics item group representing an autonomous rich-text stamp.
+    Stores and restores full HTML formatting for description, number, and value.
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def createRichStampPix(self, scene, nbr_html: str, value_html: str, desc_html: str,
+                           boxWidth: float, boxHeight: float, x: float, y: float,
+                           pixmap: QPixmap):
+        """
+        Create and insert a rich text stamp group to the active scene.
+        """
+        # 1. Description item (Top HTML text)
+        stampDesc = QGraphicsTextItem()
+        stampDesc.setHtml(desc_html)
+        stampDesc.setTextWidth(max(20.0, stampDesc.boundingRect().width()))
+        stampDesc.setData(0, "stampDesc")
+        stampDesc.setPos(0, 0)
+        stampDesc.setFlags(
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsMovable |
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsSelectable
+        )
+
+        # 2. Rect mount box item (conversion mm -> px à 96 DPI)
+        px_width = boxWidth / (25.4 / 96.0)
+        px_height = boxHeight / (25.4 / 96.0)
+        stampBox = QGraphicsRectItem(0, 0, px_width, px_height)
+
+        boxPen = QPen()
+        boxPen.setWidth(1)
+        stampBox.setPen(boxPen)
+        stampBox.setFlags(
+            QGraphicsRectItem.GraphicsItemFlag.ItemIsMovable |
+            QGraphicsRectItem.GraphicsItemFlag.ItemIsSelectable
+        )
+
+        # Centrage de la pochette sous la description
+        box_x = (stampDesc.boundingRect().width() / 2.0) - (px_width / 2.0)
+        box_y = stampDesc.boundingRect().height() + 20.0
+        stampBox.setPos(box_x, box_y)
+        stampBox.setData(0, "stampBox")
+        stampBox.setData(1, boxWidth)
+        stampBox.setData(2, boxHeight)
+
+        # 3. Image pixmap
+        pixmapitem = QGraphicsPixmapItem(pixmap)
+        if pixmapitem.boundingRect().width() > 0 and pixmapitem.boundingRect().height() > 0:
+            scale1 = (stampBox.boundingRect().width() - 4.0) / pixmapitem.boundingRect().width()
+            scale2 = (stampBox.boundingRect().height() - 4.0) / pixmapitem.boundingRect().height()
+            image_scale = min(scale1, scale2)
+        else:
+            image_scale = 1.0
+
+        pixmapitem.setScale(image_scale)
+        pix_x = stampBox.x() + (stampBox.boundingRect().width() / 2.0) - ((image_scale * pixmapitem.boundingRect().width()) / 2.0)
+        pix_y = stampBox.y() + (stampBox.boundingRect().height() / 2.0) - ((image_scale * pixmapitem.boundingRect().height()) / 2.0)
+        pixmapitem.setPos(pix_x, pix_y)
+        pixmapitem.setData(0, "pixmapItem")
+
+        # 4. Stamp number item (Bottom text 1)
+        stampNbr = QGraphicsTextItem()
+        stampNbr.setHtml(nbr_html)
+        stampNbr.setTextWidth(max(20.0, stampNbr.boundingRect().width()))
+        stampNbr.setData(0, "stampNbr")
+        stampNbr.setFlags(
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsMovable |
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsSelectable
+        )
+        nbr_x = (stampDesc.boundingRect().width() / 2.0) - (stampNbr.boundingRect().width() / 2.0)
+        nbr_y = box_y + stampBox.boundingRect().height()
+        stampNbr.setPos(nbr_x, nbr_y)
+
+        # 5. Nominal value item (Bottom text 2)
+        stampValue = QGraphicsTextItem()
+        stampValue.setHtml(value_html)
+        stampValue.setTextWidth(max(20.0, stampValue.boundingRect().width()))
+        stampValue.setData(0, "stampValue")
+        stampValue.setFlags(
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsMovable |
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsSelectable
+        )
+        val_x = (stampDesc.boundingRect().width() / 2.0) - (stampValue.boundingRect().width() / 2.0)
+        val_y = nbr_y + stampNbr.boundingRect().height()
+        stampValue.setPos(val_x, val_y)
+
+        # 6. Group all items together under dedicated type
+        group = QGraphicsItemGroup()
+        group.addToGroup(stampBox)
+        group.addToGroup(stampDesc)
+        group.addToGroup(stampNbr)
+        group.addToGroup(stampValue)
+        group.addToGroup(pixmapitem)
+
+        group.setFlags(
+            QGraphicsItemGroup.GraphicsItemFlag.ItemIsMovable |
+            QGraphicsItemGroup.GraphicsItemFlag.ItemIsSelectable
+        )
+        # Identifiant distinct de 'stampGroup'
+        group.setData(0, "richTextStampGroup")
+
+        # 7. Normalisation des coordonnées
+        children_rect = group.childrenBoundingRect()
+        for child in group.childItems():
+            child.moveBy(-children_rect.x(), -children_rect.y())
+
+        group.setPos(x, y)
+
+        if hasattr(scene, 'addItemWithUndo'):
+            scene.addItemWithUndo(group, _("Add Rich Text Stamp"))
+        else:
+            scene.addItem(group)
+
+        return group
+
+    def readRichStamp(self, stampItem):
+        """
+        Extract HTML text elements, dimensions, and pixmap data from a richTextStampGroup.
+        """
+        obj = {
+            'stampDesc_html': '',
+            'stampNbr_html': '',
+            'stampValue_html': '',
+            'stampBox_boxWidth': 25.0,
+            'stampBox_boxHeight': 30.0,
+            'pixmapItem_image': QPixmap()
+        }
+
+        for child in stampItem.childItems():
+            key = str(child.data(0))
+            if key == "stampDesc":
+                obj['stampDesc_html'] = child.toHtml()
+            elif key == "stampNbr":
+                obj['stampNbr_html'] = child.toHtml()
+            elif key == "stampValue":
+                obj['stampValue_html'] = child.toHtml()
+            elif key == "stampBox":
+                obj['stampBox_boxWidth'] = float(child.data(1))
+                obj['stampBox_boxHeight'] = float(child.data(2))
+            elif key == "pixmapItem":
+                obj['pixmapItem_image'] = child.pixmap()
+
+        return obj
+
+    def updateRichStamp(self, stampItem, scene, nbr_html: str, value_html: str,
+                        desc_html: str, boxWidth: float, boxHeight: float, pixmap: QPixmap):
+        """
+        Replace an existing rich text stamp with updated parameters under Undo history.
+        """
+        top_left = stampItem.sceneBoundingRect().topLeft()
+        undo_stack = getattr(scene, 'undoStack', None)
+
+        if undo_stack is not None:
+            from UndoCommands import DeleteItemsCommand
+            undo_stack.beginMacro(_("Edit Rich Text Stamp"))
+            undo_stack.push(DeleteItemsCommand(scene, [stampItem]))
+            self.createRichStampPix(
+                scene, nbr_html, value_html, desc_html,
+                boxWidth, boxHeight, top_left.x(), top_left.y(), pixmap
+            )
+            undo_stack.endMacro()
+        else:
+            scene.removeItem(stampItem)
+            self.createRichStampPix(
+                scene, nbr_html, value_html, desc_html,
+                boxWidth, boxHeight, top_left.x(), top_left.y(), pixmap
+            )
 
 
-    def deleteStamp(self):
-        print("delete stamp")

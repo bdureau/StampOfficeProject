@@ -1,0 +1,76 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: StampAlbum 1.0\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Create Catalog Rich Text Stamp"
+msgstr "Créer un timbre catalogue enrichi"
+
+msgid "Pochette type:"
+msgstr "Type de pochette :"
+
+msgid "Country:"
+msgstr "Pays :"
+
+msgid "Stamp type:"
+msgstr "Type de timbre :"
+
+msgid "Years:"
+msgstr "Année :"
+
+msgid "Stamp nbr:"
+msgstr "N° timbre :"
+
+msgid "Width (mm):"
+msgstr "Largeur (mm) :"
+
+msgid "Height (mm):"
+msgstr "Hauteur (mm) :"
+
+msgid "Description format:"
+msgstr "Format de la description :"
+
+msgid "Description 1"
+msgstr "Description 1"
+
+msgid "Description 2"
+msgstr "Description 2"
+
+msgid "Both (1 & 2)"
+msgstr "Les deux (1 et 2)"
+
+msgid "None"
+msgstr "Aucune"
+
+msgid "Description (Title)"
+msgstr "Description (Titre)"
+
+msgid "Stamp Number"
+msgstr "Numéro du timbre"
+
+msgid "Nominal Value"
+msgstr "Valeur faciale"
+
+msgid "&Create"
+msgstr "&Créer"
+
+msgid "&Done"
+msgstr "&Fermer"
+
+msgid "No database"
+msgstr "Aucune base de données"
+
+msgid "No country database was found in 'Databases'."
+msgstr "Aucune base pays n'a été trouvée dans le dossier 'Databases'."
+
+msgid "Database error"
+msgstr "Erreur de base de données"
+
+msgid "Invalid size"
+msgstr "Dimensions invalides"
+
+msgid "Width and height must be positive numbers (mm)."
+msgstr "La largeur et la hauteur doivent être des nombres positifs (mm)."

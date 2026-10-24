@@ -7,6 +7,8 @@ with support for database mount box sizes, drag-and-drop, and custom image loadi
 Author: Boris du Reau
 """
 
+import sys
+from pathlib import Path
 import gettext
 from pathlib import Path
 from PyQt6.QtCore import Qt
@@ -56,14 +58,24 @@ class DropImageLabel(QLabel):
                 return
         event.ignore()
 
-
 class CustomStampDlg(QDialog):
     """Dialog allowing custom stamp creation independent of catalog databases."""
 
     def __init__(self, scene=None, parent=None):
         super().__init__(parent)
         self.setWindowTitle(_("Create Custom Stamp"))
-        self.setWindowIcon(QIcon(str(get_images_dir() / "stamp_book.png")))
+
+        #self.setWindowIcon(QIcon(str(get_images_dir() / "stamp_book.png")))
+
+        self.base_dir = self._get_app_dir()
+        self.images_dir = self._get_resource_dir("Images")
+
+        icon_path = self.images_dir / "stamp_book.png"
+        if icon_path.exists():
+            self.setWindowIcon(QIcon(str(icon_path)))
+        else:
+            self.setWindowIcon(QIcon('stamp_book.png'))
+
         self.scene = scene
         self.db = None
         self.customPixmap = QPixmap()
@@ -71,6 +83,32 @@ class CustomStampDlg(QDialog):
 
         self._init_db()
         self._create_ui()
+
+    def _get_app_dir(self) -> Path:
+        """
+        Détermine le répertoire racine de l'application.
+
+        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
+        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
+          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+        """
+        if getattr(sys, 'frozen', False):
+            return Path(sys.executable).resolve().parent
+        else:
+            script_dir = Path(__file__).resolve().parent
+            parent_dir = script_dir.parent
+
+            if any((parent_dir / folder).exists() for folder in ["Databases", "Images", "Photos", "docs", "Help", "locale"]):
+                return parent_dir
+
+            return script_dir
+
+    def _get_resource_dir(self, folder_name: str) -> Path:
+        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        res_dir = self.base_dir / folder_name
+        if res_dir.exists():
+            return res_dir
+        return Path(__file__).resolve().parent / folder_name
 
     def _init_db(self):
         """Initialize connection to master database to load stamp mount box list."""
@@ -229,3 +267,4 @@ class CustomStampDlg(QDialog):
             pixmap=self.customPixmap
         )
         self.accept()
+

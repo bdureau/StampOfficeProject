@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-24 00:07+0200\n"
+"POT-Creation-Date: 2026-10-24 22:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,47 +15,71 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: PageDlg.py:21
+#: PageDlg.py:28
 msgid "Create new Page"
 msgstr ""
 
-#: PageDlg.py:69
+#: PageDlg.py:28
+msgid "Page setup"
+msgstr ""
+
+#: PageDlg.py:100
 msgid "Portrait"
 msgstr ""
 
-#: PageDlg.py:70
+#: PageDlg.py:101
 msgid "Landscape"
 msgstr ""
 
-#: PageDlg.py:77
+#: PageDlg.py:111
 msgid "Select the page:"
 msgstr ""
 
-#: PageDlg.py:90
+#: PageDlg.py:135
 msgid "Triple (Classic)"
 msgstr ""
 
-#: PageDlg.py:91
+#: PageDlg.py:136
 msgid "Simple (Frame)"
 msgstr ""
 
-#: PageDlg.py:92
+#: PageDlg.py:137
 msgid "Greek (Notched)"
 msgstr ""
 
-#: PageDlg.py:93
+#: PageDlg.py:138
 msgid "Dentelle (Philately)"
 msgstr ""
 
-#: PageDlg.py:103
+#: PageDlg.py:156
+msgid "Left"
+msgstr ""
+
+#: PageDlg.py:157
+msgid "Right"
+msgstr ""
+
+#: PageDlg.py:167
+msgid "Paper format:"
+msgstr ""
+
+#: PageDlg.py:168
 msgid "Border type:"
 msgstr ""
 
-#: PageDlg.py:117
+#: PageDlg.py:169
+msgid "Margin size:"
+msgstr ""
+
+#: PageDlg.py:170
+msgid "Margin position:"
+msgstr ""
+
+#: PageDlg.py:183
 msgid "OK"
 msgstr ""
 
-#: PageDlg.py:121
+#: PageDlg.py:187
 msgid "Cancel"
 msgstr ""
 

@@ -1,4 +1,7 @@
+
+import sys
 from PyQt6.QtCore import Qt
+from pathlib import Path
 from PyQt6.QtWidgets import (
     QComboBox, QHBoxLayout, QDialog, QPushButton, QTextEdit,
     QFormLayout, QDialogButtonBox
@@ -19,6 +22,15 @@ class TextDlg(QDialog):
     def __init__(self, txtObj=None, parent=None):
         super(TextDlg, self).__init__(parent)
 
+        self.base_dir = self._get_app_dir()
+        self.images_dir = self._get_resource_dir("Images")
+
+        icon_path = self.images_dir / "stamp_book.png"
+        if icon_path.exists():
+            self.setWindowIcon(QIcon(str(icon_path)))
+        else:
+            self.setWindowIcon(QIcon('stamp_book.png'))
+
         # Détermine s'il s'agit d'une mise à jour (édition) ou d'un ajout
         is_editing = txtObj is not None and txtObj.toPlainText().strip() != ""
 
@@ -29,6 +41,31 @@ class TextDlg(QDialog):
 
         self.createDlg(txtObj)
 
+    def _get_app_dir(self) -> Path:
+        """
+        Détermine le répertoire racine de l'application.
+
+        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
+        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
+          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+        """
+        if getattr(sys, 'frozen', False):
+            return Path(sys.executable).resolve().parent
+        else:
+            script_dir = Path(__file__).resolve().parent
+            parent_dir = script_dir.parent
+
+            if any((parent_dir / folder).exists() for folder in ["Databases", "Images", "Photos", "docs", "Help", "locale"]):
+                return parent_dir
+
+            return script_dir
+
+    def _get_resource_dir(self, folder_name: str) -> Path:
+        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        res_dir = self.base_dir / folder_name
+        if res_dir.exists():
+            return res_dir
+        return Path(__file__).resolve().parent / folder_name
     def _get_icon(self, icon_name: str) -> QIcon:
         """
         Charge dynamiquement l'icône depuis le dossier des images résolu par SAAppPaths.

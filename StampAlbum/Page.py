@@ -56,7 +56,8 @@ def undoable_move(text):
 class Page(QGraphicsScene):
     """Custom QGraphicsScene representing a single stamp album page."""
 
-    def __init__(self, pageType="portrait", border=None, paper_format=None, border_style=None, parent=None):
+    def __init__(self, pageType="portrait", border=None, paper_format=None,
+                 border_style=None, margin_size_mm=None, margin_position=None, parent=None):
         super(Page, self).__init__(parent)
         self.pageType = pageType
 
@@ -67,11 +68,22 @@ class Page(QGraphicsScene):
         self.undoStack = QUndoStack(self)
         self.mouse_press_positions = {}
 
-        # If paper_format is not provided, load from config (or default to A4)
         if not paper_format:
             paper_format = self.get_configured_paper_format()
 
         self.paper_format = paper_format
+
+        # Load margin settings from parameters or configuration
+        if margin_size_mm is None:
+            try:
+                margin_size_mm = float(get_config_value('margin size', "19"))
+            except ValueError:
+                margin_size_mm = 19.0
+        self.margin_size_mm = margin_size_mm
+
+        if margin_position is None:
+            margin_position = get_config_value('margin position', "left").lower()
+        self.margin_position = margin_position
 
         if self.paper_format == "Letter":
             self.page_width_mm = 215.9
@@ -84,7 +96,6 @@ class Page(QGraphicsScene):
         px_w = self.page_width_mm / (25.4 / 96.0)
         px_h = self.page_height_mm / (25.4 / 96.0)
 
-        # Utilise le style passé en paramètre ou celui de la configuration
         style = border_style if border_style else self.get_configured_border_style()
 
         if self.pageType == "portrait":
@@ -92,18 +103,71 @@ class Page(QGraphicsScene):
             if border:
                 border_w = (self.page_width_mm - 33.0) / (25.4 / 96.0)
                 border_h = (self.page_height_mm - 25.0) / (25.4 / 96.0)
-                margin_l = 19.0 / (25.4 / 96.0)
+                margin_px = self.margin_size_mm / (25.4 / 96.0)
+                if self.margin_position == "right":
+                    margin_l = px_w - border_w - margin_px
+                else:
+                    margin_l = margin_px
                 self.addBorder(border_w, border_h, margin_l, 0, 0, 0, style)
         else:
             self.setSceneRect(0, 0, px_h, px_w)
             if border:
                 border_w = (self.page_height_mm - 25.0) / (25.4 / 96.0)
                 border_h = (self.page_width_mm - 33.0) / (25.4 / 96.0)
+                margin_px = self.margin_size_mm / (25.4 / 96.0)
                 margin_l = ((px_h - border_w) / 2.0)
-                margin_t = 19.0 / (25.4 / 96.0)
-                self.addBorder(border_w, border_h, margin_l, 0, margin_t, 0, style)
+                self.addBorder(border_w, border_h, margin_l, 0, margin_px, 0, style)
 
         self.gridOn = False
+
+    def changePageSetup(self, page_type: str, paper_format: str, border_style: str,
+                        margin_size_mm: float = None, margin_position: str = None):
+        """Update page dimensions, orientation, margins, and recreate the border frame."""
+        self.pageType = page_type
+        self.paper_format = paper_format
+
+        if margin_size_mm is not None:
+            self.margin_size_mm = margin_size_mm
+        if margin_position is not None:
+            self.margin_position = margin_position
+
+        if self.paper_format == "Letter":
+            self.page_width_mm = 215.9
+            self.page_height_mm = 279.4
+        else:
+            self.page_width_mm = 210.0
+            self.page_height_mm = 297.0
+
+        px_w = self.page_width_mm / (25.4 / 96.0)
+        px_h = self.page_height_mm / (25.4 / 96.0)
+
+        if self.pageType == "portrait":
+            self.setSceneRect(0, 0, px_w, px_h)
+        else:
+            self.setSceneRect(0, 0, px_h, px_w)
+
+        old_border = next((it for it in self.items() if it.data(0) == "borderGroup"), None)
+        if old_border:
+            self.removeItem(old_border)
+
+        w_mm, h_mm = self.page_width_mm, self.page_height_mm
+        margin_px = self.margin_size_mm / (25.4 / 96.0)
+
+        if self.pageType == "portrait":
+            border_w = (w_mm - 33.0) / (25.4 / 96.0)
+            border_h = (h_mm - 25.0) / (25.4 / 96.0)
+            if self.margin_position == "right":
+                margin_l = px_w - border_w - margin_px
+            else:
+                margin_l = margin_px
+            self.addBorder(border_w, border_h, margin_l, 0, 0, 0, border_style)
+        else:
+            border_w = (h_mm - 25.0) / (25.4 / 96.0)
+            border_h = (w_mm - 33.0) / (25.4 / 96.0)
+            margin_l = ((px_h - border_w) / 2.0)
+            self.addBorder(border_w, border_h, margin_l, 0, margin_px, 0, border_style)
+
+        self.update()
 
     def get_configured_paper_format(self) -> str:
         """Read default paper format from configuration file."""
@@ -197,11 +261,12 @@ class Page(QGraphicsScene):
         border = PageBorder(boxWidth, boxHeight, style=style)
 
         if margin_top != 0:
-            margin_top2 = margin_top
+            final_y = margin_top
         else:
-            margin_top2 = (self.height() - border.boundingRect().size().height()) / 2
+            scene_h = self.sceneRect().height() if self.sceneRect().isValid() else self.height()
+            final_y = (scene_h - border.boundingRect().height()) / 2.0
 
-        border.setPos(margin_left, margin_top2)
+        border.setPos(float(margin_left), float(final_y))
         self.addItem(border)
 
     def addTextLabel(self, text, x=20, y=20, font=None, align=Qt.AlignmentFlag.AlignCenter, labelType="textLabel"):
@@ -281,7 +346,7 @@ class Page(QGraphicsScene):
         if items:
             self.undoStack.push(DeleteItemsCommand(self, items, _("Clear page")))
 
-    def editObject(self, item=None):
+    def editObject_old(self, item=None):
         """Edit currently selected scene item or the item passed directly."""
         top_item = item
 
@@ -324,6 +389,55 @@ class Page(QGraphicsScene):
                 self.editLabel(top_item)
             else:
                 print(f"Unrecognized item type for editing: {data_type}")
+
+        except Exception as e:
+            print(f"Error during item editing: {e}")
+
+    def editObject(self, item=None):
+        """Edit currently selected scene item or the item passed directly."""
+        top_item = item
+
+        if top_item is None:
+            items = self.selectedItems()
+            if len(items) != 1:
+                return
+            top_item = items[0]
+            while top_item.parentItem() is not None:
+                top_item = top_item.parentItem()
+
+        if top_item is None:
+            return
+
+        try:
+            raw_data = top_item.data(0)
+            data_type = str(raw_data) if raw_data is not None else ""
+
+            # 1. Ignorer les bordures de page
+            if data_type == "borderGroup":
+                return
+
+            # 2. Cas du Timbre Texte Enrichi (RichTextStamp)
+            if data_type == "richTextStampGroup":
+                from RichTextStampDlg import RichTextStampDlg
+                dlg = RichTextStampDlg(scene=self, stampItem=top_item)
+                dlg.exec()
+                return
+
+            # 3. Cas du bloc Rich Text libre
+            if data_type == "richTextLabel":
+                self.editRichText(top_item)
+
+            # 4. Cas du Timbre traditionnel
+            elif data_type == "stampGroup" or top_item.type() == 10:
+                self.editStamp(top_item)
+
+            # 5. Textes simples
+            elif (
+                    data_type in ["textLabel", "labelPageNbr", "labelCopyRight", "labelYear"]
+                    or isinstance(top_item, QGraphicsTextItem)
+                    or top_item.type() == 8
+            ):
+                self.editLabel(top_item)
 
         except Exception as e:
             print(f"Error during item editing: {e}")

@@ -17,7 +17,7 @@ msgstr ""
 
 #: RichTextDlg.py:28
 msgid "Rich Text Editor"
-msgstr "Editeur de text Riche"
+msgstr "Editeur de texte Riche"
 
 #: RichTextDlg.py:46
 msgid "Font Family"
@@ -83,3 +83,8 @@ msgstr "Justifier"
 msgid "Select Text Color"
 msgstr "Selectionner la couleur de texte"
 
+msgid "OK"
+msgstr "OK"
+
+msgid "Cancel"
+msgstr "Annuler"

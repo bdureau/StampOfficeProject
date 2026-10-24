@@ -33,8 +33,8 @@ msgid "Align"
 msgstr "Aligner"
 
 #: MainWindow.py:164
-msgid "Page"
-msgstr "Page"
+msgid "Pages"
+msgstr "Pages"
 
 #: MainWindow.py:170
 msgid "Objects"
@@ -47,6 +47,18 @@ msgstr "&Configuration"
 #: MainWindow.py:180
 msgid "&Help"
 msgstr "&Aide"
+
+#: MainWindow.py:249 MainWindow.py:684
+msgid "No album loaded"
+msgstr ""
+
+#: MainWindow.py:267
+msgid "Landscape"
+msgstr "Paysage"
+
+#: MainWindow.py:267
+msgid "Portrait"
+msgstr "Portrait"
 
 #: MainWindow.py:188
 msgid "&New"
@@ -96,6 +108,10 @@ msgstr "Couper"
 msgid "New Stamp ..."
 msgstr "Nouveau timbre ..."
 
+#: MainWindow.py:401
+msgid "New Custom Stamp ..."
+msgstr "Nouveau timbre perso..."
+
 #: MainWindow.py:253
 msgid "Edit Current Stamp ..."
 msgstr "Modifier timbre ..."
@@ -139,6 +155,10 @@ msgstr "Nouveau copyright"
 #: MainWindow.py:268
 msgid "New copyright all pages"
 msgstr "Nouveau copyright sur toutes les pages"
+
+#: MainWindow.py:436
+msgid "Current album info..."
+msgstr "Info album en cours..."
 
 #: MainWindow.py:287
 msgid "New Page border"
@@ -236,6 +256,19 @@ msgstr "Changer la bordure sur toutes les pages"
 msgid "Import AlbumEasy..."
 msgstr "Importer AlbumEasy..."
 
+#: MainWindow.py:517
+msgid "Current page setup..."
+msgstr "Config page courrante..."
+
+#: MainWindow.py:521
+msgid "New Rich Text Stamp ..."
+msgstr "Nouveau timbre enrichi..."
+
+
+#: MainWindow.py:525
+msgid "New Catalog Rich Text Stamp..."
+msgstr "Créer un timbre enrichi à partir du catalogue...."
+
 #: MainWindow.py:472
 msgid "Are you sure you want to exit the application?"
 msgstr "Etes vous certains de vouloir quitter l\'application?"
@@ -248,13 +281,17 @@ msgstr "Oui"
 msgid "&No"
 msgstr "Non"
 
+#: MainWindow.py:681
+msgid "Album:"
+msgstr "Album:"
+
 #: MainWindow.py:472
 msgid "Exit"
 msgstr "Quitter"
 
 #: MainWindow.py:628
-msgid "Effacer les guides"
-msgstr ""
+msgid "Clear guides"
+msgstr "Effacer les guides"
 
 #: MainWindow.py:550
 msgid "Are you sure you want clear the current page?"
@@ -292,13 +329,17 @@ msgstr "Effacer toutes les pages"
 msgid "Open Album file"
 msgstr "Ouvrir fichier album"
 
+#: MainWindow.py:1025 MainWindow.py:1446
+msgid "Album Files (*.sta)"
+msgstr "Fichiers Album (*.sta)"
+
 #: MainWindow.py:888
 msgid "Save Album"
 msgstr "Sauvegarder album"
 
 #: MainWindow.py:1281
 msgid "Save album as PDF"
-msgstr ""
+msgstr "Sauvegarder l\'album en PDF"
 
 #: MainWindow.py:1070
 msgid "Save current page"
@@ -306,11 +347,11 @@ msgstr "Sauvegarder page courante"
 
 #: MainWindow.py:1402
 msgid "Help"
-msgstr ""
+msgstr "Aide"
 
 #: MainWindow.py:1402
 msgid "Help file not found:"
-msgstr ""
+msgstr "Fichier d\'aide non trouvé:"
 
 #: MainWindow.py:1036
 msgid "Are you sure you want to delete those objects?"

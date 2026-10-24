@@ -20,6 +20,10 @@ msgstr ""
 msgid "Create new Page"
 msgstr "Créer page"
 
+#: PageDlg.py:28
+msgid "Page setup"
+msgstr "Configuration page"
+
 #: PageDlg.py:40
 msgid "Portrait"
 msgstr "Portrait"
@@ -48,9 +52,29 @@ msgstr "Grecque (Encoches)"
 msgid "Dentelle (Philately)"
 msgstr "Dentelle (Philatélie)"
 
+#: PageDlg.py:156
+msgid "Left"
+msgstr "Gauche"
+
+#: PageDlg.py:157
+msgid "Right"
+msgstr "Droite"
+
+#: PageDlg.py:167
+msgid "Paper format:"
+msgstr "Format page"
+
 #: PageDlg.py:103
 msgid "Border type:"
 msgstr "Type d\'encadrement"
+
+#: PageDlg.py:169
+msgid "Margin size:"
+msgstr "Taille marge:"
+
+#: PageDlg.py:170
+msgid "Margin position:"
+msgstr "Position marge:"
 
 #: PageDlg.py:117
 msgid "OK"

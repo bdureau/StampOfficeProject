@@ -36,6 +36,14 @@ msgstr "Grecque (Encoches)"
 msgid "Dentelle (Philately)"
 msgstr "Dentelle (Philatélie)"
 
+#: ConfigDlg.py:78
+msgid "Left"
+msgstr "Gauche"
+
+#: ConfigDlg.py:79
+msgid "Right"
+msgstr "Droite"
+
 #: ConfigDlg.py:86
 msgid "OK"
 msgstr "Confirmer"
@@ -59,6 +67,14 @@ msgstr "Format Page:"
 #: ConfigDlg.py:56
 msgid "Border type:"
 msgstr "Type encadrement:"
+
+#: ConfigDlg.py:112
+msgid "Margin size:"
+msgstr "Taille marge:"
+
+#: ConfigDlg.py:113
+msgid "Margin position:"
+msgstr "Position marge:"
 
 #: ConfigDlg.py:90
 msgid "Default Font:"
