@@ -122,7 +122,7 @@ msgstr "Base Pays Active"
 
 #: StampDatabase.py:689
 msgid "Catalogue Filters"
-msgstr "Filtres su Catalogue"
+msgstr "Filtres sur le Catalogue"
 
 #: StampDatabase.py:692
 msgid "Type:"
@@ -218,7 +218,7 @@ msgstr "Ajouter un timbre"
 
 #: StampDatabase.py:804
 msgid "Delete Stamp Record(s)"
-msgstr "Effacer un Timbre"
+msgstr "Effacer un timbre"
 
 #: StampDatabase.py:821 StampDatabase.py:882
 msgid "&File"
@@ -306,7 +306,7 @@ msgstr ""
 
 #: StampDatabase.py:1052 StampDatabase.py:1538
 msgid "Import Success"
-msgstr "Sccès de l\'impor"
+msgstr "Succès de l\'import"
 
 #: StampDatabase.py:1057
 msgid "Conversion Error"
