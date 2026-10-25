@@ -320,6 +320,7 @@ class MainWindow(QMainWindow):
         # Utilities
         utilities_menu = menubar.addMenu(_("&Utilities"))
         self.act_translate_xlsx = QAction(_("Translate XLSX File..."), self)
+        self.act_translate_xlsx.setIcon(QIcon(str(self.base_dir / "Images" / "translate_xlsx.png")))
         self.act_translate_xlsx.triggered.connect(self.translate_xlsx_catalogue)
         utilities_menu.addAction(self.act_translate_xlsx)
 
