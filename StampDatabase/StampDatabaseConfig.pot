@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-10-25 21:06+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: StampDatabaseConfig.py:68
+msgid "Application Configuration"
+msgstr ""
+
+#: StampDatabaseConfig.py:90
+msgid "Language:"
+msgstr ""
+
+#: StampDatabaseConfig.py:91
+msgid "Database Type:"
+msgstr ""
+
+#: StampDatabaseConfig.py:136
+msgid "Configuration"
+msgstr ""
+
+#: StampDatabaseConfig.py:137
+msgid ""
+"Configuration updated successfully.\n"
+"Please restart the application to apply language changes."
+msgstr ""
+

@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-10-25 21:06+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: translateXLSXDatabase.py:84
+msgid "Error reading file:"
+msgstr "Erreur lors de la lecture du fichier:"
+
+#: translateXLSXDatabase.py:94
+msgid "The Excel file must contain at least 7 columns (A to G)."
+msgstr "Le fichier Excel doit contenir au moins 7 colonnes (A to G)"
+
+#: translateXLSXDatabase.py:147
+msgid "Translating entries..."
+msgstr "Traduction des entrées..."
+
+#: translateXLSXDatabase.py:162
+msgid "Error saving Excel file:"
+msgstr "Erreur lors de la sauvegarde du fichier Excel:"
+
+#: translateXLSXDatabase.py:170
+msgid "Translate XLSX Catalogue"
+msgstr "Traduction du Catalogue XLSX"
+
+#: translateXLSXDatabase.py:177
+msgid "Select .xlsx file..."
+msgstr "Choisir un fichier .xlsx..."
+
+#: translateXLSXDatabase.py:179
+msgid "Browse..."
+msgstr "Parcourir..."
+
+#: translateXLSXDatabase.py:186
+msgid "Target Language:"
+msgstr "Langue cible"
+
+#: translateXLSXDatabase.py:188
+msgid "English"
+msgstr "Anglais"
+
+#: translateXLSXDatabase.py:189
+msgid "French"
+msgstr "Français"
+
+#: translateXLSXDatabase.py:190
+msgid "German"
+msgstr "Allemand"
+
+#: translateXLSXDatabase.py:191
+msgid "Spanish"
+msgstr "Espagnol"
+
+#: translateXLSXDatabase.py:192
+msgid "Italian"
+msgstr "Italien"
+
+#: translateXLSXDatabase.py:193
+msgid "Dutch"
+msgstr "Hollandais"
+
+#: translateXLSXDatabase.py:200
+msgid "OK"
+msgstr "Confirmer"
+
+#: translateXLSXDatabase.py:203 translateXLSXDatabase.py:253
+msgid "Cancel"
+msgstr "Annuler"
+
+#: translateXLSXDatabase.py:210
+msgid "Select Excel File"
+msgstr "Choisir un fichier Excel"
+
+#: translateXLSXDatabase.py:217
+msgid "Please select a file to translate."
+msgstr "Merci de choisir le fichier à traduire"
+
+#: translateXLSXDatabase.py:217
+msgid "Warning"
+msgstr "Attention"
+
+#: translateXLSXDatabase.py:250
+msgid "Could not read Excel file:"
+msgstr "Impossible de lire le fichier Excel:"
+
+#: translateXLSXDatabase.py:250
+msgid "Error"
+msgstr "Erreur"
+
+#: translateXLSXDatabase.py:253
+msgid "Preparing translation..."
+msgstr "Préparation de la traduction..."
+
+#: translateXLSXDatabase.py:254
+msgid "Translating File"
+msgstr "Traduction du Fichier"
+
+#: translateXLSXDatabase.py:269
+msgid "Translated file successfully saved as:"
+msgstr "Le fichier traduit avec succès a été sauvegardé en tant que:"
+
+#: translateXLSXDatabase.py:270
+msgid "Entries translated:"
+msgstr "Entrées traduites"
+
+#: translateXLSXDatabase.py:272
+msgid "Entries unchanged or untranslated:"
+msgstr "Entrées inchangée et non traduites:"
+
+#: translateXLSXDatabase.py:273
+msgid "Translation Complete"
+msgstr "Traduction Complete"
+
+#: translateXLSXDatabase.py:277
+msgid "Translation Error"
+msgstr "Erreur de traduction"
+

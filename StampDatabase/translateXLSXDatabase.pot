@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-10-25 21:06+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: translateXLSXDatabase.py:84
+msgid "Error reading file:"
+msgstr ""
+
+#: translateXLSXDatabase.py:94
+msgid "The Excel file must contain at least 7 columns (A to G)."
+msgstr ""
+
+#: translateXLSXDatabase.py:147
+msgid "Translating entries..."
+msgstr ""
+
+#: translateXLSXDatabase.py:162
+msgid "Error saving Excel file:"
+msgstr ""
+
+#: translateXLSXDatabase.py:170
+msgid "Translate XLSX Catalogue"
+msgstr ""
+
+#: translateXLSXDatabase.py:177
+msgid "Select .xlsx file..."
+msgstr ""
+
+#: translateXLSXDatabase.py:179
+msgid "Browse..."
+msgstr ""
+
+#: translateXLSXDatabase.py:186
+msgid "Target Language:"
+msgstr ""
+
+#: translateXLSXDatabase.py:188
+msgid "English"
+msgstr ""
+
+#: translateXLSXDatabase.py:189
+msgid "French"
+msgstr ""
+
+#: translateXLSXDatabase.py:190
+msgid "German"
+msgstr ""
+
+#: translateXLSXDatabase.py:191
+msgid "Spanish"
+msgstr ""
+
+#: translateXLSXDatabase.py:192
+msgid "Italian"
+msgstr ""
+
+#: translateXLSXDatabase.py:193
+msgid "Dutch"
+msgstr ""
+
+#: translateXLSXDatabase.py:200
+msgid "OK"
+msgstr ""
+
+#: translateXLSXDatabase.py:203 translateXLSXDatabase.py:253
+msgid "Cancel"
+msgstr ""
+
+#: translateXLSXDatabase.py:210
+msgid "Select Excel File"
+msgstr ""
+
+#: translateXLSXDatabase.py:217
+msgid "Please select a file to translate."
+msgstr ""
+
+#: translateXLSXDatabase.py:217
+msgid "Warning"
+msgstr ""
+
+#: translateXLSXDatabase.py:250
+msgid "Could not read Excel file:"
+msgstr ""
+
+#: translateXLSXDatabase.py:250
+msgid "Error"
+msgstr ""
+
+#: translateXLSXDatabase.py:253
+msgid "Preparing translation..."
+msgstr ""
+
+#: translateXLSXDatabase.py:254
+msgid "Translating File"
+msgstr ""
+
+#: translateXLSXDatabase.py:269
+msgid "Translated file successfully saved as:"
+msgstr ""
+
+#: translateXLSXDatabase.py:270
+msgid "Entries translated:"
+msgstr ""
+
+#: translateXLSXDatabase.py:272
+msgid "Entries unchanged or untranslated:"
+msgstr ""
+
+#: translateXLSXDatabase.py:273
+msgid "Translation Complete"
+msgstr ""
+
+#: translateXLSXDatabase.py:277
+msgid "Translation Error"
+msgstr ""
+

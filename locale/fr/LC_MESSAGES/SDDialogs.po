@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-10-25 21:06+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: SDDialogs.py:29
+msgid "Database Information"
+msgstr "Information Base"
+
+#: SDDialogs.py:37
+msgid "Database Name:"
+msgstr "Nom de la base"
+
+#: SDDialogs.py:38
+msgid "Database Type:"
+msgstr "Type de Base:"
+
+#: SDDialogs.py:43 SDDialogs.py:134
+msgid "Author:"
+msgstr "Auteur:"
+
+#: SDDialogs.py:46
+msgid "Country:"
+msgstr "Pays:"
+
+#: SDDialogs.py:51 SDDialogs.py:135
+msgid "Description:"
+msgstr "Description:"
+
+#: SDDialogs.py:54
+msgid "Version:"
+msgstr "Version:"
+
+#: SDDialogs.py:60 SDDialogs.py:136
+msgid "Catalogue System:"
+msgstr "Systéme de Catalogue:"
+
+#: SDDialogs.py:63
+msgid "French"
+msgstr "Français"
+
+#: SDDialogs.py:64
+msgid "English"
+msgstr "Anglais"
+
+#: SDDialogs.py:71 SDDialogs.py:137
+msgid "Data Language:"
+msgstr "Langue des données"
+
+#: SDDialogs.py:76
+msgid "Column missing in database db_info table."
+msgstr "La colonne est absente de la table db_info"
+
+#: SDDialogs.py:87 SDDialogs.py:144
+msgid "OK"
+msgstr "Confirmer"
+
+#: SDDialogs.py:90 SDDialogs.py:147
+msgid "Cancel"
+msgstr "Annuler"
+
+#: SDDialogs.py:114
+msgid "Create New Empty SQLite Database"
+msgstr "Créer une Base SQLite vide"
+
+#: SDDialogs.py:121
+msgid "e.g. Monaco, Belgium..."
+msgstr "ex: Monaco, Belgique..."
+
+#: SDDialogs.py:133
+msgid "Country / DB Name:"
+msgstr "Pays / Nom Base:"
+

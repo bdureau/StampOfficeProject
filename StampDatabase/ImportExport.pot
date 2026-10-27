@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-10-25 21:06+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: ImportExport.py:39
+msgid "Select CSV Delimiter:"
+msgstr ""
+
+#: ImportExport.py:41
+msgid "Comma ( , )"
+msgstr ""
+
+#: ImportExport.py:42
+msgid "Semicolon ( ; )"
+msgstr ""
+
+#: ImportExport.py:51
+msgid "OK"
+msgstr ""
+
+#: ImportExport.py:54
+msgid "Cancel"
+msgstr ""
+
+#: ImportExport.py:75
+msgid "Import CSV File"
+msgstr ""
+
+#: ImportExport.py:113 ImportExport.py:224
+msgid "Import Success"
+msgstr ""
+
+#: ImportExport.py:117
+msgid "Error importing CSV:"
+msgstr ""
+
+#: ImportExport.py:117 ImportExport.py:179 ImportExport.py:228
+msgid "Import Error"
+msgstr ""
+
+#: ImportExport.py:133
+msgid "Export CSV File"
+msgstr ""
+
+#: ImportExport.py:147
+msgid "Catalogue exported to CSV successfully."
+msgstr ""
+
+#: ImportExport.py:147 ImportExport.py:265
+msgid "Export Success"
+msgstr ""
+
+#: ImportExport.py:149
+msgid "Error exporting CSV:"
+msgstr ""
+
+#: ImportExport.py:149 ImportExport.py:267
+msgid "Export Error"
+msgstr ""
+
+#: ImportExport.py:162 ImportExport.py:241
+msgid "Missing Dependency"
+msgstr ""
+
+#: ImportExport.py:163 ImportExport.py:242
+msgid "The 'openpyxl' package is required for Excel files.<br>Install it using: <code>pip install openpyxl</code>"
+msgstr ""
+
+#: ImportExport.py:168
+msgid "Import Excel File"
+msgstr ""
+
+#: ImportExport.py:179
+msgid "The selected Excel file is empty."
+msgstr ""
+
+#: ImportExport.py:228
+msgid "Error importing Excel file:"
+msgstr ""
+
+#: ImportExport.py:248
+msgid "Export Excel File"
+msgstr ""
+
+#: ImportExport.py:265
+msgid "Catalogue exported to Excel successfully."
+msgstr ""
+
+#: ImportExport.py:267
+msgid "Error exporting Excel file:"
+msgstr ""
+
