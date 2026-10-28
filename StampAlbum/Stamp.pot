@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-23 21:57+0200\n"
+"POT-Creation-Date: 2026-10-28 07:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,15 @@ msgstr ""
 msgid "Add Stamp"
 msgstr ""
 
-#: Stamp.py:315
+#: Stamp.py:313
 msgid "Edit Stamp"
+msgstr ""
+
+#: Stamp.py:432
+msgid "Add Rich Text Stamp"
+msgstr ""
+
+#: Stamp.py:477
+msgid "Edit Rich Text Stamp"
 msgstr ""
 

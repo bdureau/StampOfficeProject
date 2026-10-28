@@ -46,7 +46,7 @@ msgid "&Create"
 msgstr "&Créer"
 
 msgid "&Done"
-msgstr "&Terminé"
+msgstr "&Terminer"
 
 msgid "&Apply"
 msgstr "&Appliquer"

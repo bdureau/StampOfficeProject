@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-10-28 07:47+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: AlbumInfoDlg.py:30
+msgid "Current Album Info"
+msgstr ""
+
+#: AlbumInfoDlg.py:42
+msgid "Creation date:"
+msgstr ""
+
+#: AlbumInfoDlg.py:46
+msgid "Author:"
+msgstr ""
+
+#: AlbumInfoDlg.py:50
+msgid "Operating system:"
+msgstr ""
+
+#: AlbumInfoDlg.py:54
+msgid "Total pages:"
+msgstr ""
+
+#: AlbumInfoDlg.py:58
+msgid "Total stamps:"
+msgstr ""
+
+#: AlbumInfoDlg.py:69
+msgid "OK"
+msgstr ""
+
+#: AlbumInfoDlg.py:73
+msgid "Cancel"
+msgstr ""
+

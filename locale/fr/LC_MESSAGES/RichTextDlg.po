@@ -84,7 +84,7 @@ msgid "Select Text Color"
 msgstr "Sélectionner la couleur de texte"
 
 msgid "OK"
-msgstr "Confimer"
+msgstr "Confirmer"
 
 msgid "Cancel"
 msgstr "Annuler"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-24 13:52+0200\n"
+"POT-Creation-Date: 2026-10-28 07:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,63 +15,67 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: CustomStampDlg.py:35
+#: CustomStampDlg.py:66
 msgid "Create Custom Stamp"
 msgstr ""
 
-#: CustomStampDlg.py:58
+#: CustomStampDlg.py:126
 msgid "Pochette type:"
 msgstr ""
 
-#: CustomStampDlg.py:72
+#: CustomStampDlg.py:140
 msgid "Picture:"
 msgstr ""
 
-#: CustomStampDlg.py:79
+#: CustomStampDlg.py:145
+msgid "Drop image here"
+msgstr ""
+
+#: CustomStampDlg.py:152
 msgid "&Browse picture..."
 msgstr ""
 
-#: CustomStampDlg.py:89
+#: CustomStampDlg.py:162
 msgid "Description (Title):"
 msgstr ""
 
-#: CustomStampDlg.py:92
+#: CustomStampDlg.py:165
 msgid "Stamp nbr:"
 msgstr ""
 
-#: CustomStampDlg.py:95
+#: CustomStampDlg.py:168
 msgid "Value:"
 msgstr ""
 
-#: CustomStampDlg.py:99
+#: CustomStampDlg.py:172
 msgid "Width (mm):"
 msgstr ""
 
-#: CustomStampDlg.py:103
+#: CustomStampDlg.py:176
 msgid "Height (mm):"
 msgstr ""
 
-#: CustomStampDlg.py:115
+#: CustomStampDlg.py:188
 msgid "&Create"
 msgstr ""
 
-#: CustomStampDlg.py:119
+#: CustomStampDlg.py:192
 msgid "&Done"
 msgstr ""
 
-#: CustomStampDlg.py:145
+#: CustomStampDlg.py:231
 msgid "Select picture"
 msgstr ""
 
-#: CustomStampDlg.py:146
+#: CustomStampDlg.py:232
 msgid "All pictures (*.jpg *.jpeg *.png);;PNG (*.png)"
 msgstr ""
 
-#: CustomStampDlg.py:169
+#: CustomStampDlg.py:246
 msgid "Invalid size"
 msgstr ""
 
-#: CustomStampDlg.py:169
+#: CustomStampDlg.py:246
 msgid "Width and height must be positive numbers (mm)."
 msgstr ""
 

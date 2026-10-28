@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-23 22:08+0200\n"
+"POT-Creation-Date: 2026-10-28 07:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,103 +15,103 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: StampDlg.py:34
+#: StampDlg.py:36
 msgid "Create new stamp"
 msgstr ""
 
-#: StampDlg.py:76
+#: StampDlg.py:104
 msgid "Pochette type"
 msgstr ""
 
-#: StampDlg.py:86
+#: StampDlg.py:114
 msgid "Years:"
 msgstr ""
 
-#: StampDlg.py:101
+#: StampDlg.py:129
 msgid "Stamp nbr:"
 msgstr ""
 
-#: StampDlg.py:148
+#: StampDlg.py:176
 msgid "Use description 1"
 msgstr ""
 
-#: StampDlg.py:149
+#: StampDlg.py:177
 msgid "Use description 2"
 msgstr ""
 
-#: StampDlg.py:150
+#: StampDlg.py:178
 msgid "Use description 1 and 2"
 msgstr ""
 
-#: StampDlg.py:151
+#: StampDlg.py:179
 msgid "No description"
 msgstr ""
 
-#: StampDlg.py:155
+#: StampDlg.py:183
 msgid "Select the description to use:"
 msgstr ""
 
-#: StampDlg.py:171
+#: StampDlg.py:199
 msgid "Stamp type:"
 msgstr ""
 
-#: StampDlg.py:172
+#: StampDlg.py:200
 msgid "Selected country:"
 msgstr ""
 
-#: StampDlg.py:173
+#: StampDlg.py:201
 msgid "Witdh:"
 msgstr ""
 
-#: StampDlg.py:174
+#: StampDlg.py:202
 msgid "Height:"
 msgstr ""
 
-#: StampDlg.py:175
+#: StampDlg.py:203
 msgid "Year:"
 msgstr ""
 
-#: StampDlg.py:176
+#: StampDlg.py:204
 msgid "Value:"
 msgstr ""
 
-#: StampDlg.py:177
+#: StampDlg.py:205
 msgid "Stamp description:"
 msgstr ""
 
-#: StampDlg.py:178
+#: StampDlg.py:206
 msgid "Stamp description2:"
 msgstr ""
 
-#: StampDlg.py:183
+#: StampDlg.py:211
 msgid "&Create"
 msgstr ""
 
-#: StampDlg.py:186
+#: StampDlg.py:214
 msgid "&Create from size"
 msgstr ""
 
-#: StampDlg.py:189
+#: StampDlg.py:217
 msgid "&Done"
 msgstr ""
 
-#: StampDlg.py:226
+#: StampDlg.py:254
 msgid "No database"
 msgstr ""
 
-#: StampDlg.py:227
+#: StampDlg.py:255
 msgid "No country database was found in the 'Databases' folder."
 msgstr ""
 
-#: StampDlg.py:237 StampDlg.py:457
+#: StampDlg.py:265 StampDlg.py:485
 msgid "Database error"
 msgstr ""
 
-#: StampDlg.py:647
+#: StampDlg.py:675
 msgid "Invalid size"
 msgstr ""
 
-#: StampDlg.py:647
+#: StampDlg.py:675
 msgid "Width and height must be numbers (mm)."
 msgstr ""
 

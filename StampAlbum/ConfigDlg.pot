@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-24 23:27+0200\n"
+"POT-Creation-Date: 2026-10-28 07:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,75 +15,75 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: ConfigDlg.py:30
+#: ConfigDlg.py:31
 msgid "Application configuration"
 msgstr ""
 
-#: ConfigDlg.py:63
+#: ConfigDlg.py:98
 msgid "Triple (Classic)"
 msgstr ""
 
-#: ConfigDlg.py:64
+#: ConfigDlg.py:99
 msgid "Simple (Frame)"
 msgstr ""
 
-#: ConfigDlg.py:65
+#: ConfigDlg.py:100
 msgid "Greek (Notched)"
 msgstr ""
 
-#: ConfigDlg.py:66
+#: ConfigDlg.py:101
 msgid "Dentelle (Philately)"
 msgstr ""
 
-#: ConfigDlg.py:78
+#: ConfigDlg.py:113
 msgid "Left"
 msgstr ""
 
-#: ConfigDlg.py:79
+#: ConfigDlg.py:114
 msgid "Right"
 msgstr ""
 
-#: ConfigDlg.py:98
+#: ConfigDlg.py:133
 msgid "OK"
 msgstr ""
 
-#: ConfigDlg.py:102
+#: ConfigDlg.py:137
 msgid "Cancel"
 msgstr ""
 
-#: ConfigDlg.py:108
+#: ConfigDlg.py:143
 msgid "Default Copyright:"
 msgstr ""
 
-#: ConfigDlg.py:109
+#: ConfigDlg.py:144
 msgid "Language:"
 msgstr ""
 
-#: ConfigDlg.py:110
+#: ConfigDlg.py:145
 msgid "Paper format:"
 msgstr ""
 
-#: ConfigDlg.py:111
+#: ConfigDlg.py:146
 msgid "Border type:"
 msgstr ""
 
-#: ConfigDlg.py:112
+#: ConfigDlg.py:147
 msgid "Margin size:"
 msgstr ""
 
-#: ConfigDlg.py:113
+#: ConfigDlg.py:148
 msgid "Margin position:"
 msgstr ""
 
-#: ConfigDlg.py:114
+#: ConfigDlg.py:149
 msgid "Default Font:"
 msgstr ""
 
-#: ConfigDlg.py:115
+#: ConfigDlg.py:150
 msgid "Default Country:"
 msgstr ""
 
-#: ConfigDlg.py:116
+#: ConfigDlg.py:151
 msgid "Default Database:"
 msgstr ""
 

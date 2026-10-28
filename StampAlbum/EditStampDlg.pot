@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-23 21:52+0200\n"
+"POT-Creation-Date: 2026-10-28 07:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,35 +15,47 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: EditStampDlg.py:27
+#: EditStampDlg.py:54
 msgid "Edit stamp"
 msgstr ""
 
-#: EditStampDlg.py:55
+#: EditStampDlg.py:83
 msgid "&Change image ..."
 msgstr ""
 
-#: EditStampDlg.py:69
+#: EditStampDlg.py:94
+msgid "OK"
+msgstr ""
+
+#: EditStampDlg.py:98
+msgid "Cancel"
+msgstr ""
+
+#: EditStampDlg.py:105
 msgid "Title:"
 msgstr ""
 
-#: EditStampDlg.py:70
+#: EditStampDlg.py:106
 msgid "Nbr"
 msgstr ""
 
-#: EditStampDlg.py:71
+#: EditStampDlg.py:107
 msgid "Value"
 msgstr ""
 
-#: EditStampDlg.py:78
+#: EditStampDlg.py:114
 msgid "Pochette type"
 msgstr ""
 
-#: EditStampDlg.py:101
+#: EditStampDlg.py:139
 msgid "Database error"
 msgstr ""
 
-#: EditStampDlg.py:142
+#: EditStampDlg.py:190
 msgid "Select picture"
+msgstr ""
+
+#: EditStampDlg.py:191
+msgid "all pictures (*.jpg *.jpeg *.png);;PNG (*.png)"
 msgstr ""
 

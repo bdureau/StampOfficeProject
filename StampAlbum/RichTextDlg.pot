@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-24 18:53+0200\n"
+"POT-Creation-Date: 2026-10-28 07:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,63 +15,71 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: RichTextDlg.py:35
+#: RichTextDlg.py:34
 msgid "Rich Text Editor"
 msgstr ""
 
-#: RichTextDlg.py:72
+#: RichTextDlg.py:106
 msgid "Font Family"
 msgstr ""
 
-#: RichTextDlg.py:85
+#: RichTextDlg.py:119
 msgid "Font Size"
 msgstr ""
 
-#: RichTextDlg.py:91
+#: RichTextDlg.py:125
 msgid "B"
 msgstr ""
 
-#: RichTextDlg.py:92
+#: RichTextDlg.py:126
 msgid "Bold"
 msgstr ""
 
-#: RichTextDlg.py:99
+#: RichTextDlg.py:133
 msgid "I"
 msgstr ""
 
-#: RichTextDlg.py:100
+#: RichTextDlg.py:134
 msgid "Italic"
 msgstr ""
 
-#: RichTextDlg.py:107
+#: RichTextDlg.py:141
 msgid "U"
 msgstr ""
 
-#: RichTextDlg.py:108
+#: RichTextDlg.py:142
 msgid "Underline"
 msgstr ""
 
-#: RichTextDlg.py:117
+#: RichTextDlg.py:151
 msgid "Text Color"
 msgstr ""
 
-#: RichTextDlg.py:125
+#: RichTextDlg.py:159
 msgid "Align Left"
 msgstr ""
 
-#: RichTextDlg.py:132
+#: RichTextDlg.py:166
 msgid "Center"
 msgstr ""
 
-#: RichTextDlg.py:139
+#: RichTextDlg.py:173
 msgid "Align Right"
 msgstr ""
 
-#: RichTextDlg.py:146
+#: RichTextDlg.py:180
 msgid "Justify"
 msgstr ""
 
-#: RichTextDlg.py:189
+#: RichTextDlg.py:202
+msgid "OK"
+msgstr ""
+
+#: RichTextDlg.py:206
+msgid "Cancel"
+msgstr ""
+
+#: RichTextDlg.py:238
 msgid "Select Text Color"
 msgstr ""
 
