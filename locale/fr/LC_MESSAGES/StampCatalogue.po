@@ -21,11 +21,11 @@ msgstr "Configuration"
 
 #: StampCatalogue.py:104
 msgid "Language:"
-msgstr "Langue"
+msgstr "Langue:"
 
 #: StampCatalogue.py:111
 msgid "Database Type:"
-msgstr "Type de Base"
+msgstr "Type de Base:"
 
 #: StampCatalogue.py:242 StampCatalogue.py:246 StampCatalogue.py:735
 #: StampCatalogue.py:741
@@ -54,7 +54,7 @@ msgstr "StampCatalogue - Gestion de collection"
 
 #: StampCatalogue.py:389
 msgid "New Collection..."
-msgstr "Nouvelle Collection.."
+msgstr "Nouvelle Collection..."
 
 #: StampCatalogue.py:390
 msgid "Create a new collection"
@@ -82,7 +82,7 @@ msgstr "Configuration..."
 
 #: StampCatalogue.py:408
 msgid "Configure application settings"
-msgstr "Configurer les paramétres de l'application"
+msgstr "Configurer les paramétres de l'\application"
 
 #: StampCatalogue.py:413
 msgid "User Manual"
@@ -170,7 +170,7 @@ msgstr "Type"
 
 #: StampCatalogue.py:519 StampCatalogue.py:1025
 msgid "Value / Color"
-msgstr "Valeur / Couyleur"
+msgstr "Valeur / Couleur"
 
 #: StampCatalogue.py:520 StampCatalogue.py:1026
 msgid "Description"
@@ -255,7 +255,7 @@ msgstr "Prix d\'acquisition:"
 
 #: StampCatalogue.py:591
 msgid "Notes:"
-msgstr "Notes"
+msgstr "Notes:"
 
 #: StampCatalogue.py:593
 msgid "Save to Collection"
@@ -271,7 +271,7 @@ msgid ""
 "Please restart the application to apply changes."
 msgstr ""
 "Configuration sauvegardé dans StampCatalogue.cfg.\n"
-"Veuillez redémarrer l\'application pour applique les changements."
+"Veuillez redémarrer l\'application pour appliquer les changements."
 
 #: StampCatalogue.py:624
 msgid ""
@@ -299,7 +299,7 @@ msgstr ""
 
 #: StampCatalogue.py:655
 msgid "Could not open manual:"
-msgstr "Impossible d'ouvrir le manuel:"
+msgstr "Impossible d\'ouvrir le manuel:"
 
 #: StampCatalogue.py:655 StampCatalogue.py:690 StampCatalogue.py:700
 msgid "Error"
@@ -335,7 +335,7 @@ msgstr "Etes vous certain que vous voulez effacer cette collection et tous ces t
 
 #: StampCatalogue.py:995 StampCatalogue.py:997
 msgid "Missing"
-msgstr "Mauquant"
+msgstr "Manquant"
 
 #: StampCatalogue.py:1002
 msgid "Information"
@@ -361,7 +361,7 @@ msgstr "Notes"
 msgid ""
 "Mancolist exported successfully:\n"
 msgstr ""
-"Mancolist exportée avec succès:\n"
+"Mancoliste exportée avec succès:\n"
 
 #: StampCatalogue.py:1047
 msgid "Success"

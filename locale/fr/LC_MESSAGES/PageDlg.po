@@ -62,11 +62,11 @@ msgstr "Droite"
 
 #: PageDlg.py:167
 msgid "Paper format:"
-msgstr "Format page"
+msgstr "Format page:"
 
 #: PageDlg.py:103
 msgid "Border type:"
-msgstr "Type d\'encadrement"
+msgstr "Type d\'encadrement:"
 
 #: PageDlg.py:169
 msgid "Margin size:"

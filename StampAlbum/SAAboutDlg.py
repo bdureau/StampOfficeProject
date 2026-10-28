@@ -19,8 +19,8 @@ from PyQt6.QtGui import QPixmap, QFont
 # Localization setup
 import gettext
 from AppLanguage import get_language
-gettext.find("AboutDlg")
-translate = gettext.translation('AboutDlg', localedir='locale', languages=[get_language()], fallback=True)
+gettext.find("SAAboutDlg")
+translate = gettext.translation('SAAboutDlg', localedir='locale', languages=[get_language()], fallback=True)
 translate.install()
 _ = translate.gettext
 

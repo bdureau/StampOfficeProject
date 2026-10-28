@@ -45,7 +45,7 @@ msgstr "Parcourir..."
 
 #: translateXLSXDatabase.py:186
 msgid "Target Language:"
-msgstr "Langue cible"
+msgstr "Langue cible:"
 
 #: translateXLSXDatabase.py:188
 msgid "English"
@@ -85,7 +85,7 @@ msgstr "Choisir un fichier Excel"
 
 #: translateXLSXDatabase.py:217
 msgid "Please select a file to translate."
-msgstr "Merci de choisir le fichier à traduire"
+msgstr "Merci de choisir le fichier à traduire."
 
 #: translateXLSXDatabase.py:217
 msgid "Warning"
@@ -113,7 +113,7 @@ msgstr "Le fichier traduit avec succès a été sauvegardé en tant que:"
 
 #: translateXLSXDatabase.py:270
 msgid "Entries translated:"
-msgstr "Entrées traduites"
+msgstr "Entrées traduites:"
 
 #: translateXLSXDatabase.py:272
 msgid "Entries unchanged or untranslated:"

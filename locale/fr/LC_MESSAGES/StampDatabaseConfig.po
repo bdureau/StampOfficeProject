@@ -27,6 +27,14 @@ msgstr "Langue:"
 msgid "Database Type:"
 msgstr "Type de Base:"
 
+#: StampDatabaseConfig.py:98
+msgid "OK"
+msgstr "Confirmer"
+
+#: StampDatabaseConfig.py:101
+msgid "Cancel"
+msgstr "Annuler"
+
 #: StampDatabaseConfig.py:136
 msgid "Configuration"
 msgstr "Configuration"

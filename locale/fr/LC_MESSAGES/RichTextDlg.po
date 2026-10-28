@@ -81,10 +81,10 @@ msgstr "Justifier"
 
 #: RichTextDlg.py:154
 msgid "Select Text Color"
-msgstr "Selectionner la couleur de texte"
+msgstr "Sélectionner la couleur de texte"
 
 msgid "OK"
-msgstr "OK"
+msgstr "Confimer"
 
 msgid "Cancel"
 msgstr "Annuler"

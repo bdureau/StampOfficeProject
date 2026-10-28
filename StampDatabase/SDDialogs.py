@@ -12,9 +12,9 @@ from PyQt6.QtWidgets import (
 import gettext
 from SDAppLanguage import get_language
 
-gettext.find("StampDatabase")
+gettext.find("SDDialogs")
 translate = gettext.translation(
-    'StampDatabase', localedir='locale', languages=[get_language()], fallback=True
+    'SDDialogs', localedir='locale', languages=[get_language()], fallback=True
 )
 translate.install()
 _ = translate.gettext

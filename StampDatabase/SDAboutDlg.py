@@ -21,8 +21,8 @@ from PyQt6.QtGui import QPixmap, QFont
 import gettext
 from SDAppLanguage import get_language
 
-gettext.find("StampDatabase")
-translate = gettext.translation('StampDatabase', localedir='locale', languages=[get_language()], fallback=True)
+gettext.find("SDAboutDlg")
+translate = gettext.translation('SDAboutDlg', localedir='locale', languages=[get_language()], fallback=True)
 translate.install()
 _ = translate.gettext
 
@@ -93,8 +93,14 @@ class SDAboutDlg(QDialog):
         text_browser.setHtml(self.get_about_text_html())
         main_layout.addWidget(text_browser)
 
-        # Bouton OK
+        # OK Button
         button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+
+        # --- Traduction du bouton OK ---
+        ok_button = button_box.button(QDialogButtonBox.StandardButton.Ok)
+        if ok_button:
+            ok_button.setText(_("OK"))
+
         button_box.accepted.connect(self.accept)
         main_layout.addWidget(button_box)
 

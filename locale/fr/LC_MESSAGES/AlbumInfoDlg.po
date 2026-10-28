@@ -16,7 +16,7 @@ msgid "Author:"
 msgstr "Auteur:"
 
 msgid "Operating system:"
-msgstr "Système d'exploitation:"
+msgstr "Système d\'exploitation:"
 
 msgid "Total pages:"
 msgstr "Nombre de pages:"
@@ -25,7 +25,7 @@ msgid "Total stamps:"
 msgstr "Nombre de timbres:"
 
 msgid "OK"
-msgstr "OK"
+msgstr "Confirmer"
 
 msgid "Cancel"
 msgstr "Annuler"

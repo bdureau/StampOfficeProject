@@ -50,7 +50,7 @@ msgstr "&Aide"
 
 #: MainWindow.py:249 MainWindow.py:684
 msgid "No album loaded"
-msgstr ""
+msgstr "Aucun album chargé"
 
 #: MainWindow.py:267
 msgid "Landscape"
@@ -142,7 +142,7 @@ msgstr "Nouveau texte ..."
 
 #: MainWindow.py:336
 msgid "New Rich Text ..."
-msgstr "Nouveau texte riche"
+msgstr "Nouveau texte riche..."
 
 #: MainWindow.py:277
 msgid "New Image ..."
@@ -198,7 +198,7 @@ msgstr "Aligner en bas"
 
 #: MainWindow.py:313
 msgid "Distribute Vertically"
-msgstr "Distribuer Verticallement"
+msgstr "Distribuer Verticalement"
 
 #: MainWindow.py:318
 msgid "Distribute Horizontally"
@@ -242,7 +242,7 @@ msgstr "Selectionner tout"
 
 #: MainWindow.py:463
 msgid "Thundnails..."
-msgstr "Mosaic"
+msgstr "Mosaic..."
 
 #: MainWindow.py:470
 msgid "Change current page border"
@@ -258,7 +258,7 @@ msgstr "Importer AlbumEasy..."
 
 #: MainWindow.py:517
 msgid "Current page setup..."
-msgstr "Config page courrante..."
+msgstr "Config page courante..."
 
 #: MainWindow.py:521
 msgid "New Rich Text Stamp ..."

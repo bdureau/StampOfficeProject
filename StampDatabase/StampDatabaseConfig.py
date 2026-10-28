@@ -14,9 +14,9 @@ from PyQt6.QtWidgets import (
 import gettext
 from SDAppLanguage import get_language
 
-gettext.find("StampDatabase")
+gettext.find("StampDatabaseConfig")
 translate = gettext.translation(
-    'StampDatabase', localedir='locale', languages=[get_language()], fallback=True
+    'StampDatabaseConfig', localedir='locale', languages=[get_language()], fallback=True
 )
 translate.install()
 _ = translate.gettext
@@ -93,6 +93,13 @@ class ConfigDialog(QDialog):
         layout.addLayout(form)
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        ok_btn = buttons.button(QDialogButtonBox.StandardButton.Ok)
+        if ok_btn:
+            ok_btn.setText(_("OK"))
+        cancel_btn = buttons.button(QDialogButtonBox.StandardButton.Cancel)
+        if cancel_btn:
+            cancel_btn.setText(_("Cancel"))
+
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)

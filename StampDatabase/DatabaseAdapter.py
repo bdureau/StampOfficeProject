@@ -16,9 +16,9 @@ except ImportError:
 import gettext
 from SDAppLanguage import get_language
 
-gettext.find("StampDatabase")
+gettext.find("DatabaseAdapter")
 translate = gettext.translation(
-    'StampDatabase', localedir='locale', languages=[get_language()], fallback=True
+    'DatabaseAdapter', localedir='locale', languages=[get_language()], fallback=True
 )
 translate.install()
 _ = translate.gettext

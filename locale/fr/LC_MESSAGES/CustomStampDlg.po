@@ -22,11 +22,11 @@ msgstr "Création timbre"
 
 #: CustomStampDlg.py:58
 msgid "Pochette type:"
-msgstr "Type de Pochette :"
+msgstr "Type de Pochette:"
 
 #: CustomStampDlg.py:72
 msgid "Picture:"
-msgstr "Image :"
+msgstr "Image:"
 
 #: CustomStampDlg.py:79
 msgid "&Browse picture..."
@@ -34,23 +34,23 @@ msgstr "&Choisir image..."
 
 #: CustomStampDlg.py:89
 msgid "Description (Title):"
-msgstr "Description (Titre) :"
+msgstr "Description (Titre):"
 
 #: CustomStampDlg.py:92
 msgid "Stamp nbr:"
-msgstr "N° timbre :"
+msgstr "N° timbre:"
 
 #: CustomStampDlg.py:95
 msgid "Value:"
-msgstr "Valeur :"
+msgstr "Valeur:"
 
 #: CustomStampDlg.py:99
 msgid "Width (mm):"
-msgstr "Largeur (mm) :"
+msgstr "Largeur (mm):"
 
 #: CustomStampDlg.py:103
 msgid "Height (mm):"
-msgstr "Hauteur (mm) :"
+msgstr "Hauteur (mm):"
 
 #: CustomStampDlg.py:115
 msgid "&Create"

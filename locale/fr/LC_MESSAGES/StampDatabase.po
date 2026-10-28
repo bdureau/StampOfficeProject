@@ -26,31 +26,31 @@ msgstr "Informations sur la base"
 
 #: StampDatabase.py:388
 msgid "Database Name:"
-msgstr "Nom de la base"
+msgstr "Nom de la base:"
 
 #: StampDatabase.py:389 StampDatabase.py:559
 msgid "Database Type:"
-msgstr "Type de Base"
+msgstr "Type de Base:"
 
 #: StampDatabase.py:394 StampDatabase.py:479
 msgid "Author:"
-msgstr "Auteur"
+msgstr "Auteur:"
 
 #: StampDatabase.py:397
 msgid "Country:"
-msgstr "Pays"
+msgstr "Pays:"
 
 #: StampDatabase.py:402 StampDatabase.py:480 StampDatabase.py:782
 msgid "Description:"
-msgstr "Description"
+msgstr "Description:"
 
 #: StampDatabase.py:405
 msgid "Version:"
-msgstr "Version"
+msgstr "Version:"
 
 #: StampDatabase.py:411 StampDatabase.py:481
 msgid "Catalogue System:"
-msgstr "Nom du catalogue"
+msgstr "Nom du catalogue:"
 
 #: StampDatabase.py:414
 msgid "French"
@@ -62,7 +62,7 @@ msgstr "Anglais"
 
 #: StampDatabase.py:422 StampDatabase.py:482
 msgid "Data Language:"
-msgstr "Langue des données"
+msgstr "Langue des données:"
 
 #: StampDatabase.py:427
 msgid "Column missing in database db_info table."
@@ -78,7 +78,7 @@ msgstr "ex: Monaco, Belgique..."
 
 #: StampDatabase.py:478
 msgid "Country / DB Name:"
-msgstr "Pays / Nom base"
+msgstr "Pays / Nom base:"
 
 #: StampDatabase.py:510
 msgid "Select CSV Delimiter:"
@@ -118,7 +118,7 @@ msgstr "Choix Base de données"
 
 #: StampDatabase.py:679
 msgid "Active Country Database:"
-msgstr "Base Pays Active"
+msgstr "Base Pays Active:"
 
 #: StampDatabase.py:689
 msgid "Catalogue Filters"
@@ -126,15 +126,15 @@ msgstr "Filtres sur le Catalogue"
 
 #: StampDatabase.py:692
 msgid "Type:"
-msgstr "Type"
+msgstr "Type:"
 
 #: StampDatabase.py:698 StampDatabase.py:778
 msgid "Year:"
-msgstr "Année"
+msgstr "Année:"
 
 #: StampDatabase.py:703
 msgid "Catalog N°:"
-msgstr "N° Catalogue"
+msgstr "N° Catalogue:"
 
 #: StampDatabase.py:705
 msgid "e.g. 154..."
@@ -264,6 +264,17 @@ msgstr "Défaire"
 msgid "&Redo"
 msgstr "Refaire"
 
+#: StampDatabase.py:315
+msgid "Select All"
+msgstr "Tout selectionner"
+
+#: StampDatabase.py:321
+msgid "&Utilities"
+msgstr "Utile"
+
+#: StampDatabase.py:322
+msgid "Translate XLSX File..."
+msgstr "Tranduction fichier XLSX..."
 #: StampDatabase.py:864 StampDatabase.py:927
 msgid "&Config"
 msgstr "&Config"
@@ -298,11 +309,11 @@ msgstr "Le fichier existe"
 
 #: StampDatabase.py:1012
 msgid "Table Import Notice"
-msgstr ""
+msgstr "Notification d\'import de table"
 
 #: StampDatabase.py:1013
 msgid "Could not fully replicate Stamp_List table:"
-msgstr ""
+msgstr "Impossible de repliquer entierement la table Stamp_List:"
 
 #: StampDatabase.py:1052 StampDatabase.py:1538
 msgid "Import Success"
@@ -314,7 +325,7 @@ msgstr "Erreur de conversion"
 
 #: StampDatabase.py:1057
 msgid "Error importing Access database:"
-msgstr "Erreur d\'importation de la base Access"
+msgstr "Erreur d\'importation de la base Access:"
 
 #: StampDatabase.py:1062
 msgid "Creating a new database is only supported for SQLite."
@@ -354,7 +365,7 @@ msgstr "Confirmer la suppression"
 
 #: StampDatabase.py:1360
 msgid "Database changes saved successfully."
-msgstr "Les modifications de la base sauvegardé avec succès."
+msgstr "Les modifications de la base sauvegardées avec succès."
 
 #: StampDatabase.py:1360
 msgid "Saved"
@@ -374,7 +385,7 @@ msgstr "Importer fichier CSV"
 
 #: StampDatabase.py:1542
 msgid "Error importing CSV:"
-msgstr "Erreur d\'importation du CSV"
+msgstr "Erreur d\'importation du CSV:"
 
 #: StampDatabase.py:1542
 msgid "Import Error"

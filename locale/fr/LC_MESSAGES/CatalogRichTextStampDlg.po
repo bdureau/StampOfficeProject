@@ -13,25 +13,25 @@ msgid "Pochette type:"
 msgstr "Type de pochette :"
 
 msgid "Country:"
-msgstr "Pays :"
+msgstr "Pays:"
 
 msgid "Stamp type:"
-msgstr "Type de timbre :"
+msgstr "Type de timbre:"
 
 msgid "Years:"
-msgstr "Année :"
+msgstr "Année:"
 
 msgid "Stamp nbr:"
-msgstr "N° timbre :"
+msgstr "N° timbre:"
 
 msgid "Width (mm):"
-msgstr "Largeur (mm) :"
+msgstr "Largeur (mm):"
 
 msgid "Height (mm):"
-msgstr "Hauteur (mm) :"
+msgstr "Hauteur (mm):"
 
 msgid "Description format:"
-msgstr "Format de la description :"
+msgstr "Format de la description:"
 
 msgid "Description 1"
 msgstr "Description 1"
@@ -64,7 +64,7 @@ msgid "No database"
 msgstr "Aucune base de données"
 
 msgid "No country database was found in 'Databases'."
-msgstr "Aucune base pays n'a été trouvée dans le dossier 'Databases'."
+msgstr "Aucune base pays n\'a été trouvée dans le dossier \'Databases\'."
 
 msgid "Database error"
 msgstr "Erreur de base de données"

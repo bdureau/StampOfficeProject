@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-25 21:06+0100\n"
+"POT-Creation-Date: 2026-10-28 06:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,11 +27,19 @@ msgstr ""
 msgid "Database Type:"
 msgstr ""
 
-#: StampDatabaseConfig.py:136
+#: StampDatabaseConfig.py:98
+msgid "OK"
+msgstr ""
+
+#: StampDatabaseConfig.py:101
+msgid "Cancel"
+msgstr ""
+
+#: StampDatabaseConfig.py:143
 msgid "Configuration"
 msgstr ""
 
-#: StampDatabaseConfig.py:137
+#: StampDatabaseConfig.py:144
 msgid ""
 "Configuration updated successfully.\n"
 "Please restart the application to apply language changes."

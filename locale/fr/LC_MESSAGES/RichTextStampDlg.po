@@ -10,22 +10,22 @@ msgid "Create Rich Text Stamp"
 msgstr "Créer un timbre texte enrichi"
 
 msgid "Pochette type:"
-msgstr "Type de pochette :"
+msgstr "Type de pochette:"
 
 msgid "Picture:"
-msgstr "Image :"
+msgstr "Image:"
 
 msgid "Drop image here"
-msgstr "Glisser l'image ici"
+msgstr "Glisser l\'image ici"
 
 msgid "&Browse picture..."
 msgstr "&Choisir une image..."
 
 msgid "Width (mm):"
-msgstr "Largeur (mm) :"
+msgstr "Largeur (mm):"
 
 msgid "Height (mm):"
-msgstr "Hauteur (mm) :"
+msgstr "Hauteur (mm):"
 
 msgid "Description (Title)"
 msgstr "Description (Titre)"
@@ -61,7 +61,7 @@ msgid "All pictures (*.jpg *.jpeg *.png);;PNG (*.png)"
 msgstr "Toutes les images (*.jpg *.jpeg *.png);;PNG (*.png)"
 
 msgid "Invalid size"
-msgstr "Dimensions invalides"
+msgstr "Dimensions incorrectes"
 
 msgid "Width and height must be positive numbers (mm)."
 msgstr "La largeur et la hauteur doivent être des nombres positifs (mm)."

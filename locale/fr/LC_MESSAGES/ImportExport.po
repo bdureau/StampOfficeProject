@@ -57,11 +57,11 @@ msgstr "Exporter en CSV"
 
 #: ImportExport.py:147
 msgid "Catalogue exported to CSV successfully."
-msgstr "Le Catalogue a été exporté en CSV avec succès. "
+msgstr "Le Catalogue a été exporté en CSV avec succès."
 
 #: ImportExport.py:147 ImportExport.py:265
 msgid "Export Success"
-msgstr "Succès de l\'Export "
+msgstr "Succès de l\'Export"
 
 #: ImportExport.py:149
 msgid "Error exporting CSV:"
@@ -69,7 +69,7 @@ msgstr "Erreur de l\'export CSV:"
 
 #: ImportExport.py:149 ImportExport.py:267
 msgid "Export Error"
-msgstr "Eurreur d\'export"
+msgstr "Erreur d\'export"
 
 #: ImportExport.py:162 ImportExport.py:241
 msgid "Missing Dependency"
@@ -77,7 +77,7 @@ msgstr "Dépendence absente"
 
 #: ImportExport.py:163 ImportExport.py:242
 msgid "The 'openpyxl' package is required for Excel files.<br>Install it using: <code>pip install openpyxl</code>"
-msgstr "Le package 'openpyxl' est nécessaire pour les fichiers Excel. <br>Installer le en utilisant: <code>pip install openpyxl</code>"
+msgstr "Le package \'openpyxl\' est nécessaire pour les fichiers Excel. <br>Installer le en utilisant: <code>pip install openpyxl</code>"
 
 #: ImportExport.py:168
 msgid "Import Excel File"

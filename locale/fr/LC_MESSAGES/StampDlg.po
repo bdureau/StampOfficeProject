@@ -50,7 +50,7 @@ msgstr "Pas de description"
 
 #: StampDlg.py:120
 msgid "Select the description to use:"
-msgstr "Choisir la description à utiliser"
+msgstr "Choisir la description à utiliser:"
 
 #: StampDlg.py:136
 msgid "Stamp type:"

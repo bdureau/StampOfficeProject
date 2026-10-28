@@ -57,7 +57,7 @@ msgstr "Anglais"
 
 #: SDDialogs.py:71 SDDialogs.py:137
 msgid "Data Language:"
-msgstr "Langue des données"
+msgstr "Langue des données:"
 
 #: SDDialogs.py:76
 msgid "Column missing in database db_info table."

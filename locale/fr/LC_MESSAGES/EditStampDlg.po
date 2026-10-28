@@ -48,6 +48,3 @@ msgstr "Erreur base de données"
 msgid "Select picture"
 msgstr "Choisir image"
 
-
-
-

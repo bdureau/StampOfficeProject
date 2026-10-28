@@ -33,6 +33,3 @@ msgstr "Ajouter une image"
 #: Page.py:960 Page.py:964
 msgid "Change bordure"
 msgstr "Changer l\'encadrement"
-
-
-

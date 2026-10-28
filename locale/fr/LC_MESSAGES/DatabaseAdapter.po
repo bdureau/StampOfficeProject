@@ -17,5 +17,5 @@ msgstr ""
 
 #: DatabaseAdapter.py:197 DatabaseAdapter.py:201
 msgid "All"
-msgstr "Tous"
+msgstr "Toutes"
 
