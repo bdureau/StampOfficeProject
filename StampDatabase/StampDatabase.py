@@ -11,6 +11,8 @@ Year: 2026
 import sys
 import sqlite3
 from pathlib import Path
+import shutil  # Requis pour la méthode handle_dropped_image
+from DropImageLabel import DropImageLabel
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt, QUrl
@@ -77,6 +79,78 @@ class MainWindow(QMainWindow):
         self._init_menubar()
         self._init_toolbar()
         self._load_country_list()
+
+    def handle_dropped_image(self, source_image_path: Path):
+        """Prend en charge l'image glissée-déposée, la renomme et la copie."""
+        stamp_nbr = self.edit_nbr.text().strip()
+        if not stamp_nbr:
+            QMessageBox.warning(
+                self,
+                _("Warning"),
+                _("Please select or specify a stamp record number before dropping an image.")
+            )
+            return
+
+        if not self.current_country:
+            QMessageBox.warning(
+                self,
+                _("Warning"),
+                _("No active country database selected.")
+            )
+            return
+
+        stamp_type = self.edit_type.currentText().strip()
+        stamp_sub_nbr = self.edit_sub_nbr.text().strip()
+
+        # 1. Générer le nom cible normalisé T01-...
+        target_filename = self.getPhotoName(stamp_nbr, stamp_type, stamp_sub_nbr)
+
+        # 2. Déterminer le dossier de destination (dossier du pays dans Images/)
+        target_dir = self.base_dir / "Photos" / str(self.current_country)
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target_file_path = target_dir / target_filename
+
+        # 3. Vérifier si le fichier existe déjà (ou sous une casse différente)
+        existing_file = self._find_file_case_insensitive(target_dir, target_filename)
+
+        if existing_file and existing_file.exists():
+            reply = QMessageBox.question(
+                self,
+                _("Confirm Overwrite"),
+                _(f"An image for this stamp already exists ({existing_file.name}).\nDo you want to overwrite it?"),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            )
+            if reply != QMessageBox.StandardButton.Yes:
+                return
+            destination_path = existing_file
+        else:
+            destination_path = target_file_path
+
+        # 4. Copier et convertir si nécessaire en JPG
+        try:
+            pixmap = QPixmap(str(source_image_path))
+            if pixmap.isNull():
+                # En cas de format non chargeable par Qt, simple copie brute
+                shutil.copy2(source_image_path, destination_path)
+            else:
+                # Sauvegarde au format standard JPEG haute qualité
+                pixmap.save(str(destination_path), "JPG", quality=95)
+
+            # 5. Recharger immédiatement l'affichage
+            self._load_stamp_image(stamp_nbr, stamp_type, stamp_sub_nbr)
+
+            QMessageBox.information(
+                self,
+                _("Success"),
+                _(f"Image saved successfully as:\n{target_filename}")
+            )
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                _("Error"),
+                f"{_('Failed to save image:')}\n{str(e)}"
+            )
 
     def _get_app_dir(self) -> Path:
         """Détermine le répertoire racine de l'application."""
@@ -171,10 +245,13 @@ class MainWindow(QMainWindow):
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
 
-        self.img_label = QLabel(_("No Photo Available"))
+        self.img_label = DropImageLabel(self)
         self.img_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.img_label.setFixedSize(200, 200)
-        self.img_label.setStyleSheet("border: 1px solid #cbd5e0; background: #f7fafc;")
+        self.img_label.setStyleSheet(
+            "border: 2px dashed #a0aec0; background: #f7fafc; border-radius: 6px;"
+        )
+        self.img_label.setToolTip(_("Drag and drop an image file here to assign it to the current stamp."))
         right_layout.addWidget(self.img_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         editor_box = QGroupBox(_("Stamp Catalogue Record Editor"))
@@ -788,11 +865,7 @@ class MainWindow(QMainWindow):
     def _load_stamp_image(self, stamp_nbr, stamp_type, stamp_sub_nbr=""):
         rel_filename = self.getPhotoName(stamp_nbr, stamp_type, stamp_sub_nbr)
         possible_folders = [
-            self.base_dir / "Images" / str(self.current_country),
-            self.base_dir / "Photos" / str(self.current_country),
-            self.base_dir / "Images",
-            self.base_dir / "Photos",
-            self.base_dir
+            self.base_dir / "Photos" / str(self.current_country)
         ]
         for folder in possible_folders:
             found_path = self._find_file_case_insensitive(folder, rel_filename)
