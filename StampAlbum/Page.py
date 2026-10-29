@@ -310,7 +310,7 @@ class Page(QGraphicsScene):
 
         self.addItemWithUndo(textLabel, _("Add Text"))
 
-    def addRichText(self, html_content="", x=50, y=50, label_type="richTextLabel"):
+    def addRichText_old2(self, html_content="", x=50, y=50, label_type="richTextLabel"):
         """Add a rich-text block supporting HTML content."""
         text_item = QGraphicsTextItem()
         text_item.setData(0, label_type)
@@ -325,6 +325,36 @@ class Page(QGraphicsScene):
             )
 
         text_item.setTextWidth(200)
+        text_item.setPos(x, y)
+
+        text_item.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
+        text_item.setFlags(
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsMovable |
+            QGraphicsTextItem.GraphicsItemFlag.ItemIsSelectable
+        )
+
+        if hasattr(self, 'addItemWithUndo'):
+            self.addItemWithUndo(text_item, _("Add Rich Text"))
+        else:
+            self.addItem(text_item)
+
+        return text_item
+
+    def addRichText(self, html_content="", x=50, y=50, label_type="richTextLabel"):
+        """Add a rich-text block supporting HTML content."""
+        text_item = QGraphicsTextItem()
+        text_item.setData(0, label_type)
+
+        if html_content:
+            text_item.setHtml(html_content)
+        else:
+            default_font_family = get_config_value('default font', 'Sans-Serif')
+            text_item.setHtml(
+                f"<p style='font-family:{default_font_family}; font-size:12pt;'>Double-click to edit rich text...</p>"
+            )
+
+        # -1 disables fixed line-wrapping width, letting the text expand horizontally
+        text_item.setTextWidth(-1)
         text_item.setPos(x, y)
 
         text_item.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)

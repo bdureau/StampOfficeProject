@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-28 07:47+0100\n"
+"POT-Creation-Date: 2026-10-29 23:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,22 +28,54 @@ msgid "Author:"
 msgstr ""
 
 #: AlbumInfoDlg.py:50
-msgid "Operating system:"
+msgid "French"
+msgstr ""
+
+#: AlbumInfoDlg.py:51
+msgid "English"
+msgstr ""
+
+#: AlbumInfoDlg.py:52
+msgid "German"
+msgstr ""
+
+#: AlbumInfoDlg.py:53
+msgid "Spanish"
 msgstr ""
 
 #: AlbumInfoDlg.py:54
+msgid "Italian"
+msgstr ""
+
+#: AlbumInfoDlg.py:55
+msgid "Portuguese"
+msgstr ""
+
+#: AlbumInfoDlg.py:56
+msgid "Russian"
+msgstr ""
+
+#: AlbumInfoDlg.py:66
+msgid "Album language:"
+msgstr ""
+
+#: AlbumInfoDlg.py:70
+msgid "Operating system:"
+msgstr ""
+
+#: AlbumInfoDlg.py:74
 msgid "Total pages:"
 msgstr ""
 
-#: AlbumInfoDlg.py:58
+#: AlbumInfoDlg.py:78
 msgid "Total stamps:"
 msgstr ""
 
-#: AlbumInfoDlg.py:69
+#: AlbumInfoDlg.py:89
 msgid "OK"
 msgstr ""
 
-#: AlbumInfoDlg.py:73
+#: AlbumInfoDlg.py:93
 msgid "Cancel"
 msgstr ""
 

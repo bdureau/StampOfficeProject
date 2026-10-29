@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-28 07:48+0100\n"
+"POT-Creation-Date: 2026-10-29 23:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,23 +15,23 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: Page.py:301
-msgid "Add Text"
-msgstr ""
-
-#: Page.py:327
-msgid "Add Rich Text"
-msgstr ""
-
-#: Page.py:347
-msgid "Clear page"
-msgstr ""
-
-#: Page.py:889
+#: Page.py:131 Page.py:993
 msgid "Add Image"
 msgstr ""
 
-#: Page.py:1382 Page.py:1386
+#: Page.py:311
+msgid "Add Text"
+msgstr ""
+
+#: Page.py:337 Page.py:367
+msgid "Add Rich Text"
+msgstr ""
+
+#: Page.py:400
+msgid "Clear page"
+msgstr ""
+
+#: Page.py:1394 Page.py:1398
 msgid "Change bordure"
 msgstr ""
 

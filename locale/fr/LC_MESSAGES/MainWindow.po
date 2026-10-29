@@ -16,6 +16,38 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 3.2\n"
 
+#: MainWindow.py:144
+msgid "Untitled Album"
+msgstr "Album sans titre"
+
+#: MainWindow.py:166
+msgid "Unsaved Changes"
+msgstr "Changements non sauvegardés"
+
+#: MainWindow.py:167
+msgid "this album"
+msgstr "cet album"
+
+#: MainWindow.py:172
+msgid ""
+"The album '{album}' has been modified.\n"
+"Do you want to save your changes before proceeding?"
+msgstr ""
+"Cet album'{album}' a été modiifé.\n"
+"Voulez vous sauvegarder vos changements avant de continuer?"
+
+#: MainWindow.py:181 MainWindow.py:445
+msgid "&Save"
+msgstr "&Sauvegarder"
+
+#: MainWindow.py:184
+msgid "&Don't Save"
+msgstr "Ne pas sauver"
+
+#: MainWindow.py:187
+msgid "&Cancel"
+msgstr "Annuler"
+
 #: MainWindow.py:128
 msgid "&File"
 msgstr "&Fichier"
@@ -333,6 +365,14 @@ msgstr "Ouvrir fichier album"
 msgid "Album Files (*.sta)"
 msgstr "Fichiers Album (*.sta)"
 
+#: MainWindow.py:1087
+msgid "Error Opening File"
+msgstr "Erreur ouverture fichier"
+
+#: MainWindow.py:1089
+msgid "Failed to open or parse album file:"
+msgstr "L\'ouverture du fichier ou le parcourt de celui-ci a échoué"
+
 #: MainWindow.py:888
 msgid "Save Album"
 msgstr "Sauvegarder album"
@@ -396,3 +436,7 @@ msgstr ""
 #: MainWindow.py:1869
 msgid "Import Error"
 msgstr "Erreur d\'importation"
+
+#: MainWindow.py:2305
+msgid "An error occurred:"
+msgstr "Une erreur est apparue:"

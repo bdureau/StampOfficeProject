@@ -10,17 +10,17 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=cp1252\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 #: TextDlg.py:26
 msgid "Update text"
-msgstr "Mise à jour du text"
+msgstr "Mise à jour du texte"
 
 #: TextDlg.py:28
 msgid "Add new text"
-msgstr "Ajouter un nouveau text"
+msgstr "Ajouter un nouveau texte"
 
 #: TextDlg.py:145
 msgid "OK"

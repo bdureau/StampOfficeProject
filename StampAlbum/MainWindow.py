@@ -123,13 +123,95 @@ class Window(QMainWindow):
         self.tabs.tabBar().tabMoved.connect(self.renameTabs)
         self.setCentralWidget(self.tabs)
 
+    def is_modified(self) -> bool:
+        """
+        Check if the currently active album has unsaved changes.
+        Iterates over all tab scenes and checks if any QUndoStack is dirty.
+        """
+        for i in range(self.tabs.count()):
+            widget = self.tabs.widget(i)
+            if hasattr(widget, 'view') and widget.view and widget.view.scene():
+                scene = widget.view.scene()
+                if hasattr(scene, 'undoStack') and not scene.undoStack.isClean():
+                    return True
+        return False
+
+    def update_window_title(self):
+        """
+        Update the main window title using the Qt standard [*] placeholder
+        to display the modified state indicator.
+        """
+        album_name = Path(self.currentAlbumName).name if self.currentAlbumName else _("Untitled Album")
+        # Le marqueur [*] est requis par Qt pour afficher l'indicateur de modification
+        self.setWindowTitle(f"Stamp Album - {album_name}[*]")
+        self.setWindowModified(self.is_modified())
+
+    def on_modification_changed(self, clean: bool = False):
+        """Slot invoked whenever any page's undo stack cleanliness changes."""
+        self.renameTabs()
+        self.update_window_title()
+
+    def maybe_save(self) -> bool:
+        """
+        Prompt the user to save unsaved modifications before proceeding.
+        Returns:
+            bool: True if it is safe to proceed (saved or discarded),
+                  False if the user cancelled the action.
+        """
+        if not self.is_modified():
+            return True
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle(_("Unsaved Changes"))
+        album_label = Path(self.currentAlbumName).name if self.currentAlbumName else _("this album")
+        # box.setText(
+        #     _(f"The album '{album_label}' has been modified.\nDo you want to save your changes before proceeding?"))
+
+        box.setText(
+            _("The album '{album}' has been modified.\nDo you want to save your changes before proceeding?").format(
+                album=album_label
+            )
+        )
+        box.setStandardButtons(
+            QMessageBox.StandardButton.Save |
+            QMessageBox.StandardButton.Discard |
+            QMessageBox.StandardButton.Cancel
+        )
+        box.setDefaultButton(QMessageBox.StandardButton.Save)
+
+        # Set localized button labels
+        save_btn = box.button(QMessageBox.StandardButton.Save)
+        if save_btn:
+            save_btn.setText(_("&Save"))
+        discard_btn = box.button(QMessageBox.StandardButton.Discard)
+        if discard_btn:
+            discard_btn.setText(_("&Don't Save"))
+        cancel_btn = box.button(QMessageBox.StandardButton.Cancel)
+        if cancel_btn:
+            cancel_btn.setText(_("&Cancel"))
+
+        choice = box.exec()
+
+        if choice == QMessageBox.StandardButton.Save:
+            # Perform save operation and check if the user completed it
+            saved = self.saveAlbumToFile()
+            # Si l'utilisateur clique 'Annuler' dans le QFileDialog de sauvegarde
+            return saved is not False and not self.is_modified()
+
+        elif choice == QMessageBox.StandardButton.Discard:
+            return True
+
+        # User clicked Cancel or closed the message box
+        return False
+
     def _get_app_dir(self) -> Path:
         """
-        Détermine le répertoire racine de l'application.
+            Determine the root application directory.
 
-        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
-        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
-          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+            - If running as an EXE: returns the directory containing the executable.
+            - If running from Python (.py in a subfolder): traverses to parent directory
+              if 'Databases', 'Images', 'Photos' or 'docs' is present, else returns script directory.
         """
         if getattr(sys, 'frozen', False):
             return Path(sys.executable).resolve().parent
@@ -143,14 +225,14 @@ class Window(QMainWindow):
             return script_dir
 
     def _get_resource_dir(self, folder_name: str) -> Path:
-        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        """Resolve a resource directory (Images, docs, etc.) from application base or relative directory."""
         res_dir = self.base_dir / folder_name
         if res_dir.exists():
             return res_dir
         return Path(__file__).resolve().parent / folder_name
 
     def _get_icon(self, icon_filename: str) -> QIcon:
-        """Utilitaire pour charger une icône depuis le répertoire 'Images' de façon robuste."""
+        """Utility to load an icon robustly from the 'Images' directory."""
         path = self.images_dir / icon_filename
         if path.exists():
             return QIcon(str(path))
@@ -306,7 +388,7 @@ class Window(QMainWindow):
                 view.viewport().update()
 
     def selectAll(self):
-        """Sélectionne tous les éléments mobiles de la page active."""
+        """Select all movable elements on the active page."""
         scene = self.getCurrentPageScene()
         if scene:
             for item in scene.items():
@@ -330,12 +412,12 @@ class Window(QMainWindow):
 
     def updateZoomStatus(self, percent_val: int):
         """Update status bar label and align zoom combo box text safely."""
-        # Vérification si le QLabel C++ est toujours vivant
+        # Check if the C++ QLabel is still alive
         if hasattr(self, 'statusZoomLabel') and self.statusZoomLabel is not None:
             if not sip.isdeleted(self.statusZoomLabel):
                 self.statusZoomLabel.setText(f"Zoom: {percent_val}%")
 
-        # Vérification si le QComboBox C++ est toujours vivant
+        # Check if the C++ QComboBox is still alive
         if hasattr(self, 'zoomCombo') and self.zoomCombo is not None:
             if not sip.isdeleted(self.zoomCombo):
                 self.zoomCombo.blockSignals(True)
@@ -344,7 +426,7 @@ class Window(QMainWindow):
 
     def onTabChanged(self, index: int):
         """Synchronize status bar and combo box display when switching tabs."""
-        # QTimer.singleShot diffère la mise à jour pour laisser Qt stabiliser l'IHM
+        # QTimer.singleShot defers update to allow Qt to stabilize the UI
         QtCore.QTimer.singleShot(10, self._syncZoomUI)
         self.updatePageFormatStatus()
 
@@ -645,26 +727,14 @@ class Window(QMainWindow):
         self.changeBorderAllAction.triggered.connect(self.changeBorderAllPages)
         self.importAlbumEasyAction.triggered.connect(self.importAlbumEasy)
 
-    def closeEvent(self, event):
-        """Prompt user confirmation before closing the application window."""
-        qm = QMessageBox(self)
-        qm.setIcon(QMessageBox.Icon.Question)
-        qm.setWindowTitle(_('Exit'))
-        qm.setText(_("Are you sure you want to exit the application?"))
-        qm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
-        # Récupération des boutons QPushButton pour changer leur texte
-        yes_btn = qm.button(QMessageBox.StandardButton.Yes)
-        if yes_btn:
-            yes_btn.setText(_("&Yes"))
-
-        no_btn = qm.button(QMessageBox.StandardButton.No)
-        if no_btn:
-            no_btn.setText(_("&No"))
-
-        ret = qm.exec()
-
-        if ret == QMessageBox.StandardButton.Yes:
+    def closeEvent(self, event: QtGui.QCloseEvent):
+        """
+        Intercept application close events.
+        If dirty: prompt the user to Save, Discard, or Cancel.
+        If clean: close immediately without prompting.
+        """
+        if self.maybe_save():
             event.accept()
         else:
             event.ignore()
@@ -692,17 +762,6 @@ class Window(QMainWindow):
                         total += 1
         return total
 
-    def showAlbumInfo_old(self):
-        """Open the Album Info dialog to display and edit metadata."""
-        # Refresh dynamic counters and active OS
-        self.album_metadata["page_count"] = self.tabs.count()
-        self.album_metadata["stamp_count"] = self.countTotalStamps()
-        self.album_metadata["os"] = f"{platform.system()} {platform.release()}"
-
-        dlg = AlbumInfoDlg(self.album_metadata, self)
-        if dlg.exec() == 1:
-            self.album_metadata = dlg.get_metadata()
-
     def showAlbumInfo(self):
         """Open the Album Info dialog to display and edit metadata."""
         self.album_metadata["page_count"] = self.tabs.count()
@@ -721,13 +780,13 @@ class Window(QMainWindow):
                     widget.view.scene().album_language = new_lang
 
     def undo(self):
-        """Annule la dernière action sur la page active."""
+        """Undo the last action on the active page."""
         scene = self.getCurrentPageScene()
         if scene and hasattr(scene, "undoStack"):
             scene.undoStack.undo()
 
     def redo(self):
-        """Rétablit la dernière action annulée sur la page active."""
+        """Redo the last undone action on the active page."""
         scene = self.getCurrentPageScene()
         if scene and hasattr(scene, "undoStack"):
             scene.undoStack.redo()
@@ -760,7 +819,7 @@ class Window(QMainWindow):
             else:
                 return None
 
-        # Instanciation sécurisée avec valeurs de secours
+        # Safe instantiation with fallback default values
         page = Page(
             self.pageType,
             border=border,
@@ -771,7 +830,9 @@ class Window(QMainWindow):
         )
         page.album_language = self.album_metadata.get("language", "fr")
 
-        page.undoStack.cleanChanged.connect(self.renameTabs)
+        # Track modifications whenever any command is pushed, undone, or redone
+        page.undoStack.cleanChanged.connect(self.on_modification_changed)
+
         view = GraphicsView(page)
         view.scrollContentsBy(0, 0)
         view.zoomChanged.connect(self.updateZoomStatus)
@@ -819,6 +880,8 @@ class Window(QMainWindow):
         self.zoomCombo.setCurrentText("100%")
         self.zoomCombo.blockSignals(False)
 
+        # Refresh the window title and dirty indicator for the new layout
+        self.update_window_title()
         return page
 
     def clearPageObjects(self):
@@ -829,7 +892,7 @@ class Window(QMainWindow):
         qm.setText(_("Are you sure you want clear the current page?"))
         qm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
-        # Traduction des boutons
+        # Translate buttons
         yes_btn = qm.button(QMessageBox.StandardButton.Yes)
         if yes_btn:
             yes_btn.setText(_("&Yes"))
@@ -853,7 +916,7 @@ class Window(QMainWindow):
         qm.setText(_("Are you sure you want to delete the current page?"))
         qm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
-        # Traduction des boutons
+        # Translate buttons
         yes_btn = qm.button(QMessageBox.StandardButton.Yes)
         if yes_btn:
             yes_btn.setText(_("&Yes"))
@@ -898,38 +961,19 @@ class Window(QMainWindow):
         if no_btn:
             no_btn.setText(_("&No"))
 
+
     def newFile(self):
-        """Clear existing pages and start a fresh album file."""
-        self.album_metadata = {
-            "creation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "author": "",
-            "os": f"{platform.system()} {platform.release()}",
-            "page_count": 0,
-            "stamp_count": 0
-        }
-
-        qm = QMessageBox(self)
-        qm.setIcon(QMessageBox.Icon.Question)
-        qm.setWindowTitle(_('Delete all pages'))
-        qm.setText(_("Are you sure you want to delete all the pages?"))
-        qm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-
-        # Traduction des boutons
-        yes_btn = qm.button(QMessageBox.StandardButton.Yes)
-        if yes_btn:
-            yes_btn.setText(_("&Yes"))
-
-        no_btn = qm.button(QMessageBox.StandardButton.No)
-        if no_btn:
-            no_btn.setText(_("&No"))
-
-        ret = qm.exec()
-
-        if ret == QMessageBox.StandardButton.No:
+        """Clear existing pages and start a fresh album file after confirming unsaved changes."""
+        # Ensure unsaved modifications are resolved first
+        if not self.maybe_save():
             return
 
         self.deleteAllPages()
         self.newPage(None, True)
+        self.currentAlbumName = ""
+        self.updateStatusFile("")
+        self.setWindowModified(False)
+        self.update_window_title()
 
     def createRichText(self):
         """Create a new rich text block on the current active page."""
@@ -1011,75 +1055,99 @@ class Window(QMainWindow):
                     scene.addYear(text, font, align)
 
     def openAlbumFile(self):
-        """Open and deserialize a compressed (.sta) album XML file."""
-        qm = QMessageBox(self)
-        qm.setIcon(QMessageBox.Icon.Question)
-        qm.setWindowTitle(_("Delete all pages"))
-        qm.setText(_("Are you sure you want to delete all the pages?"))
-        qm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-
-        # Traduction des boutons
-        yes_btn = qm.button(QMessageBox.StandardButton.Yes)
-        if yes_btn:
-            yes_btn.setText(_("&Yes"))
-
-        no_btn = qm.button(QMessageBox.StandardButton.No)
-        if no_btn:
-            no_btn.setText(_("&No"))
-
-        ret = qm.exec()
-
-        if ret == QMessageBox.StandardButton.No:
+        """
+        Open and deserialize a compressed (.sta) or plain XML album file.
+        Safely prompts to save unsaved modifications first, clears the workspace,
+        loads pages and metadata, and resets the dirty state across all undo stacks.
+        """
+        # 1. Prompt user to save current changes if any unsaved work exists
+        if not self.maybe_save():
             return
 
+        # 2. Select file before touching any existing album data
         options = QFileDialog.Option.DontUseNativeDialog
-
-        # Choisir le fichier AVANT d'effacer l'album : un "Annuler" ne doit rien perdre
         fileName, _filter = QFileDialog.getOpenFileName(
             self, _("Open Album file"), "", _("Album Files (*.sta)"), options=options
         )
         if not fileName:
             return
 
+        # 3. Read and parse XML document using safe context management
+        try:
+            if fileName.lower().endswith(".sta"):
+                with gzip.open(fileName, "rb") as f:
+                    mytree = ET.parse(f)
+            else:
+                with open(fileName, "r", encoding="utf-8") as f:
+                    mytree = ET.parse(f)
+            myroot = mytree.getroot()
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                _("Error Opening File"),
+                "{msg}\n{error}".format(
+                    msg=_("Failed to open or parse album file:"),
+                    error=str(e)
+                )
+            )
+            return
+
+        # 4. Clear current workspace now that reading has succeeded
         self.deleteAllPages()
-
-        fileNameArray = fileName.split(".")
-        if fileNameArray[len(fileNameArray) - 1] == "sta":
-            f = gzip.open(fileName, 'r')
-        else:
-            f = open(fileName, 'r')
-
         self.currentAlbumName = fileName
         self.updateStatusFile(fileName)
 
-        mytree = ET.parse(f)
-        f.close()
-        myroot = mytree.getroot()
-
-        # Read album metadata if present; otherwise initialize default values
-        meta_node = myroot.find('metadata')
+        # 5. Extract metadata block if present, otherwise set defaults
+        meta_node = myroot.find("metadata")
         if meta_node is not None:
             self.album_metadata = {
                 "creation_date": meta_node.findtext("creation_date", ""),
                 "author": meta_node.findtext("author", ""),
                 "language": meta_node.findtext("language", "fr"),
                 "os": meta_node.findtext("os", f"{platform.system()} {platform.release()}"),
-                "page_count": int(meta_node.findtext("page_count", str(self.tabs.count()))),
+                "page_count": int(meta_node.findtext("page_count", "0")),
                 "stamp_count": int(meta_node.findtext("stamp_count", "0"))
             }
         else:
             self.album_metadata = {
                 "creation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "author": "",
+                "language": "fr",
                 "os": f"{platform.system()} {platform.release()}",
                 "page_count": 0,
                 "stamp_count": 0
             }
 
+        # 6. Reconstruct pages and graphic items based on file version
         file_version = myroot.attrib.get("version", "0.9")
-        print(file_version)
-        self.openNewAlbumFileVersion(myroot)
-        # self.openOldAlbumFileVersion(myroot)
+        if file_version == "0.9":
+            self.openOldAlbumFileVersion(myroot)
+        else:
+            self.openNewAlbumFileVersion(myroot)
+
+        # 7. Apply album language to all newly created scenes
+        album_lang = self.album_metadata.get("language", "fr")
+        for i in range(self.tabs.count()):
+            widget = self.tabs.widget(i)
+            if hasattr(widget, "view") and widget.view and widget.view.scene():
+                widget.view.scene().album_language = album_lang
+
+        # 8. Mark all newly created pages as clean and synchronized with disk
+        for x in range(self.tabs.count()):
+            widget = self.tabs.widget(x)
+            if hasattr(widget, "view") and widget.view and widget.view.scene():
+                scene = widget.view.scene()
+                if hasattr(scene, "undoStack"):
+                    scene.undoStack.setClean()
+
+        # 9. Update UI titles, tab labels, and dirty flag indicators
+        self.setWindowModified(False)
+        self.update_window_title()
+        self.renameTabs()
+
+        # 10. Display the first page if pages were loaded
+        if self.tabs.count() > 0:
+            self.tabs.setCurrentIndex(0)
 
     def openOldAlbumFileVersion(self, myroot):
         for it in myroot.findall('page'):
@@ -1319,7 +1387,8 @@ class Window(QMainWindow):
 
                 item = QGraphicsTextItem()
                 item.setHtml(html_content)
-                item.setTextWidth(200)
+                #item.setTextWidth(200)
+                item.setTextWidth(-1)
                 item.setPos(x, y)
                 item.setData(0, "richTextLabel")
                 item.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
@@ -1454,19 +1523,24 @@ class Window(QMainWindow):
                     pixmap=pixmap
                 )
 
-    def saveAlbumToFile(self):
-        """Serialize album structure into a gzip-compressed XML file (.sta)."""
+    def saveAlbumToFile(self) -> bool:
+        """
+        Serialize album structure into a gzip-compressed XML file (.sta).
+        Returns:
+            bool: True if the file was saved successfully, False if cancelled or failed.
+        """
         options = QFileDialog.Option.DontUseNativeDialog
         fileName, _filter = QFileDialog.getSaveFileName(
             self, _("Save Album"), "", _("Album Files (*.sta)"), options=options
         )
-        if fileName:
-            if fileName.find(".") != -1:
-                fileNameArray = fileName.split(".")
-                if fileNameArray[len(fileNameArray) - 1] == "sta":
-                    fileName = fileName.rsplit('.', maxsplit=1)[0]
-        else:
-            return
+        if not fileName:
+            return False # User cancelled the file save dialog
+
+        if fileName.find(".") != -1:
+            fileNameArray = fileName.split(".")
+            if fileNameArray[len(fileNameArray) - 1] == "sta":
+                fileName = fileName.rsplit('.', maxsplit=1)[0]
+
 
         self.currentAlbumName = fileName
         self.updateStatusFile(fileName + '.sta')
@@ -1607,13 +1681,17 @@ class Window(QMainWindow):
         if os.path.isfile(fileName):
             os.remove(fileName)
 
-        # --- NOUVEAU : Marquer toutes les pages comme "propres" (sauvegardées) ---
+        # 1. Mark every page's undo stack as clean and synchronized with disk
         for x in range(self.tabs.count()):
             widget = self.tabs.widget(x)
             if hasattr(widget, 'view') and widget.view and widget.view.scene():
                 widget.view.scene().undoStack.setClean()
 
+        # 2. Reset the window dirty flag and update UI indicators
+        self.setWindowModified(False)
+        self.update_window_title()
         self.renameTabs()
+        return True
 
     def printAllPagesPDF(self):
         """Export all album pages into a single PDF document."""
@@ -1621,7 +1699,7 @@ class Window(QMainWindow):
         if not scenes:
             return
 
-        # Sans nom d'album, demander où enregistrer (sinon le PDF s'appelait ".pdf")
+        # Prompt for save path if album has no filename
         pdf_name = (self.currentAlbumName + ".pdf") if self.currentAlbumName else ""
         if not pdf_name:
             options = QFileDialog.Option.DontUseNativeDialog
@@ -1650,7 +1728,7 @@ class Window(QMainWindow):
             self._renderScenes(printer, scenes)
 
     def _allScenes(self):
-        """Liste des scènes de toutes les pages, sans changer l'onglet affiché."""
+        """List scenes of all album pages without changing active displayed tab."""
         scenes = []
         for i in range(self.tabs.count()):
             widget = self.tabs.widget(i)
@@ -1660,8 +1738,8 @@ class Window(QMainWindow):
 
     def _renderScenes(self, printer, scenes):
         """
-        Rend plusieurs pages dans un même document : chaque page reçoit son propre
-        format (A4/Letter) et sa propre orientation AVANT d'être dessinée.
+        Render multiple pages into a single document: each page receives its own
+        format (A4/Letter) and orientation BEFORE being painted.
         """
         scenes[0].apply_page_layout(printer)
         p = QPainter(printer)
@@ -1725,7 +1803,7 @@ class Window(QMainWindow):
                 self.lastStampObj['nbr'] = stamp['nbr']
 
     def createNewCustomStamp(self):
-        """Ouvre le dialogue de création d'un timbre libre et l'ajoute sur la page active."""
+        """Open custom stamp creation dialog and place item onto the active scene."""
         scene = self.getCurrentPageScene()
         if scene:
             dlg = CustomStampDlg(scene=scene, parent=self)
@@ -1810,7 +1888,7 @@ class Window(QMainWindow):
         child = self.getCurrentPageScene()
         if child:
             if child.gridOn:
-                # Restaure le fond blanc de la page lorsque l'on désactive la grille
+                # Restore plain white background when disabling grid
                 child.setBackgroundBrush(QBrush(Qt.GlobalColor.white))
                 child.gridOn = False
             else:
@@ -1947,44 +2025,44 @@ class Window(QMainWindow):
         res = dlg.exec()
 
     def autoArrangeStamps(self):
-        """Déclenche la mise en page harmonieuse sur la page courante."""
+        """Trigger harmonious stamp layout distribution on the active page."""
         scene = self.getCurrentPageScene()
         if scene and hasattr(scene, "autoArrangeStamps"):
             scene.autoArrangeStamps()
 
     def openThumbnails(self):
-        """Ouvre la planche contact pour réorganiser visuellement les pages."""
+        """Open contact sheet dialog to visually reorder album pages."""
         from ThumbnailsDlg import ThumbnailsDlg
         dlg = ThumbnailsDlg(self.tabs, self)
 
         if dlg.exec() == 1:
             new_order = dlg.get_new_order()
 
-            # Vérifier si l'ordre a vraiment changé pour éviter de tout recharger inutilement
+            # Check if order actually changed before rebuilding tabs
             if new_order == list(range(self.tabs.count())):
                 return
 
-            # Mettre en cache tous les widgets (pages) existants
+            # Cache existing tab page widgets
             widgets = [self.tabs.widget(i) for i in range(self.tabs.count())]
 
-            # On efface les onglets et on les recrée dans le nouvel ordre
+            # Clear tabs and recreate them in the selected sequence
             self.tabs.blockSignals(True)
             self.tabs.clear()
 
             for original_index in new_order:
-                self.tabs.addTab(widgets[original_index], "")  # Le nom sera mis par renameTabs
+                self.tabs.addTab(widgets[original_index], "")  # Tab text set by renameTabs
 
             self.tabs.blockSignals(False)
 
-            # Renommer "Page 1", "Page 2" proprement
+            # Sequentially rename tabs cleanly
             self.renameTabs()
 
-            # Afficher la première page par défaut après la réorganisation
+            # Display the first tab page after reordering
             if self.tabs.count() > 0:
                 self.tabs.setCurrentIndex(0)
 
     def changeBorderCurrentPage(self):
-        """Ouvre le dialogue et modifie la bordure de la page courante."""
+        """Open border dialog and update border on the active page."""
         scene = self.getCurrentPageScene()
         if not scene: return
 
@@ -2001,10 +2079,10 @@ class Window(QMainWindow):
             scene.replaceBorder(new_style)
 
     def changeBorderAllPages(self):
-        """Ouvre le dialogue et modifie la bordure de TOUTES les pages de l'album."""
+        """Open border dialog and apply border across ALL pages in the album."""
         if self.tabs.count() == 0: return
 
-        # On repère le style de la page actuelle par défaut
+        # Read style of active page by default
         current_scene = self.getCurrentPageScene()
         current_style = None
         if current_scene:
@@ -2018,17 +2096,17 @@ class Window(QMainWindow):
         if dlg.exec() == 1:
             new_style = dlg.get_style()
 
-            # Retenir l'index de la page actuellement affichée pour y revenir
+            # Remember the currently displayed tab index to restore it afterwards
             current_index = self.tabs.currentIndex()
 
-            # On applique à chaque onglet
+            # Apply change to each tab page
             for i in range(self.tabs.count()):
                 self.tabs.setCurrentIndex(i)
                 scene = self.getCurrentPageScene()
                 if scene:
                     scene.replaceBorder(new_style)
 
-            # Restaurer l'affichage de l'onglet de départ
+            # Restore initially active tab page
             self.tabs.setCurrentIndex(current_index)
 
     def importAlbumEasy(self):
@@ -2220,10 +2298,17 @@ class Window(QMainWindow):
         except Exception as e:
             import traceback
             traceback.print_exc()
-            QMessageBox.critical(self, _("Import Error"), f"An error just happened :\n{str(e)}")
+            QMessageBox.critical(
+                self,
+                _("Import Error"),
+                "{msg}\n{error}".format(
+                    msg=_("An error occurred:"),
+                    error=str(e)
+                )
+            )
 
     def renameTabs(self, *args):
-        """Renomme séquentiellement tous les onglets, avec une étoile si modifiés."""
+        """Sequentially rename all tabs, appending an asterisk indicator if modified."""
         self.tabs.blockSignals(True)
         for i in range(self.tabs.count()):
             widget = self.tabs.widget(i)

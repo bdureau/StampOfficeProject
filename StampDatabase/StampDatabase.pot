@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-28 07:48+0100\n"
+"POT-Creation-Date: 2026-10-29 23:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,308 +15,332 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: StampDatabase.py:52
+#: StampDatabase.py:54
 msgid "StampDatabase - Stamp Catalogue Administrator"
 msgstr ""
 
-#: StampDatabase.py:103
-msgid "MS Access Configuration Error"
+#: StampDatabase.py:89 StampDatabase.py:97
+msgid "Warning"
 msgstr ""
 
-#: StampDatabase.py:104
-msgid "<b>Microsoft Access is not configured properly or drivers are missing.</b><br><br>Please refer to the application documentation to install the required 64-bit ODBC Access drivers (<code>accessdatabaseengine_X64.exe /quiet</code>).<br><br>MS Access features have been disabled. The application will revert to SQLite mode."
+#: StampDatabase.py:90
+msgid "Please select or specify a stamp record number before dropping an image."
 msgstr ""
 
-#: StampDatabase.py:116
-msgid "Database Selection"
+#: StampDatabase.py:98
+msgid "No active country database selected."
 msgstr ""
 
-#: StampDatabase.py:118
-msgid "Active Country Database:"
+#: StampDatabase.py:119
+msgid "Confirm Overwrite"
 msgstr ""
 
-#: StampDatabase.py:127
-msgid "Catalogue Filters"
-msgstr ""
-
-#: StampDatabase.py:130
-msgid "Type:"
-msgstr ""
-
-#: StampDatabase.py:136 StampDatabase.py:208
-msgid "Year:"
-msgstr ""
-
-#: StampDatabase.py:141
-msgid "Catalog N°:"
-msgstr ""
-
-#: StampDatabase.py:143
-msgid "e.g. 154..."
-msgstr ""
-
-#: StampDatabase.py:160
-msgid "Type"
-msgstr ""
-
-#: StampDatabase.py:160
-msgid "Year"
-msgstr ""
-
-#: StampDatabase.py:160
-msgid "Yvert N°"
-msgstr ""
-
-#: StampDatabase.py:161
-msgid "Description"
-msgstr ""
-
-#: StampDatabase.py:161
-msgid "Description 1"
-msgstr ""
-
-#: StampDatabase.py:161
-msgid "Value / Color"
-msgstr ""
-
-#: StampDatabase.py:174 StampDatabase.py:805
-msgid "No Photo Available"
-msgstr ""
-
-#: StampDatabase.py:180
-msgid "Stamp Catalogue Record Editor"
-msgstr ""
-
-#: StampDatabase.py:206
-msgid "Yvert N°:"
-msgstr ""
-
-#: StampDatabase.py:207
-msgid "Sub N° / Variant:"
-msgstr ""
-
-#: StampDatabase.py:209
-msgid "Category / Type:"
-msgstr ""
-
-#: StampDatabase.py:210
-msgid "Value / Color:"
-msgstr ""
-
-#: StampDatabase.py:211
-msgid "Description 1:"
-msgstr ""
-
-#: StampDatabase.py:212
-msgid "Description:"
-msgstr ""
-
-#: StampDatabase.py:213
-msgid "Width (mm):"
-msgstr ""
-
-#: StampDatabase.py:214
-msgid "Height (mm):"
-msgstr ""
-
-#: StampDatabase.py:215
-msgid "Sequence:"
-msgstr ""
-
-#: StampDatabase.py:216
-msgid "ASCII Sequence:"
-msgstr ""
-
-#: StampDatabase.py:218
-msgid "Apply Record Modification"
-msgstr ""
-
-#: StampDatabase.py:227
-msgid "Add Stamp Record"
-msgstr ""
-
-#: StampDatabase.py:232
-msgid "Delete Stamp Record(s)"
-msgstr ""
-
-#: StampDatabase.py:246
-msgid "&File"
-msgstr ""
-
-#: StampDatabase.py:247
-msgid "Create New Empty SQLite DB..."
-msgstr ""
-
-#: StampDatabase.py:252
-msgid "Save Changes"
-msgstr ""
-
-#: StampDatabase.py:259
-msgid "Current Database Info..."
-msgstr ""
-
-#: StampDatabase.py:264
-msgid "Import MS Access DB to SQLite..."
-msgstr ""
-
-#: StampDatabase.py:268
-msgid "Import CSV..."
-msgstr ""
-
-#: StampDatabase.py:273
-msgid "Export CSV..."
-msgstr ""
-
-#: StampDatabase.py:279
-msgid "Import Excel (XLSX)..."
-msgstr ""
-
-#: StampDatabase.py:284
-msgid "Export Excel (XLSX)..."
-msgstr ""
-
-#: StampDatabase.py:290
-msgid "&Exit"
-msgstr ""
-
-#: StampDatabase.py:297
-msgid "&Edit"
-msgstr ""
-
-#: StampDatabase.py:298
-msgid "&Undo"
-msgstr ""
-
-#: StampDatabase.py:306
-msgid "&Redo"
-msgstr ""
-
-#: StampDatabase.py:315
-msgid "Select All"
-msgstr ""
-
-#: StampDatabase.py:321
-msgid "&Utilities"
-msgstr ""
-
-#: StampDatabase.py:322
-msgid "Translate XLSX File..."
-msgstr ""
-
-#: StampDatabase.py:328
-msgid "&Config"
-msgstr ""
-
-#: StampDatabase.py:329
-msgid "Setup Application..."
-msgstr ""
-
-#: StampDatabase.py:335
-msgid "&Help"
-msgstr ""
-
-#: StampDatabase.py:336
-msgid "User Manual"
-msgstr ""
-
-#: StampDatabase.py:341
-msgid "About StampDatabase"
-msgstr ""
-
-#: StampDatabase.py:347
-msgid "Main Toolbar"
-msgstr ""
-
-#: StampDatabase.py:374
-msgid "Select MS Access Database"
-msgstr ""
-
-#: StampDatabase.py:386
-msgid "File Exists"
-msgstr ""
-
-#: StampDatabase.py:416
-msgid "Could not fully replicate Stamp_List table:"
-msgstr ""
-
-#: StampDatabase.py:416
-msgid "Table Import Notice"
-msgstr ""
-
-#: StampDatabase.py:445
-msgid "Import Success"
-msgstr ""
-
-#: StampDatabase.py:447
-msgid "Conversion Error"
-msgstr ""
-
-#: StampDatabase.py:447
-msgid "Error importing Access database:"
-msgstr ""
-
-#: StampDatabase.py:451
-msgid "Creating a new database is only supported for SQLite."
-msgstr ""
-
-#: StampDatabase.py:451
-msgid "SQLite Only"
-msgstr ""
-
-#: StampDatabase.py:459
-msgid "Collection name cannot be empty."
-msgstr ""
-
-#: StampDatabase.py:459 StampDatabase.py:464
-msgid "Error"
-msgstr ""
-
-#: StampDatabase.py:464
-msgid "A database for this country already exists."
-msgstr ""
-
-#: StampDatabase.py:491
+#: StampDatabase.py:145 StampDatabase.py:568
 msgid "Success"
 msgstr ""
 
-#: StampDatabase.py:537 StampDatabase.py:549 StampDatabase.py:648
-#: StampDatabase.py:649
+#: StampDatabase.py:151 StampDatabase.py:536 StampDatabase.py:541
+msgid "Error"
+msgstr ""
+
+#: StampDatabase.py:152
+msgid "Failed to save image:"
+msgstr ""
+
+#: StampDatabase.py:177
+msgid "MS Access Configuration Error"
+msgstr ""
+
+#: StampDatabase.py:178
+msgid "<b>Microsoft Access is not configured properly or drivers are missing.</b><br><br>Please refer to the application documentation to install the required 64-bit ODBC Access drivers (<code>accessdatabaseengine_X64.exe /quiet</code>).<br><br>MS Access features have been disabled. The application will revert to SQLite mode."
+msgstr ""
+
+#: StampDatabase.py:190
+msgid "Database Selection"
+msgstr ""
+
+#: StampDatabase.py:192
+msgid "Active Country Database:"
+msgstr ""
+
+#: StampDatabase.py:201
+msgid "Catalogue Filters"
+msgstr ""
+
+#: StampDatabase.py:204
+msgid "Type:"
+msgstr ""
+
+#: StampDatabase.py:210 StampDatabase.py:285
+msgid "Year:"
+msgstr ""
+
+#: StampDatabase.py:215
+msgid "Catalog N°:"
+msgstr ""
+
+#: StampDatabase.py:217
+msgid "e.g. 154..."
+msgstr ""
+
+#: StampDatabase.py:234
+msgid "Type"
+msgstr ""
+
+#: StampDatabase.py:234
+msgid "Year"
+msgstr ""
+
+#: StampDatabase.py:234
+msgid "Yvert N°"
+msgstr ""
+
+#: StampDatabase.py:235
+msgid "Description"
+msgstr ""
+
+#: StampDatabase.py:235
+msgid "Description 1"
+msgstr ""
+
+#: StampDatabase.py:235
+msgid "Value / Color"
+msgstr ""
+
+#: StampDatabase.py:254
+msgid "Drag and drop an image file here to assign it to the current stamp."
+msgstr ""
+
+#: StampDatabase.py:257
+msgid "Stamp Catalogue Record Editor"
+msgstr ""
+
+#: StampDatabase.py:283
+msgid "Yvert N°:"
+msgstr ""
+
+#: StampDatabase.py:284
+msgid "Sub N° / Variant:"
+msgstr ""
+
+#: StampDatabase.py:286
+msgid "Category / Type:"
+msgstr ""
+
+#: StampDatabase.py:287
+msgid "Value / Color:"
+msgstr ""
+
+#: StampDatabase.py:288
+msgid "Description 1:"
+msgstr ""
+
+#: StampDatabase.py:289
+msgid "Description:"
+msgstr ""
+
+#: StampDatabase.py:290
+msgid "Width (mm):"
+msgstr ""
+
+#: StampDatabase.py:291
+msgid "Height (mm):"
+msgstr ""
+
+#: StampDatabase.py:292
+msgid "Sequence:"
+msgstr ""
+
+#: StampDatabase.py:293
+msgid "ASCII Sequence:"
+msgstr ""
+
+#: StampDatabase.py:295
+msgid "Apply Record Modification"
+msgstr ""
+
+#: StampDatabase.py:304
+msgid "Add Stamp Record"
+msgstr ""
+
+#: StampDatabase.py:309
+msgid "Delete Stamp Record(s)"
+msgstr ""
+
+#: StampDatabase.py:323
+msgid "&File"
+msgstr ""
+
+#: StampDatabase.py:324
+msgid "Create New Empty SQLite DB..."
+msgstr ""
+
+#: StampDatabase.py:329
+msgid "Save Changes"
+msgstr ""
+
+#: StampDatabase.py:336
+msgid "Current Database Info..."
+msgstr ""
+
+#: StampDatabase.py:341
+msgid "Import MS Access DB to SQLite..."
+msgstr ""
+
+#: StampDatabase.py:345
+msgid "Import CSV..."
+msgstr ""
+
+#: StampDatabase.py:350
+msgid "Export CSV..."
+msgstr ""
+
+#: StampDatabase.py:356
+msgid "Import Excel (XLSX)..."
+msgstr ""
+
+#: StampDatabase.py:361
+msgid "Export Excel (XLSX)..."
+msgstr ""
+
+#: StampDatabase.py:367
+msgid "&Exit"
+msgstr ""
+
+#: StampDatabase.py:374
+msgid "&Edit"
+msgstr ""
+
+#: StampDatabase.py:375
+msgid "&Undo"
+msgstr ""
+
+#: StampDatabase.py:383
+msgid "&Redo"
+msgstr ""
+
+#: StampDatabase.py:392
+msgid "Select All"
+msgstr ""
+
+#: StampDatabase.py:398
+msgid "&Utilities"
+msgstr ""
+
+#: StampDatabase.py:399
+msgid "Translate XLSX File..."
+msgstr ""
+
+#: StampDatabase.py:405
+msgid "&Config"
+msgstr ""
+
+#: StampDatabase.py:406
+msgid "Setup Application..."
+msgstr ""
+
+#: StampDatabase.py:412
+msgid "&Help"
+msgstr ""
+
+#: StampDatabase.py:413
+msgid "User Manual"
+msgstr ""
+
+#: StampDatabase.py:418
+msgid "About StampDatabase"
+msgstr ""
+
+#: StampDatabase.py:424
+msgid "Main Toolbar"
+msgstr ""
+
+#: StampDatabase.py:451
+msgid "Select MS Access Database"
+msgstr ""
+
+#: StampDatabase.py:463
+msgid "File Exists"
+msgstr ""
+
+#: StampDatabase.py:493
+msgid "Could not fully replicate Stamp_List table:"
+msgstr ""
+
+#: StampDatabase.py:493
+msgid "Table Import Notice"
+msgstr ""
+
+#: StampDatabase.py:522
+msgid "Import Success"
+msgstr ""
+
+#: StampDatabase.py:524
+msgid "Conversion Error"
+msgstr ""
+
+#: StampDatabase.py:524
+msgid "Error importing Access database:"
+msgstr ""
+
+#: StampDatabase.py:528
+msgid "Creating a new database is only supported for SQLite."
+msgstr ""
+
+#: StampDatabase.py:528
+msgid "SQLite Only"
+msgstr ""
+
+#: StampDatabase.py:536
+msgid "Collection name cannot be empty."
+msgstr ""
+
+#: StampDatabase.py:541
+msgid "A database for this country already exists."
+msgstr ""
+
+#: StampDatabase.py:614 StampDatabase.py:626 StampDatabase.py:725
+#: StampDatabase.py:726
 msgid "All"
 msgstr ""
 
-#: StampDatabase.py:642
+#: StampDatabase.py:719
 msgid "New Stamp Description"
 msgstr ""
 
-#: StampDatabase.py:682
+#: StampDatabase.py:759
 msgid "Are you sure you want to delete 1 selected stamp record?"
 msgstr ""
 
-#: StampDatabase.py:683
+#: StampDatabase.py:760
 msgid "Confirm Delete"
 msgstr ""
 
-#: StampDatabase.py:712
+#: StampDatabase.py:789
 msgid "Database changes saved successfully."
 msgstr ""
 
-#: StampDatabase.py:712
+#: StampDatabase.py:789
 msgid "Saved"
 msgstr ""
 
-#: StampDatabase.py:717
+#: StampDatabase.py:794
 msgid "Unsaved Changes"
 msgstr ""
 
-#: StampDatabase.py:718
+#: StampDatabase.py:795
 msgid "You have unsaved database changes. Do you want to save them now?"
 msgstr ""
 
-#: StampDatabase.py:846
+#: StampDatabase.py:878
+msgid "No Photo Available"
+msgstr ""
+
+#: StampDatabase.py:919
 msgid "Manual Error"
 msgstr ""
 
-#: StampDatabase.py:846
+#: StampDatabase.py:919
 msgid "User manual file not found."
 msgstr ""
 
