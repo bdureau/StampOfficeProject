@@ -22,6 +22,7 @@ from PyQt6.QtWidgets import (
     QToolButton, QTextEdit, QGroupBox, QColorDialog
 )
 
+from SpellHighlighter import SpellHighlighter
 from Databases import DB
 from SAAppPaths import get_images_dir, get_config_value, list_countries
 from Stamp import RichTextStamp
@@ -66,10 +67,11 @@ class DropImageLabel(QLabel):
 class RichTextEditorWidget(QGroupBox):
     """Reusable mini rich-text editor widget featuring formatting controls and live preview."""
 
-    def __init__(self, title: str, default_font_size: int = 10, editor_height: int = 60, parent=None):
+    def __init__(self, title: str, default_font_size: int = 10, editor_height: int = 60, language: str = "fr",parent=None):
         super().__init__(title, parent)
         self.default_font_size = default_font_size
         self.editor_height = editor_height
+        self.language = language
         self._create_ui()
 
     def _get_icon(self, icon_name: str) -> QIcon:
@@ -164,6 +166,14 @@ class RichTextEditorWidget(QGroupBox):
         self.editor.setFontPointSize(float(self.default_font_size))
         self.editor.cursorPositionChanged.connect(self._update_format_controls)
         vbox.addWidget(self.editor)
+
+        # Attachement du correcteur en direct
+        self.highlighter = SpellHighlighter(self.editor.document(), language=self.language)
+
+    def set_language(self, lang: str):
+        self.language = lang
+        if hasattr(self, "highlighter") and self.highlighter:
+            self.highlighter.set_language(lang)
 
     def _set_font_family(self, font):
         fmt = QTextCharFormat()
@@ -345,6 +355,7 @@ class RichTextStampDlg(QDialog):
 
         # 3. Right column: Three dedicated live rich-text editors
         vbox_texts = QVBoxLayout()
+        lang = getattr(self.scene, "album_language", "fr") if self.scene else "fr"
         self.editor_desc = RichTextEditorWidget(_("Description (Title)"), default_font_size=10, editor_height=65)
         self.editor_nbr = RichTextEditorWidget(_("Stamp Number"), default_font_size=8, editor_height=45)
         self.editor_val = RichTextEditorWidget(_("Nominal Value"), default_font_size=8, editor_height=45)

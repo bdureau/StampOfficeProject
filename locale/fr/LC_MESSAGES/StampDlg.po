@@ -114,5 +114,5 @@ msgstr "Taille invalide"
 
 #: StampDlg.py:647
 msgid "Width and height must be numbers (mm)."
-msgstr "Largeur et hauteur doivent etre des entiers (mm)"
+msgstr "Largeur et hauteur doivent être des entiers (mm)"
 

@@ -292,25 +292,9 @@ class GraphicsView(QtWidgets.QGraphicsView):
              activated=self.paste_items,
         )
 
-    def drawBackground_old(self, painter: QtGui.QPainter, rect: QtCore.QRectF):
-        """Draw a white page rectangle over a dark grey workspace background."""
-        # 1. Fill the viewport background with dark grey
-        painter.fillRect(rect, QtGui.QColor("#808080"))
+        # Autoriser le glisser-déposer sur la vue
+        self.setAcceptDrops(True)
 
-        scene = self.scene()
-        if scene:
-            scene_rect = scene.sceneRect()
-
-            # 2. Draw a subtle drop shadow under the page
-            shadow_rect = scene_rect.translated(4, 4)
-            painter.fillRect(shadow_rect, QtGui.QColor("#404040"))
-
-            # 3. Draw the main white page canvas
-            painter.fillRect(scene_rect, Qt.GlobalColor.white)
-
-            # 4. Draw a fine grey border around the white page
-            painter.setPen(QtGui.QPen(QtGui.QColor("#b0b0b0"), 1))
-            painter.drawRect(scene_rect)
 
     def drawBackground(self, painter: QtGui.QPainter, rect: QtCore.QRectF):
         """Draw a white page rectangle over a dark grey workspace background."""
@@ -399,7 +383,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
             for it in pasted:
                 it.setSelected(True)
 
-    def mouseDoubleClickEvent(self, event: QtGui.QMouseEvent):
+    def mouseDoubleClickEvent_old(self, event: QtGui.QMouseEvent):
         """Intercept double clicks at the viewport level before Qt unselects text items."""
         scene_pos = self.mapToScene(event.pos())
 
@@ -434,6 +418,63 @@ class GraphicsView(QtWidgets.QGraphicsView):
 
         super().mouseDoubleClickEvent(event)
 
+    def mouseDoubleClickEvent(self, event: QtGui.QMouseEvent):
+        """Intercept double clicks at the viewport level before Qt unselects text items."""
+        scene_pos = self.mapToScene(event.pos())
+        items_under_cursor = self.scene().items(scene_pos)
+
+        target_item = None
+        for item in items_under_cursor:
+            top_item = item
+            while top_item.parentItem() is not None:
+                top_item = top_item.parentItem()
+
+            data_type = str(top_item.data(0)) if top_item.data(0) is not None else ""
+            if data_type != "borderGroup":
+                target_item = top_item
+                break
+
+        if target_item:
+            if hasattr(self.scene(), "editObject"):
+                self.scene().editObject(target_item)
+                event.accept()
+                return
+
+        super().mouseDoubleClickEvent(event)
+
+    def dragEnterEvent(self, event: QtGui.QDragEnterEvent):
+        """Accepte le glisser si le contenu contient un fichier image valide."""
+        if event.mimeData().hasUrls():
+            for url in event.mimeData().urls():
+                ext = url.toLocalFile().lower()
+                if ext.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.webp', '.tiff', '.tif')):
+                    event.acceptProposedAction()
+                    return
+        event.ignore()
+
+    def dragMoveEvent(self, event: QtGui.QDragMoveEvent):
+        """Maintient l'autorisation pendant le survol."""
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event: QtGui.QDropEvent):
+        """Dépose l'image sur la scène à la position de la souris."""
+        if event.mimeData().hasUrls():
+            scene_pos = self.mapToScene(event.position().toPoint())
+            dropped = False
+            for url in event.mimeData().urls():
+                file_path = url.toLocalFile()
+                if file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.webp', '.tiff', '.tif')):
+                    scene = self.scene()
+                    if hasattr(scene, "addImageAt"):
+                        scene.addImageAt(file_path, scene_pos.x(), scene_pos.y())
+                        dropped = True
+            if dropped:
+                event.acceptProposedAction()
+                return
+        event.ignore()
 
 class GuideLineItem(QtWidgets.QGraphicsLineItem):
     """Repère visuel (ligne guide) non imprimable, déplaçable sur un seul axe."""

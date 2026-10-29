@@ -1,8 +1,8 @@
 """
 Album Information Dialog Module
 -------------------------------
-Dialog window to inspect and edit album metadata (creation date, author, OS,
-total page count, and stamp count).
+Dialog window to inspect and edit album metadata (creation date, author, language,
+operating system, total page count, and stamp count).
 
 Author: Boris du Reau
 """
@@ -11,7 +11,7 @@ import gettext
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QDialog, QFormLayout, QVBoxLayout, QLineEdit,
-    QLabel, QDialogButtonBox
+    QLabel, QDialogButtonBox, QComboBox
 )
 from AppLanguage import get_language
 
@@ -28,7 +28,7 @@ class AlbumInfoDlg(QDialog):
     def __init__(self, metadata: dict, parent=None):
         super().__init__(parent)
         self.setWindowTitle(_("Current Album Info"))
-        self.resize(360, 220)
+        self.resize(380, 260)
         self.metadata = dict(metadata)
 
         self._create_ui()
@@ -44,6 +44,26 @@ class AlbumInfoDlg(QDialog):
         # Editable author field
         self.eAuthor = QLineEdit(str(self.metadata.get("author", "")))
         form.addRow(_("Author:"), self.eAuthor)
+
+        # Editable album language dropdown field
+        self.comboLanguage = QComboBox()
+        self.comboLanguage.addItem(_("French"), "fr")
+        self.comboLanguage.addItem(_("English"), "en")
+        self.comboLanguage.addItem(_("German"), "de")
+        self.comboLanguage.addItem(_("Spanish"), "es")
+        self.comboLanguage.addItem(_("Italian"), "it")
+        self.comboLanguage.addItem(_("Portuguese"), "pt")
+        self.comboLanguage.addItem(_("Russian"), "ru")
+
+        # Select the existing album language or fallback to French
+        current_lang = str(self.metadata.get("language", "fr")).lower()
+        idx = self.comboLanguage.findData(current_lang)
+        if idx != -1:
+            self.comboLanguage.setCurrentIndex(idx)
+        else:
+            self.comboLanguage.setCurrentIndex(0)
+
+        form.addRow(_("Album language:"), self.comboLanguage)
 
         # Read-only operating system field
         self.lblOS = QLabel(str(self.metadata.get("os", "")))
@@ -80,6 +100,7 @@ class AlbumInfoDlg(QDialog):
         """Save user modifications back into metadata dictionary."""
         self.metadata["creation_date"] = self.eCreationDate.text().strip()
         self.metadata["author"] = self.eAuthor.text().strip()
+        self.metadata["language"] = self.comboLanguage.currentData()
         self.accept()
 
     def get_metadata(self) -> dict:

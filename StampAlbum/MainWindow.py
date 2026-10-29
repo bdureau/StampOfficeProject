@@ -71,6 +71,7 @@ class Window(QMainWindow):
         self.album_metadata = {
             "creation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "author": "",
+            "language": "fr",
             "os": f"{platform.system()} {platform.release()}",
             "page_count": 0,
             "stamp_count": 0
@@ -691,7 +692,7 @@ class Window(QMainWindow):
                         total += 1
         return total
 
-    def showAlbumInfo(self):
+    def showAlbumInfo_old(self):
         """Open the Album Info dialog to display and edit metadata."""
         # Refresh dynamic counters and active OS
         self.album_metadata["page_count"] = self.tabs.count()
@@ -701,6 +702,23 @@ class Window(QMainWindow):
         dlg = AlbumInfoDlg(self.album_metadata, self)
         if dlg.exec() == 1:
             self.album_metadata = dlg.get_metadata()
+
+    def showAlbumInfo(self):
+        """Open the Album Info dialog to display and edit metadata."""
+        self.album_metadata["page_count"] = self.tabs.count()
+        self.album_metadata["stamp_count"] = self.countTotalStamps()
+        self.album_metadata["os"] = f"{platform.system()} {platform.release()}"
+
+        dlg = AlbumInfoDlg(self.album_metadata, self)
+        if dlg.exec() == 1:
+            self.album_metadata = dlg.get_metadata()
+            new_lang = self.album_metadata.get("language", "fr")
+
+            # Répercuter la langue sur toutes les scènes de l'album
+            for i in range(self.tabs.count()):
+                widget = self.tabs.widget(i)
+                if hasattr(widget, 'view') and widget.view and widget.view.scene():
+                    widget.view.scene().album_language = new_lang
 
     def undo(self):
         """Annule la dernière action sur la page active."""
@@ -751,6 +769,7 @@ class Window(QMainWindow):
             margin_size_mm=margin_size,
             margin_position=margin_position
         )
+        page.album_language = self.album_metadata.get("language", "fr")
 
         page.undoStack.cleanChanged.connect(self.renameTabs)
         view = GraphicsView(page)
@@ -1043,6 +1062,7 @@ class Window(QMainWindow):
             self.album_metadata = {
                 "creation_date": meta_node.findtext("creation_date", ""),
                 "author": meta_node.findtext("author", ""),
+                "language": meta_node.findtext("language", "fr"),
                 "os": meta_node.findtext("os", f"{platform.system()} {platform.release()}"),
                 "page_count": int(meta_node.findtext("page_count", str(self.tabs.count()))),
                 "stamp_count": int(meta_node.findtext("stamp_count", "0"))
@@ -1470,6 +1490,7 @@ class Window(QMainWindow):
         ET.SubElement(meta_elem, "os").text = str(current_os)
         ET.SubElement(meta_elem, "page_count").text = str(total_pages)
         ET.SubElement(meta_elem, "stamp_count").text = str(total_stamps)
+        ET.SubElement(meta_elem, "language").text = str(self.album_metadata.get("language", "fr"))
 
         for x in range(self.tabs.count()):
             self.tabs.setCurrentIndex(x)

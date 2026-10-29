@@ -119,6 +119,16 @@ class Page(QGraphicsScene):
                 self.addBorder(border_w, border_h, margin_l, 0, margin_px, 0, style)
 
         self.gridOn = False
+        self.album_language = "fr"
+
+    def addImageAt(self, fileName, x, y):
+        """Crée et place une image à des coordonnées précises de la scène avec Undo."""
+        if fileName:
+            pixmap = QPixmap(fileName)
+            if not pixmap.isNull():
+                pixmapitem = ResizablePixmapItem(pixmap)
+                pixmapitem.setPos(x, y)
+                self.addItemWithUndo(pixmapitem, _("Add Image"))
 
     def changePageSetup(self, page_type: str, paper_format: str, border_style: str,
                         margin_size_mm: float = None, margin_position: str = None):
@@ -330,11 +340,24 @@ class Page(QGraphicsScene):
 
         return text_item
 
+    def editRichText_old(self, item):
+        """Open the rich text dialog editor for an existing text block."""
+        try:
+            from RichTextDlg import RichTextDlg
+            lang = getattr(self, "album_language", "fr")
+            dlg = RichTextDlg(item)
+            if dlg.exec() == 1:
+                item.setHtml(dlg.get_html())
+        except Exception as e:
+            print(f"Error editing rich text: {e}")
+
     def editRichText(self, item):
         """Open the rich text dialog editor for an existing text block."""
         try:
             from RichTextDlg import RichTextDlg
-            dlg = RichTextDlg(item)
+            # Récupère la langue stockée sur la page, avec repli sécurisé sur 'fr'
+            lang = getattr(self, "album_language", "fr")
+            dlg = RichTextDlg(item, album_language=lang)
             if dlg.exec() == 1:
                 item.setHtml(dlg.get_html())
         except Exception as e:
@@ -346,54 +369,8 @@ class Page(QGraphicsScene):
         if items:
             self.undoStack.push(DeleteItemsCommand(self, items, _("Clear page")))
 
+
     def editObject_old(self, item=None):
-        """Edit currently selected scene item or the item passed directly."""
-        top_item = item
-
-        if top_item is None:
-            items = self.selectedItems()
-            if len(items) != 1:
-                return
-            top_item = items[0]
-            while top_item.parentItem() is not None:
-                top_item = top_item.parentItem()
-
-        if top_item is None:
-            return
-
-        try:
-            raw_data = top_item.data(0)
-            data_type = str(raw_data) if raw_data is not None else ""
-
-            print(
-                f"Editing item - Class: {top_item.__class__.__name__}, Type: {top_item.type()}, Data(0): '{data_type}'")
-
-            # EXCLURE les bordures du double-clic d'édition pour éviter le crash
-            if data_type == "borderGroup":
-                return
-
-            # 2. Cas du Rich Text
-            if data_type == "richTextLabel":
-                self.editRichText(top_item)
-
-            # 3. Cas du Timbre (stampGroup)
-            elif data_type == "stampGroup" or top_item.type() == 10:
-                self.editStamp(top_item)
-
-            # 4. Cas de TOUS les objets texte
-            elif (
-                    data_type in ["textLabel", "labelPageNbr", "labelCopyRight", "labelYear"]
-                    or isinstance(top_item, QGraphicsTextItem)
-                    or top_item.type() == 8
-            ):
-                self.editLabel(top_item)
-            else:
-                print(f"Unrecognized item type for editing: {data_type}")
-
-        except Exception as e:
-            print(f"Error during item editing: {e}")
-
-    def editObject(self, item=None):
         """Edit currently selected scene item or the item passed directly."""
         top_item = item
 
@@ -438,6 +415,58 @@ class Page(QGraphicsScene):
                     or top_item.type() == 8
             ):
                 self.editLabel(top_item)
+
+        except Exception as e:
+            print(f"Error during item editing: {e}")
+
+    def editObject(self, item=None):
+        """Edit currently selected scene item or the item passed directly."""
+        top_item = item
+
+        if top_item is None:
+            items = self.selectedItems()
+            if len(items) != 1:
+                return
+            top_item = items[0]
+            while top_item.parentItem() is not None:
+                top_item = top_item.parentItem()
+
+        if top_item is None:
+            return
+
+        try:
+            raw_data = top_item.data(0)
+            data_type = str(raw_data) if raw_data is not None else ""
+
+            # 1. Ignorer les bordures de page
+            if data_type == "borderGroup":
+                return
+
+            # 2. Cas du Timbre Texte Enrichi (RichTextStamp)
+            if data_type == "richTextStampGroup":
+                from RichTextStampDlg import RichTextStampDlg
+                dlg = RichTextStampDlg(scene=self, stampItem=top_item)
+                dlg.exec()
+                return
+
+            # 3. Cas du bloc Rich Text libre (DOIT ETRE AVANT LES TEXTES SIMPLES)
+            if data_type == "richTextLabel":
+                self.editRichText(top_item)
+                return
+
+            # 4. Cas du Timbre traditionnel
+            elif data_type == "stampGroup" or top_item.type() == 10:
+                self.editStamp(top_item)
+                return
+
+            # 5. Textes simples
+            elif (
+                    data_type in ["textLabel", "labelPageNbr", "labelCopyRight", "labelYear"]
+                    or isinstance(top_item, QGraphicsTextItem)
+                    or top_item.type() == 8
+            ):
+                self.editLabel(top_item)
+                return
 
         except Exception as e:
             print(f"Error during item editing: {e}")
@@ -749,7 +778,7 @@ class Page(QGraphicsScene):
                     it2.setPos(topX - it2.boundingRect().size().width(), it2.y())
 
     @undoable_move("Distribute Horizontally")
-    def distributeHorizontally(self):
+    def distributeHorizontally_old(self):
         # Sécurité : nécessite au moins 3 objets pour distribuer horizontalement
         if self.countSelectedItems() < 3:
             return
@@ -809,6 +838,32 @@ class Page(QGraphicsScene):
                                 if stampItem.type().real == 3:
                                     nextX += i.boundingRect().size().width() + space
 
+    @undoable_move("Distribute Horizontally")
+    def distributeHorizontally(self):
+        """Distribue équitablement l'espace horizontal entre les objets sélectionnés."""
+        items = [it for it in self.selectedItems() if it.parentItem() is None]
+        if len(items) < 3:
+            return
+
+        # Tri des objets de gauche à droite selon leur bord gauche
+        items.sort(key=lambda it: it.sceneBoundingRect().left())
+
+        min_x = items[0].sceneBoundingRect().left()
+        max_x = items[-1].sceneBoundingRect().right()
+
+        total_items_width = sum(it.sceneBoundingRect().width() for it in items)
+        available_space = max_x - min_x - total_items_width
+
+        # Espace entre chaque objet
+        space = available_space / (len(items) - 1)
+
+        current_left = min_x
+        for it in items:
+            rect = it.sceneBoundingRect()
+            dx = current_left - rect.left()
+            it.setPos(it.x() + dx, it.y())
+            current_left += rect.width() + space
+
     @undoable_move("Distribute Vertically")
     def distributeVertically(self):
         # Sécurité : nécessite au moins 3 objets pour distribuer verticalement
@@ -846,6 +901,25 @@ class Page(QGraphicsScene):
 
     @undoable_move("Center Horizontally")
     def centerHorizontally(self):
+        """Centre horizontalement chaque objet sélectionné par rapport à la page ou la bordure."""
+        selected_items = [it for it in self.selectedItems() if it.parentItem() is None]
+        if not selected_items:
+            return
+
+        border_item = next((it for it in self.items() if str(it.data(0)) == "borderGroup"), None)
+        if border_item:
+            b_rect = border_item.sceneBoundingRect()
+            center_x = b_rect.left() + b_rect.width() / 2.0
+        else:
+            center_x = self.sceneRect().width() / 2.0
+
+        for it in selected_items:
+            rect = it.sceneBoundingRect()
+            # Déplacement requis pour aligner le centre de l'objet sur le centre cible
+            dx = center_x - (rect.left() + rect.width() / 2.0)
+            it.setPos(it.x() + dx, it.y())
+    @undoable_move("Center Horizontally")
+    def centerHorizontally_old(self):
         if self.countSelectedItems() > 0:
             for it in self.items():
                 if it.isSelected() and it.parentItem() is None:
@@ -987,247 +1061,6 @@ class Page(QGraphicsScene):
         self.mouse_press_positions.clear()
 
     def autoArrangeStamps_old(self):
-        """Organise et aligne harmonieusement les timbres sélectionnés ou tous les timbres."""
-        # 1. Sélectionner les timbres à organiser
-        selected_stamps = [
-            it for it in self.selectedItems()
-            if it.parentItem() is None and it.data(0) == "stampGroup"
-        ]
-        # Si moins de 2 timbres sont sélectionnés, on organise tous les timbres de la page
-        stamps = selected_stamps if len(selected_stamps) > 1 else [
-            it for it in self.items()
-            if it.parentItem() is None and it.data(0) == "stampGroup"
-        ]
-
-        if not stamps:
-            return
-
-        # Sauvegarder les positions pour le "Undo"
-        old_positions = [it.pos() for it in stamps]
-
-        # 2. Regrouper les timbres en rangées (clustering basé sur la position Y)
-        stamps_by_y = sorted(stamps, key=lambda s: s.y())
-        rows = []
-        y_threshold = 100.0  # Tolérance pour considérer que des timbres sont sur la même ligne
-
-        for stamp in stamps_by_y:
-            placed = False
-            for row in rows:
-                # Si le timbre est proche de la ligne actuelle en Y
-                avg_y = sum(s.y() for s in row) / len(row)
-                if abs(stamp.y() - avg_y) < y_threshold:
-                    row.append(stamp)
-                    placed = True
-                    break
-            if not placed:
-                rows.append([stamp])
-
-        # Trier les timbres de gauche à droite dans chaque rangée
-        for row in rows:
-            row.sort(key=lambda s: s.x())
-
-        # Trier les rangées de haut en bas
-        rows.sort(key=lambda r: sum(s.y() for s in r) / len(r))
-
-        # 3. Paramètres de mise en page
-        page_w = self.sceneRect().width()
-        page_h = self.sceneRect().height()
-
-        # Marges estimées d'après les Images (laissant de la place pour le titre/année et le copyright)
-        margin_top = 200.0
-        margin_bottom = page_h - 150.0
-        available_h = max(200.0, margin_bottom - margin_top)
-
-        # Calculer la hauteur de chaque rangée
-        row_heights = [max(s.boundingRect().height() for s in row) for row in rows]
-        total_rows_h = sum(row_heights)
-
-        # Calculer l'espacement vertical (v_gap) entre les rangées
-        if len(rows) > 1:
-            v_gap = (available_h - total_rows_h) / (len(rows) - 1)
-            # Limiter l'espacement vertical pour que ce ne soit ni trop collé ni trop étiré
-            v_gap = max(20.0, min(v_gap, 100.0))
-        else:
-            v_gap = 50.0
-
-        # Recalculer le point de départ Y pour centrer verticalement le bloc entier
-        total_block_h = total_rows_h + (len(rows) - 1) * v_gap
-        current_y = margin_top + max(0.0, (available_h - total_block_h) / 2.0)
-
-        # Espacement horizontal fixe entre les timbres (peut être ajusté)
-        h_spacing = 40.0
-
-        # 4. Appliquer les nouvelles positions
-        for i, row in enumerate(rows):
-            # Calculer la largeur totale de la rangée pour la centrer horizontalement
-            row_width = sum(s.boundingRect().width() for s in row) + (len(row) - 1) * h_spacing
-            start_x = (page_w - row_width) / 2.0
-
-            # Aligner les cadres (stampBox) plutôt que le haut du groupe (qui inclut le titre s'il y en a)
-            box_offsets = []
-            for stamp in row:
-                box = next((c for c in stamp.childItems() if c.data(0) == "stampBox"), None)
-                box_offsets.append(box.y() if box else 0.0)
-
-            target_box_offset = max(box_offsets) if box_offsets else 0.0
-
-            current_x = start_x
-            for j, stamp in enumerate(row):
-                # Ajuster le Y pour que les stampBox soient alignées sur la ligne
-                y_adjust = target_box_offset - box_offsets[j]
-
-                new_x = current_x - stamp.boundingRect().x()
-                new_y = current_y + y_adjust - stamp.boundingRect().y()
-
-                stamp.setPos(new_x, new_y)
-                current_x += stamp.boundingRect().width() + h_spacing
-
-            current_y += row_heights[i] + v_gap
-
-        # 5. Enregistrer le déplacement pour la fonction "Undo" (Annuler)
-        moved_items = []
-        old_moved_positions = []
-        for it, old_pos in zip(stamps, old_positions):
-            if it.pos() != old_pos:
-                moved_items.append(it)
-                old_moved_positions.append(old_pos)
-
-        if moved_items:
-            cmd = MoveCommand(moved_items, old_moved_positions)
-            self.undoStack.push(cmd)
-
-    def autoArrangeStamps_old2(self):
-        """Organise et aligne harmonieusement les timbres sans jamais dépasser la bordure de page."""
-        # 1. Sélectionner les timbres à organiser
-        selected_stamps = [
-            it for it in self.selectedItems()
-            if it.parentItem() is None and it.data(0) == "stampGroup"
-        ]
-        stamps = selected_stamps if len(selected_stamps) > 1 else [
-            it for it in self.items()
-            if it.parentItem() is None and it.data(0) == "stampGroup"
-        ]
-
-        if not stamps:
-            return
-
-        # Sauvegarder les positions pour le "Undo"
-        old_positions = [it.pos() for it in stamps]
-
-        # 2. Déterminer la zone limite (Inner Rect) de la bordure ou des marges de page
-        border_item = next((it for it in self.items() if it.data(0) == "borderGroup"), None)
-        if border_item:
-            # Récupère le rectangle exact de la bordure dans la scène
-            border_rect = border_item.sceneBoundingRect()
-            # Marge de sécurité interne par rapport à la ligne de bordure
-            padding = 10.0
-            min_x_limit = border_rect.left() + padding
-            max_x_limit = border_rect.right() - padding
-            min_y_limit = border_rect.top() + padding
-            max_y_limit = border_rect.bottom() - padding
-        else:
-            # Fallback sur les dimensions de la scène avec marges par défaut
-            px_w = self.sceneRect().width()
-            px_h = self.sceneRect().height()
-            min_x_limit = 50.0
-            max_x_limit = px_w - 50.0
-            min_y_limit = 100.0
-            max_y_limit = px_h - 100.0
-
-        available_w = max(100.0, max_x_limit - min_x_limit)
-        available_h = max(100.0, max_y_limit - min_y_limit)
-
-        # 3. Regrouper les timbres en rangées (clustering basé sur Y)
-        stamps_by_y = sorted(stamps, key=lambda s: s.y())
-        rows = []
-        y_threshold = 100.0  # Tolérance de proximité Y
-
-        for stamp in stamps_by_y:
-            placed = False
-            for row in rows:
-                avg_y = sum(s.y() for s in row) / len(row)
-                if abs(stamp.y() - avg_y) < y_threshold:
-                    row.append(stamp)
-                    placed = True
-                    break
-            if not placed:
-                rows.append([stamp])
-
-        # Trier chaque rangée de gauche à droite, puis les rangées de haut en bas
-        for row in rows:
-            row.sort(key=lambda s: s.x())
-        rows.sort(key=lambda r: sum(s.y() for s in r) / len(r))
-
-        # 4. Calcul des espacements verticaux
-        row_heights = [max(s.boundingRect().height() for s in row) for row in rows]
-        total_rows_h = sum(row_heights)
-
-        if len(rows) > 1:
-            raw_v_gap = (available_h - total_rows_h) / (len(rows) - 1)
-            # Réduire l'espacement si les rangées sont nombreuses pour ne pas déborder
-            v_gap = max(10.0, min(raw_v_gap, 80.0))
-        else:
-            v_gap = 20.0
-
-        # Répartir le bloc verticalement au centre de la zone disponible
-        total_block_h = total_rows_h + (len(rows) - 1) * v_gap
-        current_y = min_y_limit + max(0.0, (available_h - total_block_h) / 2.0)
-
-        # 5. Appliquer les nouvelles positions avec contraintes de bordure stricte
-        for i, row in enumerate(rows):
-            total_stamps_w = sum(s.boundingRect().width() for s in row)
-
-            # Calcul de l'espacement horizontal dynamique selon la largeur de la rangée
-            if len(row) > 1:
-                raw_h_spacing = (available_w - total_stamps_w) / (len(row) - 1)
-                h_spacing = max(10.0, min(raw_h_spacing, 40.0))
-            else:
-                h_spacing = 0.0
-
-            row_width = total_stamps_w + (len(row) - 1) * h_spacing
-            start_x = min_x_limit + max(0.0, (available_w - row_width) / 2.0)
-
-            # Alignement vertical des cadres (stampBox) dans la rangée
-            box_offsets = []
-            for stamp in row:
-                box = next((c for c in stamp.childItems() if c.data(0) == "stampBox"), None)
-                box_offsets.append(box.y() if box else 0.0)
-
-            target_box_offset = max(box_offsets) if box_offsets else 0.0
-
-            current_x = start_x
-            for j, stamp in enumerate(row):
-                y_adjust = target_box_offset - box_offsets[j]
-
-                # Position visée
-                target_x = current_x - stamp.boundingRect().x()
-                target_y = current_y + y_adjust - stamp.boundingRect().y()
-
-                # Clamping / Sécurité stricte : empêche le timbre de dépasser de la bordure
-                stamp_w = stamp.boundingRect().width()
-                stamp_h = stamp.boundingRect().height()
-
-                final_x = max(min_x_limit, min(target_x, max_x_limit - stamp_w))
-                final_y = max(min_y_limit, min(target_y, max_y_limit - stamp_h))
-
-                stamp.setPos(final_x, final_y)
-                current_x += stamp_w + h_spacing
-
-            current_y += row_heights[i] + v_gap
-
-        # 6. Enregistrer le déplacement pour la fonction Undo
-        moved_items = []
-        old_moved_positions = []
-        for it, old_pos in zip(stamps, old_positions):
-            if it.pos() != old_pos:
-                moved_items.append(it)
-                old_moved_positions.append(old_pos)
-
-        if moved_items:
-            cmd = MoveCommand(moved_items, old_moved_positions)
-            self.undoStack.push(cmd)
-
-    def autoArrangeStamps(self):
         """Organise les timbres par ordre de numéro sans chevauchement ni dépassement de bordure."""
         # 1. Sélectionner les timbres à organiser
         selected_stamps = [
@@ -1345,6 +1178,155 @@ class Page(QGraphicsScene):
             current_y += row_heights[i] + v_spacing
 
         # 7. Enregistrer le déplacement global dans l'historique d'annulation (Undo)
+        moved_items = []
+        old_moved_positions = []
+        for it, old_pos in zip(stamps, old_positions):
+            if it.pos() != old_pos:
+                moved_items.append(it)
+                old_moved_positions.append(old_pos)
+
+        if moved_items:
+            cmd = MoveCommand(moved_items, old_moved_positions)
+            self.undoStack.push(cmd)
+
+    def autoArrangeStamps(self):
+        """Arrange stamps by stamp number, aligning rows relative to the stamp images."""
+        # 1. Filter stamps to arrange (supports both stampGroup and richTextStampGroup)
+        valid_types = {"stampGroup", "richTextStampGroup"}
+        selected_stamps = [
+            it for it in self.selectedItems()
+            if it.parentItem() is None and str(it.data(0)) in valid_types
+        ]
+        stamps = selected_stamps if len(selected_stamps) > 1 else [
+            it for it in self.items()
+            if it.parentItem() is None and str(it.data(0)) in valid_types
+        ]
+
+        if not stamps:
+            return
+
+        # Save initial positions for the Undo stack (Ctrl+Z)
+        old_positions = [it.pos() for it in stamps]
+
+        # 2. Natural sequential sorting by stamp number (e.g., 1, 2, 10 instead of 1, 10, 2)
+        def get_stamp_number_key(stamp):
+            nbr_item = next((c for c in stamp.childItems() if str(c.data(0)) == "stampNbr"), None)
+            if nbr_item:
+                text = nbr_item.toPlainText().strip() if hasattr(nbr_item, "toPlainText") else ""
+            else:
+                text = ""
+
+            import re
+            parts = re.split(r'(\d+)', text)
+            return [int(p) if p.isdigit() else p.lower() for p in parts if p]
+
+        stamps.sort(key=get_stamp_number_key)
+
+        # 3. Retrieve bounding boundaries from the page border or scene
+        border_item = next((it for it in self.items() if it.data(0) == "borderGroup"), None)
+        if border_item:
+            border_rect = border_item.sceneBoundingRect()
+            padding = 10.0  # Internal safety padding
+            min_x_limit = border_rect.left() + padding
+            max_x_limit = border_rect.right() - padding
+            min_y_limit = border_rect.top() + padding
+            max_y_limit = border_rect.bottom() - padding
+        else:
+            px_w = self.sceneRect().width()
+            px_h = self.sceneRect().height()
+            min_x_limit = 50.0
+            max_x_limit = px_w - 50.0
+            min_y_limit = 100.0
+            max_y_limit = px_h - 100.0
+
+        available_w = max(100.0, max_x_limit - min_x_limit)
+
+        # 4. Spacing configuration
+        h_spacing = 20.0
+        v_spacing = 25.0
+
+        # 5. Row distribution without horizontal overflow
+        rows = []
+        current_row = []
+        current_row_w = 0.0
+
+        for stamp in stamps:
+            stamp_w = stamp.boundingRect().width()
+            if current_row and (current_row_w + h_spacing + stamp_w > available_w):
+                rows.append(current_row)
+                current_row = [stamp]
+                current_row_w = stamp_w
+            else:
+                if current_row:
+                    current_row_w += h_spacing + stamp_w
+                else:
+                    current_row_w = stamp_w
+                current_row.append(stamp)
+
+        if current_row:
+            rows.append(current_row)
+
+        # 6. Helper function to inspect the stamp image position and dimensions
+        def get_image_info(stamp):
+            """
+            Return the Y offset and height of the image relative to the stamp group.
+            Falls back to stampBox if no valid image is found.
+            """
+            img_item = next((c for c in stamp.childItems() if str(c.data(0)) == "pixmapItem"), None)
+            if img_item and hasattr(img_item, "pixmap") and not img_item.pixmap().isNull():
+                h = img_item.boundingRect().height() * img_item.scale()
+                return img_item.y(), h
+
+            box_item = next((c for c in stamp.childItems() if str(c.data(0)) == "stampBox"), None)
+            if box_item:
+                return box_item.y(), box_item.boundingRect().height()
+
+            return 0.0, stamp.boundingRect().height()
+
+        # Compute total required block height
+        row_heights = [max(s.boundingRect().height() for s in row) for row in rows]
+        total_block_h = sum(row_heights) + (len(rows) - 1) * v_spacing
+
+        # Global vertical centering
+        current_y = min_y_limit + max(0.0, (max_y_limit - min_y_limit - total_block_h) / 2.0)
+
+        # 7. Row-by-row placement with vertical alignment centered on images
+        for i, row in enumerate(rows):
+            total_stamps_w = sum(s.boundingRect().width() for s in row)
+            actual_row_w = total_stamps_w + (len(row) - 1) * h_spacing
+            current_x = min_x_limit + max(0.0, (available_w - actual_row_w) / 2.0)
+
+            # Compute vertical center coordinates for all images in the row
+            img_centers = []
+            for stamp in row:
+                img_y, img_h = get_image_info(stamp)
+                img_centers.append(img_y + (img_h / 2.0))
+
+            target_img_center = max(img_centers) if img_centers else 0.0
+
+            for stamp in row:
+                img_y, img_h = get_image_info(stamp)
+                stamp_img_center = img_y + (img_h / 2.0)
+
+                # Vertical delta to align image centers across the row
+                y_adjust = target_img_center - stamp_img_center
+
+                target_x = current_x - stamp.boundingRect().x()
+                target_y = current_y + y_adjust - stamp.boundingRect().y()
+
+                stamp_w = stamp.boundingRect().width()
+                stamp_h = stamp.boundingRect().height()
+
+                # Boundary clamping to prevent overflowing outside the border
+                final_x = max(min_x_limit, min(target_x, max_x_limit - stamp_w))
+                final_y = max(min_y_limit, min(target_y, max_y_limit - stamp_h))
+
+                stamp.setPos(final_x, final_y)
+                current_x += stamp_w + h_spacing
+
+            current_y += row_heights[i] + v_spacing
+
+        # 8. Record the aggregated position changes into the Undo stack
         moved_items = []
         old_moved_positions = []
         for it, old_pos in zip(stamps, old_positions):

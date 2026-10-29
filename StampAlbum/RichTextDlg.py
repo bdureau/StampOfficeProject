@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import (
     QColorDialog, QDialog, QDialogButtonBox, QFontComboBox,
     QHBoxLayout, QSpinBox, QTextEdit, QToolButton, QVBoxLayout
 )
-
+from SpellHighlighter import SpellHighlighter
 from AppLanguage import get_language
 
 from SAAppPaths import get_images_dir, get_config_value
@@ -29,11 +29,12 @@ _ = translate.gettext
 class RichTextDlg(QDialog):
     """Dialog allowing full rich-text formatting for QGraphicsTextItem."""
 
-    def __init__(self, text_item=None, parent=None):
+    def __init__(self, text_item=None, album_language="fr", parent=None):
         super(RichTextDlg,self).__init__(parent)
         self.setWindowTitle(_("Rich Text Editor"))
         self.resize(600, 400)
         self.text_item = text_item
+        self.album_language = album_language
 
         self.base_dir = self._get_app_dir()
         self.images_dir = self._get_resource_dir("Images")
@@ -45,6 +46,16 @@ class RichTextDlg(QDialog):
             self.setWindowIcon(QIcon('stamp_book.png'))
 
         self._create_ui()
+
+        # Attachement du correcteur orthographique en direct sur l'éditeur
+        #self.highlighter = SpellHighlighter(self.editor.document(), language=self.album_language)
+
+        try:
+            from SpellHighlighter import SpellHighlighter
+            self.highlighter = SpellHighlighter(self.editor.document(), language=self.album_language)
+        except Exception as e:
+            print(f"[RichTextDlg] Spell checker initialization skipped: {e}")
+
         if self.text_item:
             self.editor.blockSignals(True)
             self.editor.setHtml(self.text_item.toHtml())
