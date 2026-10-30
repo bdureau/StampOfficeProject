@@ -19,12 +19,13 @@ from PyQt6.QtWidgets import (
     QGridLayout, QMessageBox, QFileDialog, QComboBox,
     QLabel, QMainWindow, QMenu,
     QToolBar, QGraphicsTextItem, QPushButton,
-    QStatusBar, QTabWidget, QWidget
+    QStatusBar, QTabWidget, QWidget, QApplication
 )
 from PyQt6.QtGui import QBrush, QPainter, QPixmap, QFont, QTextCursor, QTextBlockFormat
 from PyQt6.QtPrintSupport import QPrintPreviewDialog, QPrinter
 from Stamp import Stamp
 from CustomStampDlg import CustomStampDlg
+from AlbumEasyImporter import AlbumEasyImporter
 
 from Page import Page
 from ConfigDlg import ConfigDlg
@@ -2107,202 +2108,84 @@ class Window(QMainWindow):
             self.tabs.setCurrentIndex(current_index)
 
     def importAlbumEasy(self):
-        """Read AlbumEasy text file and construct corresponding album pages."""
+        """Import an AlbumEasy (.txt) description file, either replacing or appending to the album."""
         options = QFileDialog.Option.DontUseNativeDialog
         fileName, _filter = QFileDialog.getOpenFileName(
-            self, _("Import from AlbumEasy"), "", "AlbumEasy Files (*.txt);;All Files (*)", options=options
+            self, _("Import from AlbumEasy"), "", _("AlbumEasy Files (*.txt);;All Files (*)"), options=options
         )
         if not fileName:
             return
 
-        # Confirm whether to clear the active album
-        qm = QMessageBox()
-        ret = qm.question(self, _('Import AlbumEasy'),
-                          _("Do you want to replace the actual album ?\n(Choose 'No' to append it)"),
-                          qm.StandardButton.Yes | qm.StandardButton.No)
-        if ret == qm.StandardButton.Yes:
+        qm = QMessageBox(self)
+        qm.setIcon(QMessageBox.Icon.Question)
+        qm.setWindowTitle(_("Import AlbumEasy"))
+        qm.setText(_("Do you want to replace the actual album ?\n(Choose 'No' to append it)"))
+        qm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No |
+                              QMessageBox.StandardButton.Cancel)
+        for btn, label in ((QMessageBox.StandardButton.Yes, _("&Yes")),
+                           (QMessageBox.StandardButton.No, _("&No")),
+                           (QMessageBox.StandardButton.Cancel, _("&Cancel"))):
+            b = qm.button(btn)
+            if b:
+                b.setText(label)
+        ret = qm.exec()
+        if ret == QMessageBox.StandardButton.Cancel:
+            return
+
+        replace = ret == QMessageBox.StandardButton.Yes
+        if replace:
+            if not self.maybe_save():
+                return
             self.deleteAllPages()
+        first_new_index = self.tabs.count()
 
-        # State tracking variables simulating AlbumEasy behavior
-        current_page = None
-
-        page_width_mm = 210.0  # Default A4, updated by ALBUM_PAGES_SIZE
-        page_margin_top = 15.0
-
-        current_row_y_mm = page_margin_top
-        current_x_mm = 20.0
-        row_spacing_mm = 5.0
-
-        global_page_title = ""
-
-        def mm_to_px(mm):
-            """Convert millimeters from AlbumEasy to screen pixels for PyQt."""
-            return float(mm) / (25.4 / 96.0)
-
-        # Regex to extract text inside quotes OR non-whitespace words
-        arg_pattern = re.compile(r'"([^"]*)"|(\S+)')
-
-        # Regex to extract float/integer numbers from a list of arguments
-        def extract_floats(args_list):
-            floats = []
-            for arg in args_list:
-                # Find patterns matching numbers (e.g. 25.0, 15, -6.0)
-                matches = re.findall(r'-?\d+\.?\d*', str(arg))
-                for m in matches:
-                    try:
-                        floats.append(float(m))
-                    except ValueError:
-                        pass
-            return floats
-
-        multiline_buffer = ""
-
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
-            with open(fileName, 'r', encoding='utf-8', errors='ignore') as f:
-                for line in f:
-                    line = line.strip()
-
-                    # Strip full comments or parts following '#'
-                    if '#' in line:
-                        line = line.split('#')[0].strip()
-
-                    if not line:
-                        continue
-
-                    # Handle lines ending with backslash (multiline statements)
-                    if line.endswith('\\'):
-                        multiline_buffer += line[:-1]
-                        continue
-                    else:
-                        line = multiline_buffer + line
-                        multiline_buffer = ""
-
-                    # Extract primary command, e.g. PAGE_START () or COLOUR_PAGE_TEXT(red)
-                    match = re.match(r'^([A-Z_0-9]+)\s*(?:\((.*)\))?', line)
-                    if match:
-                        cmd = match.group(1)
-                        args_str = match.group(2) if match.group(2) else ""
-
-                        # Extract arguments via regex
-                        args = []
-                        for arg_match in arg_pattern.finditer(args_str):
-                            val = arg_match.group(1) if arg_match.group(1) is not None else arg_match.group(2)
-                            val = val.replace('\\n', '\n')
-                            args.append(val)
-
-                        # --- COMMAND PROCESSING ---
-
-                        # 1. GLOBAL SETTINGS
-                        if cmd == "ALBUM_PAGES_SIZE":
-                            nums = extract_floats(args)
-                            if len(nums) >= 1:
-                                page_width_mm = nums[0]
-
-                        elif cmd == "ALBUM_PAGES_TITLE":
-                            # The last string argument is usually the title
-                            text_args = [a for a in args if not re.match(r'^-?\d+\.?\d*$', a)]
-                            if text_args:
-                                global_page_title = text_args[-1]
-
-                        # 2. NEW PAGE
-                        elif cmd == "PAGE_START":
-                            self.newPage("portrait", True)
-                            current_page = self.getCurrentPageScene()
-                            current_row_y_mm = page_margin_top
-
-                            if global_page_title and current_page:
-                                font = QFont("Arial", 16, QFont.Weight.Bold)
-                                x_px = mm_to_px(page_width_mm / 2.0)
-                                current_page.addTextLabel(global_page_title, x_px - 50, mm_to_px(current_row_y_mm),
-                                                          font, Qt.AlignmentFlag.AlignCenter)
-                                current_row_y_mm += 15.0
-
-                        # 3. TEXT BLOCKS
-                        elif cmd in ["PAGE_TEXT", "PAGE_TEXT_CENTRE"] and current_page:
-                            nums = extract_floats(args)
-                            font_size = int(nums[0]) if nums else 10
-
-                            # The text is typically the only non-numeric argument or the last one
-                            text = ""
-                            for a in reversed(args):
-                                if not re.match(r'^[A-Z0-9_\.]+$', a):
-                                    text = a
-                                    break
-
-                            if text:
-                                font = QFont("Arial", font_size)
-                                x_px = mm_to_px(page_width_mm / 2.0)
-                                y_px = mm_to_px(current_row_y_mm)
-
-                                current_page.addTextLabel(text, x_px - 50, y_px, font, Qt.AlignmentFlag.AlignCenter)
-                                text_lines = text.count('\n') + 1
-                                current_row_y_mm += (font_size * 0.35 * text_lines) + 5.0
-
-                        # 3b. EXPLICIT VERTICAL SPACING
-                        elif cmd == "PAGE_VSPACE" and current_page:
-                            nums = extract_floats(args)
-                            if nums:
-                                current_row_y_mm += nums[0]
-
-                        # 4. ROW SETUP FOR STAMPS
-                        elif cmd in ["ROW_START_FS", "ROW_START_JS", "ROW_START"] and current_page:
-                            nums = extract_floats(args)
-                            if len(nums) >= 3:
-                                espacement_y = nums[-3]
-                                row_spacing_mm = nums[-2]
-                                current_x_mm = nums[-1]
-                                current_row_y_mm += espacement_y
-                            elif len(nums) == 2:
-                                row_spacing_mm = nums[0]
-                                current_x_mm = nums[1]
-
-                        # 5. STAMP OR IMAGE INSERTION
-                        elif cmd in ["STAMP_ADD", "STAMP_ADD_IMG"] and current_page:
-                            nums = extract_floats(args)
-                            if len(nums) >= 2:
-                                w_mm = nums[0]
-                                h_mm = nums[1]
-
-                                # Filter text-only arguments to populate fields
-                                text_args = [a for a in args[2:] if not a.replace('.', '', 1).isdigit()]
-
-                                text_center = text_args[0] if len(text_args) > 0 else ""
-                                text_top = text_args[1] if len(text_args) > 1 else ""
-                                text_bot = text_args[2] if len(text_args) > 2 else ""
-                                value = text_args[3] if len(text_args) > 3 else ""
-
-                                if not text_top:
-                                    text_top = text_center
-
-                                pixmap = QPixmap(int(mm_to_px(w_mm)), int(mm_to_px(h_mm)))
-                                pixmap.fill(Qt.GlobalColor.transparent)
-
-                                stamp_obj = Stamp()
-                                stamp_obj.createStampPix(
-                                    current_page,
-                                    text_top,
-                                    value,
-                                    text_bot,
-                                    mm_to_px(w_mm),
-                                    mm_to_px(h_mm),
-                                    mm_to_px(current_x_mm),
-                                    mm_to_px(current_row_y_mm),
-                                    pixmap
-                                )
-
-                                current_x_mm += w_mm + row_spacing_mm
-
+            report = AlbumEasyImporter(self, fileName).run()
         except Exception as e:
             import traceback
             traceback.print_exc()
-            QMessageBox.critical(
-                self,
-                _("Import Error"),
-                "{msg}\n{error}".format(
-                    msg=_("An error occurred:"),
-                    error=str(e)
-                )
-            )
+            QApplication.restoreOverrideCursor()
+            QMessageBox.critical(self, _("Import Error"),
+                                 "{msg}\n{error}".format(msg=_("An error occurred:"), error=str(e)))
+            if self.tabs.count() == 0:
+                self.newPage("portrait", True)
+            return
+        finally:
+            if QApplication.overrideCursor() is not None:
+                QApplication.restoreOverrideCursor()
+
+        if self.tabs.count() == 0:
+            self.newPage("portrait", True)
+
+        # Apply album language to the new scenes
+        album_lang = self.album_metadata.get("language", "fr")
+        for i in range(self.tabs.count()):
+            widget = self.tabs.widget(i)
+            if hasattr(widget, "view") and widget.view and widget.view.scene():
+                widget.view.scene().album_language = album_lang
+
+        self.renameTabs()
+        self.update_window_title()
+        self.tabs.setCurrentIndex(min(first_new_index, self.tabs.count() - 1))
+
+        # Import report
+        lines = [_("{pages} page(s) and {stamps} stamp(s) imported.").format(
+            pages=report["pages"], stamps=report["stamps"])]
+        if report["missing_images"]:
+            lines.append("")
+            lines.append(_("Images not found:"))
+            lines += ["  • " + p for p in report["missing_images"][:10]]
+            if len(report["missing_images"]) > 10:
+                lines.append("  …")
+        if report["unsupported"]:
+            lines.append("")
+            lines.append(_("Ignored commands:"))
+            lines += ["  • {0} ({1}x)".format(c, n) for c, n in sorted(report["unsupported"].items())]
+        if report["notes"]:
+            lines.append("")
+            lines += ["  • " + n for n in report["notes"]]
+        QMessageBox.information(self, _("Import AlbumEasy"), "\n".join(lines))
 
     def renameTabs(self, *args):
         """Sequentially rename all tabs, appending an asterisk indicator if modified."""

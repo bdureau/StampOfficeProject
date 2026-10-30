@@ -45,7 +45,7 @@ msgstr "Version:"
 
 #: SDDialogs.py:60 SDDialogs.py:136
 msgid "Catalogue System:"
-msgstr "Systéme de Catalogue:"
+msgstr "Système de Catalogue:"
 
 #: SDDialogs.py:63
 msgid "French"
@@ -61,7 +61,7 @@ msgstr "Langue des données:"
 
 #: SDDialogs.py:76
 msgid "Column missing in database db_info table."
-msgstr "La colonne est absente de la table db_info"
+msgstr "La colonne est absente de la table db_info."
 
 #: SDDialogs.py:87 SDDialogs.py:144
 msgid "OK"

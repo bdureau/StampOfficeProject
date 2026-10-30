@@ -13,7 +13,7 @@ from pathlib import Path
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QTextBrowser, QDialogButtonBox
+    QTextBrowser, QDialogButtonBox, QPushButton
 )
 from PyQt6.QtGui import QPixmap, QFont
 
@@ -35,14 +35,14 @@ class SCAboutDlg(QDialog):
         self.setWindowTitle(_("About StampCatalogue"))
         self.resize(580, 480)
 
-        # Résolution dynamique du dossier d'Images
+        # Dynamically resolve images directory
         self.base_dir = self._get_app_dir()
         self.images_dir = self._get_resource_dir("Images")
 
         self.createDlg()
 
     def _get_app_dir(self) -> Path:
-        """Détermine le répertoire racine de l'application."""
+        """Determine the root application directory."""
         if getattr(sys, 'frozen', False):
             return Path(sys.executable).resolve().parent
         else:
@@ -55,7 +55,7 @@ class SCAboutDlg(QDialog):
             return script_dir
 
     def _get_resource_dir(self, folder_name: str) -> Path:
-        """Résout le dossier de ressources spécifié."""
+        """Resolve the specified resource directory."""
         res_dir = self.base_dir / folder_name
         if res_dir.exists():
             return res_dir
@@ -64,7 +64,7 @@ class SCAboutDlg(QDialog):
     def createDlg(self):
         main_layout = QVBoxLayout()
 
-        # En-tête : Icône + Titre
+        # Header: Icon + Title
         header_layout = QHBoxLayout()
 
         logo = QLabel()
@@ -87,21 +87,23 @@ class SCAboutDlg(QDialog):
 
         main_layout.addLayout(header_layout)
 
-        # Zone de texte HTML défilante
+        # Scrollable HTML text area
         text_browser = QTextBrowser()
         text_browser.setOpenExternalLinks(True)
         text_browser.setHtml(self.get_about_text_html())
         main_layout.addWidget(text_browser)
 
-        # Bouton OK
-        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        # Translatable OK button
+        button_box = QDialogButtonBox()
+        ok_button = QPushButton(_("OK"))
+        button_box.addButton(ok_button, QDialogButtonBox.ButtonRole.AcceptRole)
         button_box.accepted.connect(self.accept)
         main_layout.addWidget(button_box)
 
         self.setLayout(main_layout)
 
     def get_about_text_html(self) -> str:
-        """Retourne la description formatée en HTML selon la langue sélectionnée."""
+        """Return the HTML-formatted description according to the selected language."""
         lang = get_language()
 
         base_css = """

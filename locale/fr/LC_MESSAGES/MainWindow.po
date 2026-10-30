@@ -33,7 +33,7 @@ msgid ""
 "The album '{album}' has been modified.\n"
 "Do you want to save your changes before proceeding?"
 msgstr ""
-"Cet album'{album}' a été modiifé.\n"
+"Cet album \'{album}\' a été modifié.\n"
 "Voulez vous sauvegarder vos changements avant de continuer?"
 
 #: MainWindow.py:181 MainWindow.py:445
@@ -311,7 +311,7 @@ msgstr "Oui"
 
 #: MainWindow.py:582
 msgid "&No"
-msgstr "Non"
+msgstr "&Non"
 
 #: MainWindow.py:681
 msgid "Album:"
@@ -416,10 +416,10 @@ msgstr "Import de AlbumEasy"
 #: MainWindow.py:1744
 msgid ""
 "Do you want to replace the actual album ?\n"
-"(Choose \'No\' to append it)"
+"(Choose 'No' to append it)"
 msgstr ""
 "Voulez vous remplacer l\'album courant ?\n"
-"(Choisir\'Non\' pour l\'ajouter)"
+"(Choisir \'Non\' pour l\'ajouter)"
 
 #: MainWindow.py:890
 msgid "About Stamp Album"

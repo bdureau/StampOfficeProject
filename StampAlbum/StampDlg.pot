@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-29 23:22+0100\n"
+"POT-Creation-Date: 2026-10-30 22:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,87 +31,87 @@ msgstr ""
 msgid "Stamp nbr:"
 msgstr ""
 
-#: StampDlg.py:176
+#: StampDlg.py:175
 msgid "Use description 1"
 msgstr ""
 
-#: StampDlg.py:177
+#: StampDlg.py:176
 msgid "Use description 2"
 msgstr ""
 
-#: StampDlg.py:178
+#: StampDlg.py:177
 msgid "Use description 1 and 2"
 msgstr ""
 
-#: StampDlg.py:179
+#: StampDlg.py:178
 msgid "No description"
 msgstr ""
 
-#: StampDlg.py:183
+#: StampDlg.py:182
 msgid "Select the description to use:"
 msgstr ""
 
-#: StampDlg.py:199
+#: StampDlg.py:198
 msgid "Stamp type:"
 msgstr ""
 
-#: StampDlg.py:200
+#: StampDlg.py:199
 msgid "Selected country:"
 msgstr ""
 
-#: StampDlg.py:201
+#: StampDlg.py:200
 msgid "Witdh:"
 msgstr ""
 
-#: StampDlg.py:202
+#: StampDlg.py:201
 msgid "Height:"
 msgstr ""
 
-#: StampDlg.py:203
+#: StampDlg.py:202
 msgid "Year:"
 msgstr ""
 
-#: StampDlg.py:204
+#: StampDlg.py:203
 msgid "Value:"
 msgstr ""
 
-#: StampDlg.py:205
+#: StampDlg.py:204
 msgid "Stamp description:"
 msgstr ""
 
-#: StampDlg.py:206
+#: StampDlg.py:205
 msgid "Stamp description2:"
 msgstr ""
 
-#: StampDlg.py:211
+#: StampDlg.py:210
 msgid "&Create"
 msgstr ""
 
-#: StampDlg.py:214
+#: StampDlg.py:213
 msgid "&Create from size"
 msgstr ""
 
-#: StampDlg.py:217
+#: StampDlg.py:216
 msgid "&Done"
 msgstr ""
 
-#: StampDlg.py:254
+#: StampDlg.py:252
 msgid "No database"
 msgstr ""
 
-#: StampDlg.py:255
+#: StampDlg.py:253
 msgid "No country database was found in the 'Databases' folder."
 msgstr ""
 
-#: StampDlg.py:265 StampDlg.py:485
+#: StampDlg.py:263 StampDlg.py:476
 msgid "Database error"
 msgstr ""
 
-#: StampDlg.py:675
+#: StampDlg.py:663
 msgid "Invalid size"
 msgstr ""
 
-#: StampDlg.py:675
+#: StampDlg.py:663
 msgid "Width and height must be numbers (mm)."
 msgstr ""
 

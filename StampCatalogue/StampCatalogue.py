@@ -114,7 +114,13 @@ class ConfigurationDialog(QDialog):
 
         layout.addLayout(form)
 
-        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        #buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons = QDialogButtonBox()
+        btn_ok = buttons.addButton(QDialogButtonBox.StandardButton.Ok)
+        btn_ok.setText(_("OK"))
+        btn_cancel = buttons.addButton(QDialogButtonBox.StandardButton.Cancel)
+        btn_cancel.setText(_("Cancel"))
+
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
@@ -284,7 +290,13 @@ class CreateCollectionDialog(QDialog):
 
         layout.addLayout(form)
 
-        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        #buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons = QDialogButtonBox()
+        btn_ok = buttons.addButton(QDialogButtonBox.StandardButton.Ok)
+        btn_ok.setText(_("OK"))
+        btn_cancel = buttons.addButton(QDialogButtonBox.StandardButton.Cancel)
+        btn_cancel.setText(_("Cancel"))
+
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
@@ -616,9 +628,6 @@ class MainWindow(QMainWindow):
         doc_dir = self.base_dir / "Help"
 
         # Try language-specific file, fall back to English
-        # manual_path = doc_dir / f"manual_{lang}.pdf"
-        # if not manual_path.exists():
-        #     manual_path = doc_dir / "manual_en.pdf"
         if lang == "fr":
             help_file = doc_dir / "StampCatalogue Documentation Utilisateur19-10-2026.pdf"
         else:
@@ -638,7 +647,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(
                 self,
                 _("Manual Not Found"),
-                f"{_('User manual file not found:')}\n{manual_path}"
+                f"{_('User manual file not found:')}\n{help_file}"
             )
 
     def _load_collections(self):

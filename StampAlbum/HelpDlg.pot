@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-29 23:22+0100\n"
+"POT-Creation-Date: 2026-10-30 22:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,11 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: HelpDlg.py:23
+#: HelpDlg.py:24
 msgid "Application Help"
+msgstr ""
+
+#: HelpDlg.py:44
+msgid "OK"
 msgstr ""
 

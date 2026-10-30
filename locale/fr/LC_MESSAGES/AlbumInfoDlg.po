@@ -7,7 +7,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Current Album Info"
-msgstr "Informations sur l'album"
+msgstr "Informations sur l\'album"
 
 msgid "Creation date:"
 msgstr "Date de création:"

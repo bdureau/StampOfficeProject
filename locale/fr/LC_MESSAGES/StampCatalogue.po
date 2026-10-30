@@ -27,6 +27,14 @@ msgstr "Langue:"
 msgid "Database Type:"
 msgstr "Type de Base:"
 
+#: StampCatalogue.py:120 StampCatalogue.py:296
+msgid "OK"
+msgstr "Confirmer"
+
+#: StampCatalogue.py:122 StampCatalogue.py:298
+msgid "Cancel"
+msgstr "Annuler"
+
 #: StampCatalogue.py:242 StampCatalogue.py:246 StampCatalogue.py:735
 #: StampCatalogue.py:741
 msgid "All"
@@ -82,7 +90,7 @@ msgstr "Configuration..."
 
 #: StampCatalogue.py:408
 msgid "Configure application settings"
-msgstr "Configurer les paramétres de l'\application"
+msgstr "Configurer les paramètres de l'\application"
 
 #: StampCatalogue.py:413
 msgid "User Manual"
@@ -223,11 +231,11 @@ msgstr "Commandé"
 
 #: StampCatalogue.py:571 StampCatalogue.py:810
 msgid "Mint Never Hinged (** MNH)"
-msgstr "Neuf sans charnière"
+msgstr "Neuf sans charnière (**)"
 
 #: StampCatalogue.py:572
 msgid "Mint Hinged (* MH)"
-msgstr "Neuf avec charnière"
+msgstr "Neuf avec charnière (*)"
 
 #: StampCatalogue.py:573
 msgid "Used (Cancelled)"
@@ -294,7 +302,7 @@ msgstr ""
 "- Track stamp ownership status, condition, purchase price, and notes.\n"
 "- Export mancolists (missing stamps) directly to Excel.\n"
 "\n"
-"Author: Boris du Reau \n"
+"Auteur: Boris du Reau \n"
 "Year: 2026"
 
 #: StampCatalogue.py:655
