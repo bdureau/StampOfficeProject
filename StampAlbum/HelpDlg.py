@@ -6,6 +6,7 @@ Displays local HTML help documentation adapted to the active locale language.
 
 import gettext
 from pathlib import Path
+from PyQt6.QtCore import QUrl, QLocale
 from PyQt6.QtWidgets import (
     QDialog, QTextBrowser,
     QFormLayout, QDialogButtonBox
@@ -30,15 +31,18 @@ class HelpDlg(QDialog):
         lang = QLocale.system().name()[:2]
         help_path = Path(f"Help/stamp_album_help_{lang}.html")
 
-        #output.setSource(QtCore.QUrl.fromLocalFile("Help/stamp_album_help.html"))
         # Fallback to default if language file does not exist
         if not help_path.exists():
             help_path = Path("../Help/stamp_album_help.html")
 
         output.setSource(QUrl.fromLocalFile(str(help_path)))
 
-        # ok /cancel button
+        # OK button with localized text
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        ok_btn = bb.button(QDialogButtonBox.StandardButton.Ok)
+        if ok_btn:
+            ok_btn.setText(_("OK"))
+
         bb.accepted.connect(self.accept)
 
         flo = QFormLayout()

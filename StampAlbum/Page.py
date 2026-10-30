@@ -35,9 +35,9 @@ _ = translate.gettext
 
 def undoable_move(text):
     """
-    Décorateur pour les fonctions d'alignement / distribution / centrage :
-    mémorise la position des objets avant l'opération et pousse un MoveCommand
-    unique dans l'historique pour les objets réellement déplacés.
+        Decorator for alignment / distribution / centering functions:
+        records item positions prior to operation and pushes a single MoveCommand
+        onto the history stack for items that actually moved.
     """
     def decorator(func):
         @functools.wraps(func)
@@ -122,7 +122,7 @@ class Page(QGraphicsScene):
         self.album_language = "fr"
 
     def addImageAt(self, fileName, x, y):
-        """Crée et place une image à des coordonnées précises de la scène avec Undo."""
+        """Create and place an image at exact scene coordinates with Undo support."""
         if fileName:
             pixmap = QPixmap(fileName)
             if not pixmap.isNull():
@@ -185,8 +185,8 @@ class Page(QGraphicsScene):
 
     def apply_page_layout(self, printer):
         """
-        Applique au QPrinter le format papier, l'orientation et des marges nulles
-        correspondant à cette page (A4 ou Letter, portrait ou paysage).
+        Apply paper format, orientation, and zero margins matching this page
+        to the QPrinter (A4 or Letter, portrait or landscape).
         """
         size_id = QPageSize.PageSizeId.Letter if self.paper_format == "Letter" else QPageSize.PageSizeId.A4
         orientation = (QPageLayout.Orientation.Portrait if self.pageType == "portrait"
@@ -196,7 +196,7 @@ class Page(QGraphicsScene):
         printer.setPageLayout(layout)
 
     def hiddenGuides(self):
-        """Désélectionne tout et cache les guides ; retourne la liste à réafficher."""
+        """Deselect all items and hide guidelines; return the list to restore."""
         for item in self.selectedItems():
             item.setSelected(False)
         guides = [it for it in self.items() if it.data(0) == "guideLine"]
@@ -205,21 +205,21 @@ class Page(QGraphicsScene):
         return guides
 
     def renderToPrinter(self, painter, printer):
-        """Rend la page entière sur le painter à la résolution de l'imprimante."""
+        """Render the entire page onto the painter at printer resolution."""
         scale = printer.resolution() / 96.0
         source = QtCore.QRectF(0, 0, self.width(), self.height())
         target = QRectF(0, 0, source.width() * scale, source.height() * scale)
 
-        # Sauvegarde du fond actuel
+        # Save current background brush
         saved_brush = self.backgroundBrush()
 
         guides = self.hiddenGuides()
         try:
-            # Force un fond blanc pur pour l'impression
+            # Force pure white background for printing
             self.setBackgroundBrush(QBrush(Qt.GlobalColor.white))
             self.render(painter, target, source)
         finally:
-            # Restaure le fond (avec grille s'il y en avait une) et réaffiche les guides
+            # Restore background (with grid if active) and show guidelines again
             self.setBackgroundBrush(saved_brush)
             for g in guides:
                 g.show()
@@ -230,7 +230,7 @@ class Page(QGraphicsScene):
             super().addItem(item)
 
     def removeItemNative(self, item):
-        """Suppression directe de la scène sans ajouter de commande dans l'historique."""
+        """Remove item directly from scene without pushing an Undo command."""
         if item.scene() == self:
             super().removeItem(item)
 
@@ -284,10 +284,10 @@ class Page(QGraphicsScene):
         textLabel = QGraphicsTextItem(text)
         textLabel.setData(0, labelType)
 
-        # Si aucune police n'est spécifiée, on récupère la police par défaut de la configuration
+        # If no font is specified, load default font from configuration
         if font is None:
             default_font_family = get_config_value('default font', 'Arial')
-            font = QFont(default_font_family, 10)  # On applique la famille configurée
+            font = QFont(default_font_family, 10)  # Apply configured font family
 
         textLabel.setFont(font)
         textLabel.setTextWidth(textLabel.boundingRect().size().width())
@@ -309,36 +309,6 @@ class Page(QGraphicsScene):
         )
 
         self.addItemWithUndo(textLabel, _("Add Text"))
-
-    def addRichText_old2(self, html_content="", x=50, y=50, label_type="richTextLabel"):
-        """Add a rich-text block supporting HTML content."""
-        text_item = QGraphicsTextItem()
-        text_item.setData(0, label_type)
-
-        if html_content:
-            text_item.setHtml(html_content)
-        else:
-            # Récupération de la police par défaut configurée
-            default_font_family = get_config_value('default font', 'Sans-Serif')
-            text_item.setHtml(
-                f"<p style='font-family:{default_font_family}; font-size:12pt;'>Double-click to edit rich text...</p>"
-            )
-
-        text_item.setTextWidth(200)
-        text_item.setPos(x, y)
-
-        text_item.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
-        text_item.setFlags(
-            QGraphicsTextItem.GraphicsItemFlag.ItemIsMovable |
-            QGraphicsTextItem.GraphicsItemFlag.ItemIsSelectable
-        )
-
-        if hasattr(self, 'addItemWithUndo'):
-            self.addItemWithUndo(text_item, _("Add Rich Text"))
-        else:
-            self.addItem(text_item)
-
-        return text_item
 
     def addRichText(self, html_content="", x=50, y=50, label_type="richTextLabel"):
         """Add a rich-text block supporting HTML content."""
@@ -370,22 +340,12 @@ class Page(QGraphicsScene):
 
         return text_item
 
-    def editRichText_old(self, item):
-        """Open the rich text dialog editor for an existing text block."""
-        try:
-            from RichTextDlg import RichTextDlg
-            lang = getattr(self, "album_language", "fr")
-            dlg = RichTextDlg(item)
-            if dlg.exec() == 1:
-                item.setHtml(dlg.get_html())
-        except Exception as e:
-            print(f"Error editing rich text: {e}")
 
     def editRichText(self, item):
         """Open the rich text dialog editor for an existing text block."""
         try:
             from RichTextDlg import RichTextDlg
-            # Récupère la langue stockée sur la page, avec repli sécurisé sur 'fr'
+            # Retrieve language stored on the page, with safe fallback to 'fr'
             lang = getattr(self, "album_language", "fr")
             dlg = RichTextDlg(item, album_language=lang)
             if dlg.exec() == 1:
@@ -399,55 +359,6 @@ class Page(QGraphicsScene):
         if items:
             self.undoStack.push(DeleteItemsCommand(self, items, _("Clear page")))
 
-
-    def editObject_old(self, item=None):
-        """Edit currently selected scene item or the item passed directly."""
-        top_item = item
-
-        if top_item is None:
-            items = self.selectedItems()
-            if len(items) != 1:
-                return
-            top_item = items[0]
-            while top_item.parentItem() is not None:
-                top_item = top_item.parentItem()
-
-        if top_item is None:
-            return
-
-        try:
-            raw_data = top_item.data(0)
-            data_type = str(raw_data) if raw_data is not None else ""
-
-            # 1. Ignorer les bordures de page
-            if data_type == "borderGroup":
-                return
-
-            # 2. Cas du Timbre Texte Enrichi (RichTextStamp)
-            if data_type == "richTextStampGroup":
-                from RichTextStampDlg import RichTextStampDlg
-                dlg = RichTextStampDlg(scene=self, stampItem=top_item)
-                dlg.exec()
-                return
-
-            # 3. Cas du bloc Rich Text libre
-            if data_type == "richTextLabel":
-                self.editRichText(top_item)
-
-            # 4. Cas du Timbre traditionnel
-            elif data_type == "stampGroup" or top_item.type() == 10:
-                self.editStamp(top_item)
-
-            # 5. Textes simples
-            elif (
-                    data_type in ["textLabel", "labelPageNbr", "labelCopyRight", "labelYear"]
-                    or isinstance(top_item, QGraphicsTextItem)
-                    or top_item.type() == 8
-            ):
-                self.editLabel(top_item)
-
-        except Exception as e:
-            print(f"Error during item editing: {e}")
 
     def editObject(self, item=None):
         """Edit currently selected scene item or the item passed directly."""
@@ -468,28 +379,28 @@ class Page(QGraphicsScene):
             raw_data = top_item.data(0)
             data_type = str(raw_data) if raw_data is not None else ""
 
-            # 1. Ignorer les bordures de page
+            # 1. Ignore page borders
             if data_type == "borderGroup":
                 return
 
-            # 2. Cas du Timbre Texte Enrichi (RichTextStamp)
+            # 2. Case of Rich Text Stamp (RichTextStamp)
             if data_type == "richTextStampGroup":
                 from RichTextStampDlg import RichTextStampDlg
                 dlg = RichTextStampDlg(scene=self, stampItem=top_item)
                 dlg.exec()
                 return
 
-            # 3. Cas du bloc Rich Text libre (DOIT ETRE AVANT LES TEXTES SIMPLES)
+            # 3. Case of standalone rich text block (MUST BE EVALUATED BEFORE SIMPLE TEXTS)
             if data_type == "richTextLabel":
                 self.editRichText(top_item)
                 return
 
-            # 4. Cas du Timbre traditionnel
+            # 4. Case of traditional stamp
             elif data_type == "stampGroup" or top_item.type() == 10:
                 self.editStamp(top_item)
                 return
 
-            # 5. Textes simples
+            # 5. Simple text labels
             elif (
                     data_type in ["textLabel", "labelPageNbr", "labelCopyRight", "labelYear"]
                     or isinstance(top_item, QGraphicsTextItem)
@@ -571,7 +482,7 @@ class Page(QGraphicsScene):
             stampObj['stampBox_boxWidth'] = width
             height = ret[1]
             stampObj['stampBox_boxHeight'] = height
-            # image pleine résolution (et non la vignette 200 px affichée dans le dialogue)
+            # Full-resolution pixmap (not the 200px thumbnail displayed in dialog)
             stampObj['pixmapItem_image'] = dlg.getPixmap()
 
             stamp.updateStamp(stampItem, stampObj, self)
@@ -581,7 +492,7 @@ class Page(QGraphicsScene):
         printer = QPrinter(QPrinter.PrinterMode.HighResolution)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setOutputFileName(fileName2)
-        # Format (A4/Letter), orientation et marges AVANT de créer le QPainter
+        # Apply layout format (A4/Letter), orientation, and margins BEFORE creating QPainter
         self.apply_page_layout(printer)
 
         p = QPainter(printer)
@@ -657,16 +568,16 @@ class Page(QGraphicsScene):
 
     def _get_bottom_footer_y(self, offset_above_border=18.0) -> float:
         """
-        Calcule la position Y idéale du pied de page (copyright, numéro de page)
-        pour qu'il se place légèrement au-dessus du bas du cadre.
+            Compute optimal Y position for footer (copyright, page number)
+            so that it sits slightly above the lower edge of the border frame.
         """
         border_item = next((it for it in self.items() if it.data(0) == "borderGroup"), None)
         if border_item:
-            # Récupère le bas exact du cadre/bordure
+            # Retrieve exact bottom edge of border/frame
             border_bottom = border_item.sceneBoundingRect().bottom()
             return border_bottom - offset_above_border
         else:
-            # S'il n'y a pas encore de cadre, on se base sur la hauteur de la scène
+            # Fall back to scene height if border is not present
             px_h = self.sceneRect().height()
             return px_h - 50.0
 
@@ -677,7 +588,7 @@ class Page(QGraphicsScene):
         font = QFont()
         font.setPointSize(6)
 
-        # Calcul dynamique de la position Y et X par rapport au cadre
+        # Dynamic calculation of Y and X positions relative to the border
         y_pos = self._get_bottom_footer_y(offset_above_border=28.0)
 
         border_item = next((it for it in self.items() if it.data(0) == "borderGroup"), None)
@@ -714,7 +625,7 @@ class Page(QGraphicsScene):
 
         border_item = next((it for it in self.items() if it.data(0) == "borderGroup"), None)
         if border_item:
-            # Calcule la position X par rapport au bord droit du cadre
+            # Calculate X position relative to right edge of border
             border_right = border_item.sceneBoundingRect().right()
             x_pos = border_right - textWidth - 10.0
         else:
@@ -807,75 +718,15 @@ class Page(QGraphicsScene):
                 if it2.isSelected() and it2.parentItem() is None:
                     it2.setPos(topX - it2.boundingRect().size().width(), it2.y())
 
-    @undoable_move("Distribute Horizontally")
-    def distributeHorizontally_old(self):
-        # Sécurité : nécessite au moins 3 objets pour distribuer horizontalement
-        if self.countSelectedItems() < 3:
-            return
-
-        itemLength = 0
-        minX = 0
-        maxX = 0
-        nbrItems = 0
-        posX = []
-
-        for it in self.items():
-            if it.isSelected() and it.parentItem() is None:
-                nbrItems += 1
-                if it.type().real == 8:
-                    if minX == 0:
-                        minX = it.x()
-                    if it.x() < minX:
-                        minX = it.x()
-                    if (it.x() + it.boundingRect().size().width()) > maxX:
-                        maxX = it.x() + it.boundingRect().size().width()
-                elif it.type().real == 10 and it.data(0) == "stampGroup":
-                    stampIts = it.childItems()
-                    for stampIt in stampIts:
-                        if stampIt.type().real == 3:
-                            if stampIt.x() < 0:
-                                if minX == 0:
-                                    minX = it.x() + stampIt.x()
-                                if (it.x() - stampIt.x()) < minX:
-                                    minX = it.x() + stampIt.x()
-                                if (it.x() + stampIt.x() + it.boundingRect().size().width()) > maxX:
-                                    maxX = it.x() + it.boundingRect().size().width()
-                            else:
-                                if minX == 0:
-                                    minX = it.x()
-                                if it.x() < minX:
-                                    minX = it.x()
-                                if (it.x() + it.boundingRect().size().width()) > maxX:
-                                    maxX = it.x() + it.boundingRect().size().width()
-
-                posX.append(it.x())
-                itemLength += it.boundingRect().size().width()
-
-        if nbrItems > 2 and (nbrItems - 1) > 0:
-            space = (maxX - minX - itemLength) / (nbrItems - 1)
-            posX.sort()
-
-            nextX = minX
-            for px in posX:
-                for i in self.items():
-                    if i.isSelected() and i.parentItem() is None and px == i.x():
-                        i.setPos(nextX, i.y())
-                        if i.type().real == 8:
-                            nextX += i.boundingRect().size().width() + space
-                        elif i.type().real == 10 and i.data(0) == "stampGroup":
-                            stampItems = i.childItems()
-                            for stampItem in stampItems:
-                                if stampItem.type().real == 3:
-                                    nextX += i.boundingRect().size().width() + space
 
     @undoable_move("Distribute Horizontally")
     def distributeHorizontally(self):
-        """Distribue équitablement l'espace horizontal entre les objets sélectionnés."""
+        """Evenly distribute horizontal space between selected items."""
         items = [it for it in self.selectedItems() if it.parentItem() is None]
         if len(items) < 3:
             return
 
-        # Tri des objets de gauche à droite selon leur bord gauche
+        # Sort items left-to-right by their left bounding edge
         items.sort(key=lambda it: it.sceneBoundingRect().left())
 
         min_x = items[0].sceneBoundingRect().left()
@@ -884,7 +735,7 @@ class Page(QGraphicsScene):
         total_items_width = sum(it.sceneBoundingRect().width() for it in items)
         available_space = max_x - min_x - total_items_width
 
-        # Espace entre chaque objet
+        # Distance spacing between each item
         space = available_space / (len(items) - 1)
 
         current_left = min_x
@@ -896,7 +747,7 @@ class Page(QGraphicsScene):
 
     @undoable_move("Distribute Vertically")
     def distributeVertically(self):
-        # Sécurité : nécessite au moins 3 objets pour distribuer verticalement
+        # Safety check: requires at least 3 items to distribute vertically
         if self.countSelectedItems() < 3:
             return
 
@@ -931,7 +782,7 @@ class Page(QGraphicsScene):
 
     @undoable_move("Center Horizontally")
     def centerHorizontally(self):
-        """Centre horizontalement chaque objet sélectionné par rapport à la page ou la bordure."""
+        """Center each selected item horizontally relative to page or border frame."""
         selected_items = [it for it in self.selectedItems() if it.parentItem() is None]
         if not selected_items:
             return
@@ -945,7 +796,7 @@ class Page(QGraphicsScene):
 
         for it in selected_items:
             rect = it.sceneBoundingRect()
-            # Déplacement requis pour aligner le centre de l'objet sur le centre cible
+            # Offset needed to align the item center with the target horizontal center
             dx = center_x - (rect.left() + rect.width() / 2.0)
             it.setPos(it.x() + dx, it.y())
     @undoable_move("Center Horizontally")
@@ -1006,12 +857,12 @@ class Page(QGraphicsScene):
             super().mouseDoubleClickEvent(event)
 
     def mousePressEvent(self, event):
-        """Gère la sélection unitaire ou multiple par Ctrl+Clic et le déplacement."""
+        """Handle single and multi-selection via Ctrl+Click and drag initialization."""
         scene_pos = event.scenePos()
         self._press_scene_pos = scene_pos
         items_under_cursor = self.items(scene_pos)
 
-        # 1. Identifier le premier objet sous le curseur (en ignorant la bordure)
+        # 1. Identify primary item under cursor (ignoring border frame)
         target_item = None
         for item in items_under_cursor:
             top_item = item
@@ -1027,7 +878,7 @@ class Page(QGraphicsScene):
 
         if event.button() == Qt.MouseButton.LeftButton:
             if is_ctrl:
-                # Mode Ctrl maintenu : bascule l'état (sélectionne ou désélectionne)
+                # Ctrl held down: toggle selection status
                 if target_item is not None:
                     target_item.setSelected(not target_item.isSelected())
 
@@ -1035,25 +886,25 @@ class Page(QGraphicsScene):
                     it: it.pos() for it in self.selectedItems() if it.parentItem() is None
                 }
                 event.accept()
-                return  # On sort pour empêcher Qt d'interférer avec les sous-éléments
+                return  # Prevent Qt from interfering with child items
 
             else:
-                # Clic simple sans Ctrl
+                # Normal left click without Ctrl
                 if target_item is not None:
                     if not target_item.isSelected():
                         # Si l'objet n'était pas sélectionné, il devient le seul sélectionné
                         self.clearSelection()
                         target_item.setSelected(True)
                     else:
-                        # S'il était déjà sélectionné parmi d'autres, on garde la sélection
-                        # en prévision d'un déplacement groupé, mais on note l'item
+                        # Already selected among others: retain selection for group dragging,
+                        # but track item in case it's a stationary click
                         if len(self.selectedItems()) > 1:
                             self._single_click_item = target_item
                 else:
-                    # Clic dans le vide ou sur la bordure : tout désélectionner
+                    # Click on empty background or border frame: clear selection
                     self.clearSelection()
 
-        # Enregistrement des positions initiales pour l'Undo (MoveCommand)
+        # Save initial positions for Undo command (MoveCommand)
         self.mouse_press_positions = {
             item: item.pos() for item in self.selectedItems() if item.parentItem() is None
         }
@@ -1062,8 +913,8 @@ class Page(QGraphicsScene):
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
 
-        # Si on a cliqué sans Ctrl sur un objet déjà dans un groupe sans le déplacer,
-        # on réduit la sélection à ce seul objet
+        # If an item within a multi-selection was clicked without dragging,
+        # narrow selection down to only that item
         if hasattr(self, '_single_click_item') and self._single_click_item is not None:
             if hasattr(self, '_press_scene_pos'):
                 drag_distance = (event.scenePos() - self._press_scene_pos).manhattanLength()
@@ -1072,7 +923,7 @@ class Page(QGraphicsScene):
                     self._single_click_item.setSelected(True)
             self._single_click_item = None
 
-        # Gestion de l'historique d'annulation (Undo)
+        # Record moved items in the Undo stack
         moved_items = []
         old_positions = []
 
@@ -1369,12 +1220,12 @@ class Page(QGraphicsScene):
             self.undoStack.push(cmd)
 
     def clearGuides(self):
-        """Supprime toutes les lignes guides de la page."""
+        """Remove all guidelines from the page."""
         guides = [it for it in self.items() if it.data(0) == "guideLine"]
         for g in guides:
             self.removeItem(g)
 
-    def replaceBorder(self, new_style):
+    def replaceBorder_old(self, new_style):
         """Remplace la bordure existante par un nouveau style, ou en crée une si elle n'existe pas."""
         old_border = None
 
@@ -1400,6 +1251,45 @@ class Page(QGraphicsScene):
         else:
             # Si aucune bordure n'était présente, on en génère une standard
             # format de CETTE page (et non celui de la configuration)
+            w_mm, h_mm = self.page_width_mm, self.page_height_mm
+
+            if self.pageType == "portrait":
+                border_w = (w_mm - 33.0) / (25.4 / 96.0)
+                border_h = (h_mm - 25.0) / (25.4 / 96.0)
+                margin_l = 19.0 / (25.4 / 96.0)
+                self.addBorder(border_w, border_h, margin_l, 0, 0, 0, new_style)
+            else:
+                border_w = (h_mm - 25.0) / (25.4 / 96.0)
+                border_h = (w_mm - 33.0) / (25.4 / 96.0)
+                margin_l = (((h_mm / (25.4 / 96.0)) - border_w) / 2)
+                margin_t = 19.0 / (25.4 / 96.0)
+                self.addBorder(border_w, border_h, margin_l, 0, margin_t, 0, new_style)
+
+    def replaceBorder(self, new_style):
+        """Replace existing border with a new style, or create one if none exists."""
+        old_border = None
+
+        # Search for current border item on the page
+        for item in self.items():
+            if item.data(0) == "borderGroup":
+                old_border = item
+                break
+
+        if old_border:
+            # Retrieve dimensions and coordinates of previous border
+            w = old_border.data(1)
+            h = old_border.data(2)
+            pos = old_border.pos()
+
+            # Group deletion + addition: a single Ctrl+Z restores the previous border
+            self.undoStack.beginMacro(_("Change bordure"))
+            self.undoStack.push(DeleteItemsCommand(self, [old_border]))
+            new_border = PageBorder(w, h, style=new_style)
+            new_border.setPos(pos)
+            self.addItemWithUndo(new_border, _("Change bordure"))
+            self.undoStack.endMacro()
+        else:
+            # Generate a default border using THIS page's dimensions if none exists
             w_mm, h_mm = self.page_width_mm, self.page_height_mm
 
             if self.pageType == "portrait":

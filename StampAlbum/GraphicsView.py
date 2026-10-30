@@ -15,7 +15,7 @@ from PyQt6.QtGui import QFont, QTextCursor, QTextBlockFormat, QPen, QColor, QSho
 
 custom_mimeType = "application/x-qgraphicsitems"
 
-# Décalage appliqué aux objets collés (en pixels scène) pour qu'ils ne recouvrent pas l'original
+# Offset applied to pasted items (in scene pixels) so they do not overlap the original
 PASTE_OFFSET = 20.0
 
 
@@ -292,7 +292,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
              activated=self.paste_items,
         )
 
-        # Autoriser le glisser-déposer sur la vue
+        # Allow drag and drop on the view
         self.setAcceptDrops(True)
 
 
@@ -309,9 +309,8 @@ class GraphicsView(QtWidgets.QGraphicsView):
             shadow_rect = scene_rect.translated(4, 4)
             painter.fillRect(shadow_rect, QtGui.QColor("#404040"))
 
-            # 3. Utiliser le backgroundBrush de la scène (blanc ou grille) au lieu d'un blanc fixe
+            # 3. Use the scene backgroundBrush (white or grid) instead of a fixed white
             painter.fillRect(scene_rect, scene.backgroundBrush())
-            #painter.fillRect(scene_rect, Qt.GlobalColor.white)
 
             # 4. Draw a fine grey border around the white page
             painter.setPen(QtGui.QPen(QtGui.QColor("#b0b0b0"), 1))
@@ -321,13 +320,13 @@ class GraphicsView(QtWidgets.QGraphicsView):
         """Set viewport zoom factor bounded between 25% (0.25) and 200% (2.0)."""
         factor = max(0.25, min(2.0, factor))
 
-        # Évite toute ré-exécution inutile
+        # Avoid any unnecessary re-execution
         if abs(self.current_zoom - factor) < 0.001:
             return
 
         self.current_zoom = factor
 
-        # Application de la transformation
+        # Apply transformation
         t = QTransform()
         t.scale(factor, factor)
         self.setTransform(t)
@@ -366,7 +365,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
             if not pasted:
                 return
 
-            # Un seul Ctrl+Z annule tout le collage
+            # A single Ctrl+Z undoes the entire paste operation
             has_undo = hasattr(scene, "undoStack") and hasattr(scene, "addItemWithUndo")
             if has_undo:
                 scene.undoStack.beginMacro("Paste")
@@ -378,7 +377,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
             if has_undo:
                 scene.undoStack.endMacro()
 
-            # Sélectionner les objets collés pour pouvoir les déplacer immédiatement
+            # Select pasted items to allow immediate movement
             scene.clearSelection()
             for it in pasted:
                 it.setSelected(True)
@@ -387,12 +386,12 @@ class GraphicsView(QtWidgets.QGraphicsView):
         """Intercept double clicks at the viewport level before Qt unselects text items."""
         scene_pos = self.mapToScene(event.pos())
 
-        # Récupérer TOUS les items sous le curseur pour éviter de choper la bordure par erreur
+        # Retrieve ALL items under cursor to avoid inadvertently grabbing the border
         items_under_cursor = self.scene().items(scene_pos)
 
         target_item = None
         for item in items_under_cursor:
-            # On ignore les bordures de page et le fond si on cherche un objet cliquable
+            # Ignore page borders and background when searching for a clickable item
             top_item = item
             while top_item.parentItem() is not None:
                 top_item = top_item.parentItem()
@@ -400,9 +399,9 @@ class GraphicsView(QtWidgets.QGraphicsView):
             data_type = str(top_item.data(0)) if top_item.data(0) is not None else ""
             if data_type != "borderGroup":
                 target_item = top_item
-                break  # On a trouvé un élément prioritaire (texte, timbre, image...)
+                break  # Found a priority element (text, stamp, image...)
 
-        # Si aucun élément prioritaire n'est trouvé, on prend le premier s'il y en a un
+        # If no priority item is found, take the first one if available
         if not target_item and items_under_cursor:
             target_item = items_under_cursor[0]
             while target_item.parentItem() is not None:
@@ -443,7 +442,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
         super().mouseDoubleClickEvent(event)
 
     def dragEnterEvent(self, event: QtGui.QDragEnterEvent):
-        """Accepte le glisser si le contenu contient un fichier image valide."""
+        """Accept drag if contents contain a valid image file."""
         if event.mimeData().hasUrls():
             for url in event.mimeData().urls():
                 ext = url.toLocalFile().lower()
@@ -453,14 +452,14 @@ class GraphicsView(QtWidgets.QGraphicsView):
         event.ignore()
 
     def dragMoveEvent(self, event: QtGui.QDragMoveEvent):
-        """Maintient l'autorisation pendant le survol."""
+        """Maintain drag authorization while hovering."""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
         else:
             event.ignore()
 
     def dropEvent(self, event: QtGui.QDropEvent):
-        """Dépose l'image sur la scène à la position de la souris."""
+        """Drop the image onto the scene at mouse position."""
         if event.mimeData().hasUrls():
             scene_pos = self.mapToScene(event.position().toPoint())
             dropped = False
@@ -477,24 +476,24 @@ class GraphicsView(QtWidgets.QGraphicsView):
         event.ignore()
 
 class GuideLineItem(QtWidgets.QGraphicsLineItem):
-    """Repère visuel (ligne guide) non imprimable, déplaçable sur un seul axe."""
+    """Non-printable visual marker (guideline), movable along a single axis."""
 
     def __init__(self, orientation, pos_val):
         super().__init__()
         self.orientation = orientation
         self.setData(0, "guideLine")
 
-        # Style de la ligne guide (cyan pointillé)
+        # Guideline style (dashed cyan)
         pen = QtGui.QPen(QtGui.QColor(0, 200, 255, 200), 1.5, Qt.PenStyle.DashLine)
-        pen.setCosmetic(True)  # Reste toujours fine quel que soit le zoom
+        pen.setCosmetic(True)  # Always remains thin regardless of zoom level
         self.setPen(pen)
-        self.setZValue(1000)  # Toujours au-dessus des autres éléments
+        self.setZValue(1000)  # Always above other items
 
         self.setFlags(QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsMovable |
                       QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable |
                       QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges)
 
-        # Dimensions infinies factices
+        # Arbitrary pseudo-infinite dimensions
         if orientation == Qt.Orientation.Horizontal:
             self.setLine(-10000, 0, 10000, 0)
             self.setPos(0, pos_val)
@@ -505,7 +504,7 @@ class GuideLineItem(QtWidgets.QGraphicsLineItem):
             self.setCursor(Qt.CursorShape.SplitHCursor)
 
     def itemChange(self, change, value):
-        """Bloque le déplacement sur l'axe opposé."""
+        """Constrain movement on the opposite axis."""
         if change == QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange:
             new_pos = value
             if self.orientation == Qt.Orientation.Horizontal:
@@ -515,7 +514,7 @@ class GuideLineItem(QtWidgets.QGraphicsLineItem):
         return super().itemChange(change, value)
 
     def shape(self):
-        """Agrandit la zone de saisie pour attraper la ligne plus facilement à la souris."""
+        """Enlarge hit-test area to grab the line more easily with the mouse."""
         path = QtGui.QPainterPath()
         if self.orientation == Qt.Orientation.Horizontal:
             path.addRect(-10000, -5, 20000, 10)
@@ -525,7 +524,7 @@ class GuideLineItem(QtWidgets.QGraphicsLineItem):
 
 
 class RulerWidget(QtWidgets.QWidget):
-    """Règle millimétrée réagissant au zoom et au défilement."""
+    """Millimeter ruler that dynamically adjusts to zoom and scrolling."""
 
     def __init__(self, view, orientation, parent=None):
         super().__init__(parent)
@@ -537,7 +536,7 @@ class RulerWidget(QtWidgets.QWidget):
             self.setFixedWidth(20)
 
         self.setMouseTracking(True)
-        # Rafraîchir les règles au défilement
+        # Refresh rulers on viewport scroll
         self.view.verticalScrollBar().valueChanged.connect(self.update)
         self.view.horizontalScrollBar().valueChanged.connect(self.update)
 
@@ -590,9 +589,9 @@ class RulerWidget(QtWidgets.QWidget):
                 painter.drawLine(20 - length, int(screen_pos), 20, int(screen_pos))
 
     def mousePressEvent(self, event):
-        """Au clic sur la règle, on génère une ligne guide dans la scène."""
+        """Create a new guideline on the scene upon clicking the ruler."""
         if event.button() == Qt.MouseButton.LeftButton:
-            # Récupère l'origine visuelle de la vue
+            # Retrieve visual viewport origin in scene coordinates
             scene_pt = self.view.mapToScene(0, 0)
 
             if self.orientation == Qt.Orientation.Horizontal:

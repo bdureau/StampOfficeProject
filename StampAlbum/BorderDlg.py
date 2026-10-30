@@ -11,7 +11,7 @@ _ = translate.gettext
 
 
 class BorderDlg(QDialog):
-    """Dialogue permettant de choisir un nouveau style de bordure."""
+    """Dialog allowing the user to choose a new border style."""
 
     def __init__(self, current_style=None, parent=None):
         super().__init__(parent)
@@ -29,7 +29,7 @@ class BorderDlg(QDialog):
         self.combo.addItem(_("Greek (Notched)"), PageBorder.STYLE_GREEK)
         self.combo.addItem(_("Dentelle (Philately)"), PageBorder.STYLE_DENTELLE)
 
-        # Pré-sélectionne le style actuel de la page
+        # Preselect the page's current style
         if current_style:
             index = self.combo.findData(current_style)
             if index != -1:
@@ -39,7 +39,7 @@ class BorderDlg(QDialog):
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
 
-        # --- Traduction des boutons ---
+        # --- Button localization ---
         ok_button = self.buttonBox.button(QDialogButtonBox.StandardButton.Ok)
         if ok_button:
             ok_button.setText(_("OK"))
@@ -54,5 +54,5 @@ class BorderDlg(QDialog):
         layout.addWidget(self.buttonBox)
 
     def get_style(self):
-        """Retourne l'identifiant du style sélectionné."""
+        """Return the identifier of the selected border style."""
         return self.combo.currentData()

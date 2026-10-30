@@ -14,7 +14,7 @@ from pathlib import Path
 
 from SAAppPaths import get_app_dir, get_db_dir, get_db_type
 
-# pyodbc n'est nécessaire que pour Microsoft Access : on ne l'impose pas en mode sqlite
+# pyodbc is only required for Microsoft Access: we do not enforce it in sqlite mode
 try:
     import pyodbc
 except ImportError:  # pragma: no cover
@@ -49,8 +49,8 @@ class DB:
         return self.dbtype.lower() == "sqlite"
 
     def _connect_sqlite(self, path: Path):
-        # sqlite3.connect crée silencieusement un fichier vide si le chemin n'existe pas :
-        # on vérifie d'abord pour donner une erreur claire.
+        # sqlite3.connect silently creates an empty file if the path does not exist:
+        # we check first to provide a clear error message.
         if not path.is_file():
             raise FileNotFoundError(f"Database not found: {path}")
         return sqlite3.connect(path)

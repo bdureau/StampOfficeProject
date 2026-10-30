@@ -4,11 +4,11 @@ _cached_lang = None
 
 
 def get_language():
-    """Lit la langue dans le fichier de configuration une seule fois au démarrage."""
+    """Read the language from the configuration file only once at startup."""
     global _cached_lang
     if _cached_lang is not None:
         return _cached_lang
 
-    # Langue par défaut : "fr" (lecture tolérante UTF-8 / cp1252 via AppPaths)
+    # Default language: "fr" (fault-tolerant reading UTF-8 / cp1252 via AppPaths)
     _cached_lang = get_config_value('language', "fr")
     return _cached_lang
