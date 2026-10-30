@@ -47,9 +47,7 @@ class RichTextDlg(QDialog):
 
         self._create_ui()
 
-        # Attachement du correcteur orthographique en direct sur l'éditeur
-        #self.highlighter = SpellHighlighter(self.editor.document(), language=self.album_language)
-
+        # Attach live spell checker directly to the editor
         try:
             from SpellHighlighter import SpellHighlighter
             self.highlighter = SpellHighlighter(self.editor.document(), language=self.album_language)
@@ -61,17 +59,17 @@ class RichTextDlg(QDialog):
             self.editor.setHtml(self.text_item.toHtml())
             self.editor.blockSignals(False)
         else:
-            # Appliquer la police par défaut au curseur du nouvel éditeur
+            # Apply default font family to the cursor of the new editor
             default_font_name = get_config_value('default font', 'Arial')
             self.editor.setFontFamily(default_font_name)
 
     def _get_app_dir(self) -> Path:
         """
-        Détermine le répertoire racine de l'application.
+                Determine the root application directory.
 
-        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
-        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
-          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+                - If running as an EXE: returns the directory containing the executable.
+                - If running from Python (.py in a subfolder): traverses to parent directory
+                  if 'Databases', 'Images', 'Photos' or 'docs' is present, else returns script directory.
         """
         if getattr(sys, 'frozen', False):
             return Path(sys.executable).resolve().parent
@@ -85,7 +83,7 @@ class RichTextDlg(QDialog):
             return script_dir
 
     def _get_resource_dir(self, folder_name: str) -> Path:
-        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        """Resolve a resource directory (Images, docs, etc.) from application base or relative directory."""
         res_dir = self.base_dir / folder_name
         if res_dir.exists():
             return res_dir
@@ -93,9 +91,9 @@ class RichTextDlg(QDialog):
 
     def _get_icon(self, icon_name: str) -> QIcon:
         """
-        Récupère l'icône de manière dynamique :
-        Cherche dans le dossier Images résolu par AppPaths,
-        puis retombe sur le chemin relatif habituel si besoin.
+                Retrieve icon asset dynamically:
+                Searches in the Images directory resolved by AppPaths,
+                then falls back to standard relative path if needed.
         """
         images_dir = get_images_dir()
         icon_path = images_dir / icon_name
@@ -116,7 +114,7 @@ class RichTextDlg(QDialog):
         self.font_combo = QFontComboBox()
         self.font_combo.setToolTip(_("Font Family"))
 
-        # Charger la police par défaut depuis la configuration
+        # Load default font from configuration
         default_font_name = get_config_value('default font', 'Arial')
         self.font_combo.setCurrentFont(QFont(default_font_name))
 
@@ -198,12 +196,6 @@ class RichTextDlg(QDialog):
         self.editor = QTextEdit()
         self.editor.cursorPositionChanged.connect(self._update_format_controls)
         layout.addWidget(self.editor)
-
-        # --- Standard OK / Cancel Buttons ---
-        # buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-        # buttons.accepted.connect(self.accept)
-        # buttons.rejected.connect(self.reject)
-        # layout.addWidget(buttons)
 
         # --- Standard OK / Cancel Buttons ---
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)

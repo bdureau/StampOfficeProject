@@ -22,7 +22,7 @@ class SpellHighlighter(QSyntaxHighlighter):
         self.known_cache = set()
         self.misspelled_cache = set()
 
-        # Format de soulignement rouge type correcteur orthographique
+        # Spellcheck-style red wavy underline format
         self.error_format = QTextCharFormat()
         self.error_format.setUnderlineColor(QColor("#e53e3e"))
         self.error_format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
@@ -30,8 +30,8 @@ class SpellHighlighter(QSyntaxHighlighter):
         self.set_language(language)
 
     def set_language(self, lang_code: str):
-        """Met à jour le dictionnaire utilisé ('fr', 'en', 'de', 'es', etc.)."""
-        # pyspellchecker accepte les codes 2 lettres (fr, en, es, de, pt, ru, it)
+        """Update the active dictionary ('fr', 'en', 'de', 'es', etc.)."""
+        # pyspellchecker accepts 2-letter language codes (fr, en, es, de, pt, ru, it)
         lang = (lang_code or "fr").lower()
         if lang not in ["fr", "en", "de", "es", "it", "pt", "ru"]:
             lang = "fr"
@@ -54,7 +54,7 @@ class SpellHighlighter(QSyntaxHighlighter):
 
         for match in WORD_PATTERN.finditer(text):
             word = match.group()
-            # On ignore les mots de moins de 2 lettres
+            # Ignore single-letter words
             if len(word) < 2:
                 continue
 
@@ -67,7 +67,7 @@ class SpellHighlighter(QSyntaxHighlighter):
                 self.setFormat(match.start(), len(word), self.error_format)
                 continue
 
-            # Vérification via pyspellchecker
+            # Verification using pyspellchecker
             if word_lower not in self.spell:
                 self.misspelled_cache.add(word_lower)
                 self.setFormat(match.start(), len(word), self.error_format)

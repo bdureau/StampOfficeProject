@@ -1,10 +1,10 @@
 """
 App Paths Module
 ----------------
-Point unique pour les chemins de l'application, la lecture de la
-configuration et la liste des bases pays disponibles.
+Single entry point for application file paths, configuration loading,
+and listing available country database files.
 
-Compatible avec un exécutable PyInstaller/cx_Freeze (sys.frozen).
+Compatible with PyInstaller/cx_Freeze frozen executables (sys.frozen).
 
 Author: Boris du Reau
 """
@@ -16,7 +16,7 @@ CONFIG_FILE_NAME = "stamp_album.cfg"
 
 
 def get_app_dir_old() -> Path:
-    """Dossier de l'application (celui du .exe si l'application est compilée)."""
+    """Application directory (the directory containing the executable if frozen)."""
     if getattr(sys, 'frozen', False):
         return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parent
@@ -24,11 +24,11 @@ def get_app_dir_old() -> Path:
 
 def get_app_dir() -> Path:
     """
-    Dossier racine de l'application.
+        Root application directory.
 
-    - En mode EXE (sys.frozen) : renvoie le dossier où se trouve l'exécutable.
-    - En mode script Python (.py dans un sous-dossier comme StampAlbum/) :
-      remonte au dossier parent s'il contient l'un des répertoires de ressources.
+        - In frozen executable mode (sys.frozen): returns the directory containing the binary.
+        - In Python script mode (.py in a subfolder like StampAlbum/):
+          traverses up to the parent directory if it contains any of the resource folders.
     """
     if getattr(sys, 'frozen', False):
         return Path(sys.executable).resolve().parent
@@ -36,7 +36,7 @@ def get_app_dir() -> Path:
     script_dir = Path(__file__).resolve().parent
     parent_dir = script_dir.parent
 
-    # Vérifie si l'un des dossiers principaux existe dans le répertoire parent
+    # Check if any of the primary resource folders exist in the parent directory
     if any((parent_dir / folder).exists() for folder in ["Databases", "Images", "Photos", "docs", "Help"]):
         return parent_dir
 
@@ -67,11 +67,11 @@ CONFIG_ENCODING = "utf-8"
 
 def read_config_into(parser: configparser.RawConfigParser, path: Path = None) -> configparser.RawConfigParser:
     """
-    Charge le fichier de configuration dans le parser fourni.
+        Load configuration file content into the provided configparser instance.
 
-    Le fichier est écrit en UTF-8, mais les anciennes versions l'écrivaient avec
-    l'encodage par défaut de Windows (cp1252, où « © » vaut l'octet 0xA9).
-    On essaie donc UTF-8, puis cp1252 : les deux formats restent lisibles.
+        The file is typically written in UTF-8, but legacy versions wrote it using
+        the Windows default codepage (cp1252, where '©' is the single byte 0xA9).
+        We try UTF-8 first, followed by cp1252: both encodings remain readable.
     """
     path = path or get_config_path()
     if not path.exists():
@@ -84,19 +84,19 @@ def read_config_into(parser: configparser.RawConfigParser, path: Path = None) ->
             return parser
         except UnicodeDecodeError:
             parser.clear()
-    # Dernier recours : ne jamais bloquer le démarrage à cause d'un caractère
+    # Last resort fallback: never crash startup due to an unreadable character
     with open(path, "r", encoding=CONFIG_ENCODING, errors="replace") as f:
         parser.read_file(f, source=str(path))
     return parser
 
 
 def read_config() -> configparser.RawConfigParser:
-    """Lit stamp_album.cfg (retourne un parser vide si le fichier n'existe pas)."""
+    """Read stamp_album.cfg (returns an empty parser if file does not exist)."""
     return read_config_into(configparser.RawConfigParser())
 
 
 def get_config_value(option: str, default: str = "") -> str:
-    """Retourne une option de la section [CONF], ou la valeur par défaut."""
+    """Return an option value from the [CONF] section, or the default value."""
     parser = read_config()
     if parser.has_option('CONF', option):
         return parser.get('CONF', option)
@@ -104,20 +104,20 @@ def get_config_value(option: str, default: str = "") -> str:
 
 
 def get_db_type() -> str:
-    """'sqlite' (par défaut) ou 'Access'."""
+    """'sqlite' (default) or 'Access'."""
     return get_config_value("database type", "sqlite")
 
 
 def get_db_extension(db_type: str = None) -> str:
-    """Extension des fichiers de base selon le moteur configuré."""
+    """Return database file extension based on configured engine."""
     db_type = db_type or get_db_type()
     return ".db" if db_type.lower() == "sqlite" else ".mdb"
 
 
 def list_countries(db_type: str = None) -> list:
     """
-    Liste triée des pays disponibles dans le dossier Databases/,
-    en ne gardant que les fichiers du moteur configuré (.db ou .mdb).
+        Sorted list of available country databases found in the Databases/ directory,
+        filtering only files matching the configured engine (.db or .mdb).
     """
     db_dir = get_db_dir()
     if not db_dir.is_dir():

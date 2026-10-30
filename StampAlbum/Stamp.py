@@ -295,7 +295,7 @@ class Stamp:
         return stampObj
 
     def updateStamp(self, stampItem, stampObj, scene):
-        # Récupérer le coin supérieur gauche réel dans la scène avant suppression
+        # Retrieve actual top-left scene corner coordinates before deletion
         top_left = stampItem.sceneBoundingRect().topLeft()
 
         boxWidth = stampObj['stampBox_boxWidth']
@@ -307,8 +307,8 @@ class Stamp:
 
         undo_stack = getattr(scene, 'undoStack', None)
         if undo_stack is not None:
-            # Suppression + recréation dans une seule macro :
-            # un Ctrl+Z restaure l'ancien timbre au lieu de le faire disparaître
+            # Delete + re-create grouped inside a single macro:
+            # pressing Ctrl+Z restores the previous stamp instead of deleting it permanently
             from UndoCommands import DeleteItemsCommand
             undo_stack.beginMacro(_("Edit Stamp"))
             undo_stack.push(DeleteItemsCommand(scene, [stampItem]))
@@ -357,7 +357,7 @@ class RichTextStamp(Stamp):
             QGraphicsRectItem.GraphicsItemFlag.ItemIsSelectable
         )
 
-        # Centrage de la pochette sous la description
+        # Center the mount box below the description text
         box_x = (stampDesc.boundingRect().width() / 2.0) - (px_width / 2.0)
         box_y = stampDesc.boundingRect().height() + 20.0
         stampBox.setPos(box_x, box_y)
@@ -418,10 +418,10 @@ class RichTextStamp(Stamp):
             QGraphicsItemGroup.GraphicsItemFlag.ItemIsMovable |
             QGraphicsItemGroup.GraphicsItemFlag.ItemIsSelectable
         )
-        # Identifiant distinct de 'stampGroup'
+        # Distinct identifier from 'stampGroup'
         group.setData(0, "richTextStampGroup")
 
-        # 7. Normalisation des coordonnées
+        # 7. Normalize coordinates
         children_rect = group.childrenBoundingRect()
         for child in group.childItems():
             child.moveBy(-children_rect.x(), -children_rect.y())

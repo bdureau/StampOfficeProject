@@ -13,11 +13,10 @@ from PyQt6.QtGui import QPen, QBrush, QColor, QPainterPath
 
 class PageBorder(QGraphicsItemGroup):
     """Graphics item group representing a decorative page border."""
-
-    STYLE_TRIPLE = "triple"  # Classique à 3 cadres (ton style d'origine)
-    STYLE_SIMPLE = "simple"  # Cadre simple épais avec filet intérieur
-    STYLE_GREEK = "greek"  # Cadre élégant avec motifs aux 4 coins
-    STYLE_DENTELLE = "dentelle"  # Style philatélie (cadre avec tirets/pointillés)
+    STYLE_TRIPLE = "triple"  # Classic 3-box border (original default style)
+    STYLE_SIMPLE = "simple"  # Clean double frame with an inner fine line
+    STYLE_GREEK = "greek"  # Vintage frame with indented decorative corners
+    STYLE_DENTELLE = "dentelle"  # Philatelic style (frame with dashed/perforated lines)
 
     def __init__(self, width: float, height: float, style: str = STYLE_TRIPLE, parent=None):
         """
@@ -36,7 +35,7 @@ class PageBorder(QGraphicsItemGroup):
         self.setData(0, "borderGroup")
         self.setData(1, width)
         self.setData(2, height)
-        self.setData(4, style)  # <-- Stocke le code du style ('triple', 'simple', 'greek', 'dentelle')
+        self.setData(4, style)  # Store style key identifier ('triple', 'simple', 'greek', 'dentelle')
 
         self._build_border()
 
@@ -52,8 +51,7 @@ class PageBorder(QGraphicsItemGroup):
             self._create_triple_border()
 
     def _create_triple_border(self):
-        """Style 1 : Triple cadre traditionnel (Cadre fin - Cadre épais - Cadre fin)."""
-        print("_create_triple_border")
+        """Style 1: Traditional triple frame (Thin line - Thick line - Thin line)."""
         # Outer thin box
         b1 = QGraphicsRectItem(0, 0, self.width, self.height)
         b1.setPen(QPen(Qt.GlobalColor.black, 1))
@@ -83,8 +81,7 @@ class PageBorder(QGraphicsItemGroup):
         self.addToGroup(b3)
 
     def _create_simple_border(self):
-        """Style 2 : Cadre extérieur double classique et épuré."""
-        print("_create_simple_border")
+        """Style 2: Clean and classic double outer frame."""
         # Outer thick border
         b1 = QGraphicsRectItem(0, 0, self.width, self.height)
         b1.setPen(QPen(Qt.GlobalColor.black, 2))
@@ -105,11 +102,10 @@ class PageBorder(QGraphicsItemGroup):
         self.addToGroup(b2)
 
     def _create_greek_border(self):
-        print("_create_greek_border")
-        """Style 3 : Cadre avec coins rentrants (style ancien / exposition)."""
+        """Style 3: Frame with notched/indented corners (vintage exhibition style)."""
         corner_size = 15
 
-        # Cadre principal avec encoches dans les coins
+        # Main outline path with notched corners
         path = QPainterPath()
         w, h = self.width, self.height
         c = corner_size
@@ -138,7 +134,7 @@ class PageBorder(QGraphicsItemGroup):
         item.setData(2, h)
         self.addToGroup(item)
 
-        # Fillet intérieur
+        # Inner fine fillet
         margin = 6
         b_inner = QGraphicsRectItem(margin, margin, w - 2 * margin, h - 2 * margin)
         b_inner.setPen(QPen(Qt.GlobalColor.black, 1))
@@ -147,15 +143,14 @@ class PageBorder(QGraphicsItemGroup):
         self.addToGroup(b_inner)
 
     def _create_dentelle_border(self):
-        print("_create_dentelle_border")
-        """Style 4 : Style philatélique avec cadre intérieur pointillé/dentelé."""
-        # Cadre extérieur solide
+        """Style 4: Philatelic style with a dashed/perforated inner frame."""
+        # Outer solid border
         b1 = QGraphicsRectItem(0, 0, self.width, self.height)
         b1.setPen(QPen(Qt.GlobalColor.black, 2))
         b1.setData(1, self.width)
         b1.setData(2, self.height)
 
-        # Cadre intérieur en tirets (style pointillage de timbre)
+        # Inner dashed border (stamp perforation effect)
         margin = 8
         w2 = self.width - (margin * 2)
         h2 = self.height - (margin * 2)

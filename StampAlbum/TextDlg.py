@@ -1,4 +1,12 @@
+"""
+Text Dialog Module
+------------------
+Provides a dialog window for adding and updating standard text labels on
+stamp album pages, including typography controls (bold, italic, strikeout,
+underline, font size) and paragraph alignments (left, center, right).
 
+Author: Boris du Reau
+"""
 import sys
 from PyQt6.QtCore import Qt
 from pathlib import Path
@@ -19,6 +27,7 @@ _ = translate.gettext
 
 
 class TextDlg(QDialog):
+    """Dialog window allowing the creation or editing of text labels."""
     def __init__(self, txtObj=None, parent=None):
         super(TextDlg, self).__init__(parent)
 
@@ -31,7 +40,7 @@ class TextDlg(QDialog):
         else:
             self.setWindowIcon(QIcon('stamp_book.png'))
 
-        # Détermine s'il s'agit d'une mise à jour (édition) ou d'un ajout
+        # Determine whether this is an edit operation or a new text insertion
         is_editing = txtObj is not None and txtObj.toPlainText().strip() != ""
 
         if is_editing:
@@ -43,11 +52,11 @@ class TextDlg(QDialog):
 
     def _get_app_dir(self) -> Path:
         """
-        Détermine le répertoire racine de l'application.
+                Determine the root application directory.
 
-        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
-        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
-          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+                - If running as an EXE: returns the directory containing the executable.
+                - If running from Python (.py in a subfolder): traverses to parent directory
+                  if 'Databases', 'Images', 'Photos' or 'docs' is present, else returns script directory.
         """
         if getattr(sys, 'frozen', False):
             return Path(sys.executable).resolve().parent
@@ -61,15 +70,15 @@ class TextDlg(QDialog):
             return script_dir
 
     def _get_resource_dir(self, folder_name: str) -> Path:
-        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        """Resolve a resource directory (Images, docs, etc.) from application base or relative directory."""
         res_dir = self.base_dir / folder_name
         if res_dir.exists():
             return res_dir
         return Path(__file__).resolve().parent / folder_name
     def _get_icon(self, icon_name: str) -> QIcon:
         """
-        Charge dynamiquement l'icône depuis le dossier des images résolu par SAAppPaths.
-        Si l'icône n'est pas trouvée directement, retombe sur le chemin relatif classique.
+                Dynamically load icon from the images directory resolved by SAAppPaths.
+                Falls back to standard relative path if needed.
         """
         images_dir = get_images_dir()
         icon_path = images_dir / icon_name
@@ -77,10 +86,11 @@ class TextDlg(QDialog):
         if icon_path.exists():
             return QIcon(str(icon_path))
 
-        # Chemin relatif de secours si besoin
+        # Relative fallback path if needed
         return QIcon(f"../Images/{icon_name}")
 
     def createDlg(self, txtObj=None):
+        """Construct dialog widgets, formatting toolbar, and layouts."""
         hLayout1 = QHBoxLayout()
 
         boldButton = QPushButton()
@@ -176,7 +186,7 @@ class TextDlg(QDialog):
 
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
 
-        # --- Traduction des boutons ---
+        # --- Button localization ---
         ok_button = bb.button(QDialogButtonBox.StandardButton.Ok)
         if ok_button:
             ok_button.setText(_("OK"))
@@ -191,6 +201,7 @@ class TextDlg(QDialog):
         self.eTXT.setFocus()
 
     def boldPushed(self):
+        """Toggle bold font style for the text editor."""
         if self.eTXT.font().bold() == True:
             myFont = self.eTXT.font()
             myFont.setBold(False)
@@ -201,6 +212,7 @@ class TextDlg(QDialog):
             self.eTXT.setFont(myFont)
 
     def underlinePushed(self):
+        """Toggle underline font style for the text editor."""
         if self.eTXT.font().underline() == True:
             myFont = self.eTXT.font()
             myFont.setUnderline(False)
@@ -211,6 +223,7 @@ class TextDlg(QDialog):
             self.eTXT.setFont(myFont)
 
     def italicPushed(self):
+        """Toggle italic font style for the text editor."""
         if self.eTXT.font().italic():
             myFont = self.eTXT.font()
             myFont.setItalic(False)
@@ -221,6 +234,7 @@ class TextDlg(QDialog):
             self.eTXT.setFont(myFont)
 
     def strikePushed(self):
+        """Toggle strikeout font style for the text editor."""
         if self.eTXT.font().strikeOut() == True:
             myFont = self.eTXT.font()
             myFont.setStrikeOut(False)
@@ -231,16 +245,19 @@ class TextDlg(QDialog):
             self.eTXT.setFont(myFont)
 
     def fontSizeClicked(self):
+        """Update editor font size to the selected dropdown value."""
         myFont = self.eTXT.font()
         myFont.setPointSize(int(self.fontSize.currentText()))
         self.eTXT.setFont(myFont)
 
     def justifyLeftPushed(self):
-        # set text alignment to AlignLeft
+        """Set text alignment to left."""
         self.eTXT.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
     def centerPushed(self):
+        """Set text alignment to center."""
         self.eTXT.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def justifyRightPushed(self):
+        """Set text alignment to right."""
         self.eTXT.setAlignment(Qt.AlignmentFlag.AlignRight)

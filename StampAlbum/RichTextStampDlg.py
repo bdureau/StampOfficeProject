@@ -167,7 +167,7 @@ class RichTextEditorWidget(QGroupBox):
         self.editor.cursorPositionChanged.connect(self._update_format_controls)
         vbox.addWidget(self.editor)
 
-        # Attachement du correcteur en direct
+        # Attach live spell checker
         self.highlighter = SpellHighlighter(self.editor.document(), language=self.language)
 
     def set_language(self, lang: str):
@@ -278,11 +278,11 @@ class RichTextStampDlg(QDialog):
 
     def _get_app_dir(self) -> Path:
         """
-        Détermine le répertoire racine de l'application.
+                Determine the root application directory.
 
-        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
-        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
-          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+                - If running as an EXE: returns the directory containing the executable.
+                - If running from Python (.py in a subfolder): traverses to parent directory
+                  if 'Databases', 'Images', 'Photos' or 'docs' is present, else returns script directory.
         """
         if getattr(sys, 'frozen', False):
             return Path(sys.executable).resolve().parent
@@ -296,7 +296,7 @@ class RichTextStampDlg(QDialog):
             return script_dir
 
     def _get_resource_dir(self, folder_name: str) -> Path:
-        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        """Resolve a resource directory (Images, docs, etc.) from application base or relative directory."""
         res_dir = self.base_dir / folder_name
         if res_dir.exists():
             return res_dir
@@ -444,8 +444,6 @@ class RichTextStampDlg(QDialog):
         self.editor_nbr.set_html(data.get('stampNbr_html', ''))
         self.editor_val.set_html(data.get('stampValue_html', ''))
 
-        # self.eWidth.setText(str(data.get('stampBox_boxWidth', 25.0)))
-        # self.eHeight.setText(str(data.get('stampBox_boxHeight', 30.0)))
         box_w = data.get('stampBox_boxWidth', 25.0)
         box_h = data.get('stampBox_boxHeight', 30.0)
 

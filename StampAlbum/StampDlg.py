@@ -47,7 +47,7 @@ class StampDlg(QDialog):
         self.currentStampNbr = ""
         self.fullPhotoPath = None
         self.db = None
-        # La scène doit être connue AVANT createDlg (les boutons Create l'utilisent)
+        # The scene must be known BEFORE createDlg (the Create buttons use it)
         self.scene = scene
         if lastStampObj is None:
             lastStampObj = {'country': None, 'type': None, 'year': None, 'nbr': None}
@@ -60,11 +60,11 @@ class StampDlg(QDialog):
 
     def _get_app_dir(self) -> Path:
         """
-        Détermine le répertoire racine de l'application.
+                Determine the root application directory.
 
-        - Si exécuté en EXE : renvoie le répertoire contenant l'exécutable.
-        - Si exécuté depuis Python (.py dans un sous-dossier) : remonte au dossier parent
-          si 'Databases', 'Images', 'Photos' ou 'docs' s'y trouve, sinon renvoie le dossier du script.
+                - If running as an EXE: returns the directory containing the executable.
+                - If running from Python (.py in a subfolder): traverses to parent directory
+                  if 'Databases', 'Images', 'Photos' or 'docs' is present, else returns script directory.
         """
         if getattr(sys, 'frozen', False):
             return Path(sys.executable).resolve().parent
@@ -78,7 +78,7 @@ class StampDlg(QDialog):
             return script_dir
 
     def _get_resource_dir(self, folder_name: str) -> Path:
-        """Résout un dossier de ressources (Images, docs, etc.) depuis le dossier applicatif ou relatif."""
+        """Resolve a resource directory (Images, docs, etc.) from application base or relative directory."""
         res_dir = self.base_dir / folder_name
         if res_dir.exists():
             return res_dir
@@ -89,12 +89,12 @@ class StampDlg(QDialog):
         return get_config_value('default country', "France")
 
     def onStampCurrentChanged(self, current, previous):
-        """Met à jour l'affichage du timbre lors d'un changement de sélection (souris ou clavier)."""
+        """Update stamp display upon selection change (mouse or keyboard)."""
         if current.isValid():
             self.stampClicked(current)
 
     def keyPressEvent(self, e):
-        """Laisse Qt gérer nativement la navigation au clavier via le selectionModel."""
+        """Let Qt natively handle keyboard navigation via the selectionModel."""
         super().keyPressEvent(e)
 
     def createDlg(self, lastStampObj):
@@ -135,7 +135,6 @@ class StampDlg(QDialog):
         vLayoutStampNbr.addWidget(self.stampNbrList)
 
         # where to go if the stamp is clicked
-        #self.stampNbrList.clicked.connect(self.stampClicked)
 
         # hlayout to group them
         hLayout2 = QHBoxLayout()
@@ -244,10 +243,9 @@ class StampDlg(QDialog):
         else:
             target_country  = self.get_configured_country()
 
-        #print("target_country:" + target_country )
         # get the list of countries from the Databases available
         self.db = None
-        # Liste des pays selon le moteur configuré (.db pour sqlite, .mdb pour Access)
+        # List of countries according to configured engine (.db for SQLite, .mdb for Access)
         self.stampCountries = list_countries()
 
         if not self.stampCountries:
@@ -255,7 +253,7 @@ class StampDlg(QDialog):
                                 _("No country database was found in the 'Databases' folder."))
             return
 
-        # Ouvrir directement le pays cible (évite d'ouvrir le 1er puis de changer)
+        # Open target country directly (avoids opening the 1st then switching)
         if target_country not in self.stampCountries:
             target_country = self.stampCountries[0]
 
@@ -266,7 +264,7 @@ class StampDlg(QDialog):
             self.db = None
             return
 
-        # Remplir la combo sans déclencher countryClicked pendant l'initialisation
+        # Populate combo without firing countryClicked during initialization
         self.selectedCountryCombo.blockSignals(True)
         self.selectedCountryCombo.addItems(self.stampCountries)
         self.selectedCountryCombo.setCurrentText(target_country)
@@ -325,7 +323,7 @@ class StampDlg(QDialog):
                     myIndex = i
             i = i + 1
         self.stampNbrList.setModel(model)
-        # Connexion du modèle de sélection pour gérer le clavier et la souris
+        # Connect selection model to handle both keyboard and mouse navigation
         self.stampNbrList.selectionModel().currentChanged.connect(self.onStampCurrentChanged)
 
         if len(self.stampNbrList.selectedIndexes()) < 1:
@@ -430,8 +428,7 @@ class StampDlg(QDialog):
             retStampInfo = self.db.stampChanged(stampNbr, stampKey)
 
             if len(retStampInfo) > 0:
-                # nbr,year,valuecolor, stampDescription,width, height,sub_nbr,stampDescription1
-                # Les champs NULL de la base reviennent en None : on les convertit en ""
+                # NULL database values return as None: convert them to empty strings
                 info = ["" if v is None else str(v) for v in retStampInfo]
                 self.eWidth.setText(info[4])
                 self.eHeight.setText(info[5])
@@ -442,17 +439,11 @@ class StampDlg(QDialog):
 
                 stampSubNbr = retStampInfo[6]
 
-                # photoName = self.getPhotoName(str(stampNbr), str(stampType), stampSubNbr)
-                # # Chemin portable (Windows / macOS / Linux)
-                # photo_path = get_photos_dir() / self.currentCountry / photoName
-                # if not photo_path.is_file():
-                #     photo_path = get_images_dir() / "blanc.jpg"
-                # self.fullPhotoPath = str(photo_path)
                 photoName = self.getPhotoName(str(stampNbr), str(stampType), stampSubNbr)  # [cite: 18]
-                folder_path = get_photos_dir() / self.currentCountry  # [cite: 18]
-                photo_path = folder_path / photoName  # [cite: 18]
+                folder_path = get_photos_dir() / self.currentCountry
+                photo_path = folder_path / photoName
 
-                # Si le fichier exact n'est pas trouvé sous Linux, on cherche insensiblement à la casse
+                # Case-insensitive file search fallback for Linux environments
                 if not photo_path.is_file() and folder_path.is_dir():
                     target_name_lower = photoName.lower()
                     # Recherche du fichier correspondant dans le dossier en ignorant la casse
@@ -462,11 +453,11 @@ class StampDlg(QDialog):
                     if matching_file:
                         photo_path = matching_file
 
-                # Si toujours introuvable, fallback sur l'image blanche
-                if not photo_path.is_file():  # [cite: 18]
-                    photo_path = get_images_dir() / "blanc.jpg"  # [cite: 18]
+                # Fallback to blank placeholder image if still not found
+                if not photo_path.is_file():
+                    photo_path = get_images_dir() / "blanc.jpg"
 
-                self.fullPhotoPath = str(photo_path)  # [cite: 18]
+                self.fullPhotoPath = str(photo_path)
                 if self.photo is not None:
                     pix = QPixmap(self.fullPhotoPath)
                     if not pix.isNull():
@@ -665,9 +656,6 @@ class StampDlg(QDialog):
         if self.fullPhotoPath is not None:
             pixmap = self.fullPhotoPath
 
-        #ret = self.getBoxInfo(self.pochetteList.currentItem().text())
-        #self.eWidth.setText("")
-        #self.eHeight.setText("")
         try:
             width = float(self.eWidth.text().replace(",", "."))
             height = float(self.eHeight.text().replace(",", "."))

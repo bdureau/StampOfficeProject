@@ -27,6 +27,8 @@ class MoveCommand(QUndoCommand):
             item.setPos(pos)
 
 class AddItemCommand(QUndoCommand):
+    """Command to handle adding a graphic item to the scene."""
+
     def __init__(self, scene, item, text="Add Item", parent=None):
         super().__init__(text, parent)
         self.scene = scene
@@ -45,7 +47,7 @@ class DeleteItemsCommand(QUndoCommand):
     def __init__(self, scene, items, text="Delete Item(s)"):
         super().__init__(text)
         self.scene = scene
-        self.items = list(items)  # Garde la liste des références vivante
+        self.items = list(items)  # Keep the list of object references alive
 
     def undo(self):
         for item in self.items:

@@ -32,14 +32,14 @@ class AboutDlg(QDialog):
         self.setWindowTitle(_("About Stamp Album"))
         self.resize(550, 450)
 
-        # Résolution dynamique du dossier d'Images
+        # Dynamic resolution of the Images directory
         self.base_dir = self._get_app_dir()
         self.images_dir = self._get_resource_dir("Images")
 
         self.createDlg()
 
     def _get_app_dir(self) -> Path:
-        """Détermine le répertoire racine de l'application."""
+        """Determine the root application directory."""
         if getattr(sys, 'frozen', False):
             return Path(sys.executable).resolve().parent
         else:
@@ -52,7 +52,7 @@ class AboutDlg(QDialog):
             return script_dir
 
     def _get_resource_dir(self, folder_name: str) -> Path:
-        """Résout le dossier de ressources spécifié."""
+        """Resolve the specified resource directory."""
         res_dir = self.base_dir / folder_name
         if res_dir.exists():
             return res_dir
@@ -107,7 +107,7 @@ class AboutDlg(QDialog):
         """Return the description formatted in HTML depending on the selected language."""
         lang = get_language()
 
-        # Le style CSS commun aux deux langues
+        # Shared CSS styles across languages
         base_css = """
         <style>
             body { font-family: sans-serif; font-size: 11pt; line-height: 1.4; color: #222; }
