@@ -2,25 +2,18 @@
 Utility Helper Module
 ---------------------
 Contains photo name resolution, case-insensitive file lookups, and Excel export logic.
+The Excel headers are written in the language active at the time of the export.
 
 Author: Boris du Reau
-Year: 2026
+Date: 2026-10-31
 """
 
 from pathlib import Path
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
-import gettext
-from SCAppLanguage import get_language
-
-# Localization setup
-gettext.find("StampCatalogue")
-translate = gettext.translation(
-    'StampCatalogue', localedir='locale', languages=[get_language()], fallback=True
-)
-translate.install()
-_ = translate.gettext
+# Translation function of the current language (follows a change of language)
+from SCAppLanguage import _
 
 
 def get_photo_name(stamp_number: str, stamp_type: str, stamp_sub_nbr) -> str:

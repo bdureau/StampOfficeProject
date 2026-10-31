@@ -1,0 +1,265 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: StampPhoto 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-31 16:45+0100\n"
+"PO-Revision-Date: 2026-10-31 16:45+0100\n"
+"Last-Translator: Boris du Reau\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: SPAbout.py:17
+msgid "About StampPhoto"
+msgstr "À propos de StampPhoto"
+
+#: SPAbout.py:33
+msgid "Part of the stampOffice software suite"
+msgstr "Fait partie de la suite logicielle stampOffice"
+
+#: SPAbout.py:38
+msgid "A photo and stamp viewer and batch resolution converter designed for collectors and archivists."
+msgstr "Un visualiseur et convertisseur de timbres et photographies par lots conçu pour les collectionneurs et archivistes."
+
+#: SPAbout.py:44
+msgid "Author: Boris du Reau"
+msgstr "Auteur : Boris du Reau"
+
+#: SPConfig.py:16
+msgid "Configuration"
+msgstr "Configuration"
+
+#: SPConfig.py:24
+msgid "General Settings"
+msgstr "Paramètres généraux"
+
+#: SPConfig.py:28
+msgid "English"
+msgstr "Anglais"
+
+#: SPConfig.py:29
+msgid "French"
+msgstr "Français"
+
+#: SPConfig.py:30
+msgid "Language:"
+msgstr "Langue :"
+
+#: SPConfig.py:36
+msgid "JPEG Quality:"
+msgstr "Qualité JPEG :"
+
+#: SPConfig.py:41
+msgid "Max Width Resolutions (px)"
+msgstr "Résolutions - Largeur max (px)"
+
+#: SPConfig.py:46
+msgid "Low resolution:"
+msgstr "Basse résolution :"
+
+#: SPConfig.py:51
+msgid "Medium resolution:"
+msgstr "Moyenne résolution :"
+
+#: SPConfig.py:56
+msgid "High resolution:"
+msgstr "Haute résolution :"
+
+#: StampPhoto.py:157
+msgid "StampPhoto - stampOffice Suite"
+msgstr "StampPhoto - Suite stampOffice"
+
+#: StampPhoto.py:160
+msgid "&File"
+msgstr "&Fichier"
+
+#: StampPhoto.py:161
+msgid "&Exit"
+msgstr "&Quitter"
+
+#: StampPhoto.py:162
+msgid "&Config"
+msgstr "&Configuration"
+
+#: StampPhoto.py:163
+msgid "&Language"
+msgstr "&Langue"
+
+#: StampPhoto.py:164
+msgid "&Preferences..."
+msgstr "&Préférences..."
+
+#: StampPhoto.py:165
+msgid "&Help"
+msgstr "&Aide"
+
+#: StampPhoto.py:166
+msgid "&Manual"
+msgstr "&Manuel utilisateur"
+
+#: StampPhoto.py:167
+msgid "&About"
+msgstr "À &propos"
+
+#: StampPhoto.py:170
+msgid "Select Source Folder..."
+msgstr "Dossier source..."
+
+#: StampPhoto.py:171
+msgid "Select Destination Folder..."
+msgstr "Dossier destination..."
+
+#: StampPhoto.py:172
+msgid "◀ Previous"
+msgstr "◀ Précédent"
+
+#: StampPhoto.py:173
+msgid "Next ▶"
+msgstr "Suivant ▶"
+
+#: StampPhoto.py:174
+msgid "Resolution:"
+msgstr "Résolution :"
+
+#: StampPhoto.py:175
+msgid "Convert Current"
+msgstr "Convertir l'image"
+
+#: StampPhoto.py:176
+msgid "Convert All"
+msgstr "Tout convertir"
+
+#: StampPhoto.py:180
+msgid "Low Resolution"
+msgstr "Basse résolution"
+
+#: StampPhoto.py:181
+msgid "Medium Resolution"
+msgstr "Moyenne résolution"
+
+#: StampPhoto.py:182
+msgid "High Resolution"
+msgstr "Haute résolution"
+
+#: StampPhoto.py:183
+msgid "All Resolutions"
+msgstr "Toutes les résolutions"
+
+#: StampPhoto.py:190
+msgid "Select Source Folder"
+msgstr "Sélectionner le dossier source"
+
+#: StampPhoto.py:199
+msgid "Select Destination Folder"
+msgstr "Sélectionner le dossier destination"
+
+#: StampPhoto.py:204
+msgid "Destination:"
+msgstr "Destination :"
+
+#: StampPhoto.py:217
+msgid "No images found in the selected folder."
+msgstr "Aucune image trouvée dans le dossier sélectionné."
+
+#: StampPhoto.py:228
+msgid "Failed to load image."
+msgstr "Échec du chargement de l'image."
+
+#: StampPhoto.py:230
+msgid "Image {current} / {total}"
+msgstr "Image {current} / {total}"
+
+#: StampPhoto.py:269
+#: StampPhoto.py:272
+msgid "Warning"
+msgstr "Avertissement"
+
+#: StampPhoto.py:269
+msgid "Please select a source folder with images first."
+msgstr "Veuillez d'abord sélectionner un dossier source contenant des images."
+
+#: StampPhoto.py:272
+msgid "Please select a destination directory."
+msgstr "Veuillez sélectionner un dossier de destination."
+
+#: StampPhoto.py:280
+#: StampPhoto.py:297
+msgid "Success"
+msgstr "Succès"
+
+#: StampPhoto.py:280
+msgid "Conversion completed successfully!"
+msgstr "Conversion terminée avec succès !"
+
+#: StampPhoto.py:297
+msgid "Batch conversion completed successfully!"
+msgstr "Conversion par lots terminée avec succès !"
+
+#: StampPhoto.py:313
+msgid ""
+"1. Click 'Select Source Folder' to browse your photo directory.\n"
+"2. Navigate between stamps using Previous and Next buttons.\n"
+"3. Choose a destination folder.\n"
+"4. Choose resolution (Low, Medium, High, or All) and click Convert.\n"
+"All converted files are exported in JPG format with resolution suffixes."
+msgstr ""
+"1. Cliquez sur 'Dossier source...' pour parcourir vos timbres.\n"
+"2. Naviguez avec les boutons Précédent et Suivant.\n"
+"3. Choisissez un dossier de destination.\n"
+"4. Sélectionnez une résolution (Basse, Moyenne, Haute ou Toutes) et cliquez sur Convertir.\n"
+"Tous les fichiers sont exportés en JPG avec les suffixes de résolution correspondants."
+
+#: StampPhoto.py:320
+msgid "StampPhoto Manual"
+msgstr "Manuel StampPhoto"
+
+msgid "Main Toolbar"
+msgstr "Barre d'outils principale"
+
+msgid "Stop"
+msgstr "Arrêter"
+
+msgid "Files already exist"
+msgstr "Fichiers déjà présents"
+
+msgid "Replace"
+msgstr "Remplacer"
+
+msgid "Keep existing files"
+msgstr "Garder les fichiers existants"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Stopping after the current picture..."
+msgstr "Arrêt après la photo en cours…"
+
+msgid "A conversion is in progress. Stop it and exit StampPhoto?"
+msgstr "Une conversion est en cours. L’arrêter et quitter StampPhoto ?"
+
+msgid "{n} file(s) already exist in the destination folder."
+msgstr "{n} fichier(s) existe(nt) déjà dans le dossier de destination."
+
+msgid "Conversion stopped: {done} of {total} picture(s) converted."
+msgstr "Conversion arrêtée : {done} photo(s) convertie(s) sur {total}."
+
+msgid "{n} existing file(s) kept."
+msgstr "{n} fichier(s) existant(s) conservé(s)."
+
+msgid "{n} picture(s) could not be converted:"
+msgstr "{n} photo(s) n'ont pas pu être convertie(s) :"
+
+msgid "The folder cannot be read:"
+msgstr "Le dossier ne peut pas être lu :"
+
+msgid "Converting {name}..."
+msgstr "Conversion de {name}…"
+
+msgid "{done} of {total} picture(s) converted."
+msgstr "{done} photo(s) convertie(s) sur {total}."
+
+msgid "Settings could not be saved:"
+msgstr "Les paramètres n'ont pas pu être enregistrés :"

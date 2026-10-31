@@ -375,3 +375,5 @@ msgstr ""
 msgid "Success"
 msgstr "Succès"
 
+msgid "The database type will be used the next time the application starts."
+msgstr "Le type de base de données sera utilisé au prochain démarrage de l'application."

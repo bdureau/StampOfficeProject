@@ -2,25 +2,19 @@
 Dialog Windows Module
 ---------------------
 Contains auxiliary dialogs for application settings and collection creation.
+The dialogs are built each time they are opened, so they always use the
+current language.
 
 Author: Boris du Reau
-Year: 2026
+Date: 2026-10-31
 """
 
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QFormLayout, QComboBox,
     QLineEdit, QDialogButtonBox, QPushButton
 )
-import gettext
-from SCAppLanguage import get_language
-
-# Localization setup
-gettext.find("StampCatalogue")
-translate = gettext.translation(
-    'StampCatalogue', localedir='locale', languages=[get_language()], fallback=True
-)
-translate.install()
-_ = translate.gettext
+# Translation function of the current language (follows a change of language)
+from SCAppLanguage import _
 
 
 class ConfigurationDialog(QDialog):

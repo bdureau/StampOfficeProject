@@ -154,8 +154,8 @@ msgstr "&Langue"
 msgid "&Help"
 msgstr "&Aide"
 
-msgid "Toolbar"
-msgstr "Barre d'outils"
+msgid "Help"
+msgstr "Aide"
 
 msgid "&Open destination folder"
 msgstr "&Ouvrir le dossier de destination"
@@ -342,6 +342,9 @@ msgstr "Ce fichier n'est pas un classeur Excel 97-2003 (.xls)."
 
 msgid "{n} stamp(s) without image"
 msgstr "{n} timbre(s) sans image"
+
+msgid "Configuration file: {path}"
+msgstr "Fichier de configuration : {path}"
 
 msgid "{n} file(s) selected"
 msgstr "{n} fichier(s) sélectionné(s)"

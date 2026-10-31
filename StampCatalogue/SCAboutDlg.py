@@ -2,13 +2,14 @@
 SCAbout Dialog Module
 ---------------------
 Displays information about the StampCatalogue application, its features,
-and author details in both French and English with scrollable HTML text.
+and author details in French or English (current language) with scrollable
+HTML text. The dialog is built each time it is opened, so it always follows
+the language chosen in the settings.
 
 Author: Boris du Reau
-Year: 2026
+Date: 2026-10-31
 """
 
-import sys
 from pathlib import Path
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
@@ -17,14 +18,9 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QPixmap, QFont
 
-# Localization setup
-import gettext
-from SCAppLanguage import get_language
-
-gettext.find("StampCatalogue")
-translate = gettext.translation('StampCatalogue', localedir='locale', languages=[get_language()], fallback=True)
-translate.install()
-_ = translate.gettext
+# Translation function and language of the moment (follow a change of language)
+from SCAppLanguage import _, get_language
+from SCAppPaths import get_images_dir
 
 
 class SCAboutDlg(QDialog):
@@ -35,31 +31,10 @@ class SCAboutDlg(QDialog):
         self.setWindowTitle(_("About StampCatalogue"))
         self.resize(580, 480)
 
-        # Dynamically resolve images directory
-        self.base_dir = self._get_app_dir()
-        self.images_dir = self._get_resource_dir("Images")
+        # Images folder of the application (see SCAppPaths)
+        self.images_dir = get_images_dir()
 
         self.createDlg()
-
-    def _get_app_dir(self) -> Path:
-        """Determine the root application directory."""
-        if getattr(sys, 'frozen', False):
-            return Path(sys.executable).resolve().parent
-        else:
-            script_dir = Path(__file__).resolve().parent
-            parent_dir = script_dir.parent
-
-            if any((parent_dir / folder).exists() for folder in ["Databases", "Images", "Photos", "docs", "Help", "locale"]):
-                return parent_dir
-
-            return script_dir
-
-    def _get_resource_dir(self, folder_name: str) -> Path:
-        """Resolve the specified resource directory."""
-        res_dir = self.base_dir / folder_name
-        if res_dir.exists():
-            return res_dir
-        return Path(__file__).resolve().parent / folder_name
 
     def createDlg(self):
         main_layout = QVBoxLayout()
@@ -103,7 +78,7 @@ class SCAboutDlg(QDialog):
         self.setLayout(main_layout)
 
     def get_about_text_html(self) -> str:
-        """Return the HTML-formatted description according to the selected language."""
+        """Return the HTML-formatted description according to the current language."""
         lang = get_language()
 
         base_css = """

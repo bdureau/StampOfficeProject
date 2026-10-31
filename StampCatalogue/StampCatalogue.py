@@ -1,18 +1,20 @@
 """
 StampCatalogue Application
 --------------------------
-Main application window, toolbar, actions, and user interface.
+Main application window, menus, toolbar, actions, and user interface.
+
+Every visible text is set in retranslate_ui(): it runs when the window is
+built and again after each change of language (SCAppLanguage.set_language),
+so the whole interface switches language immediately, without restarting.
 
 Author: Boris du Reau
-Year: 2026
+Date: 2026-10-31
 """
 
 import sys
 import os
 import sqlite3
-import gettext
 import subprocess
-from pathlib import Path
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt, QSize
@@ -26,20 +28,16 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QPixmap, QIcon, QAction
 
 # Internal module imports
-from SCAppLanguage import get_language
+import SCAppLanguage
+from SCAppLanguage import _, get_language
+from SCAppPaths import get_app_dir
 from SCAboutDlg import SCAboutDlg
 from SCConfig import ConfigManager
-from SCDatabase import CollectionManagerDB, CountryCatalogueDB
+from SCDatabase import (CollectionManagerDB, CountryCatalogueDB, STATUS_LABELS, CONDITION_LABELS,
+                        STATUS_NOT_OWNED, STATUS_OWNED, STATUS_WANTED, STATUS_MISSING,
+                        status_label)
 from SCDialogs import ConfigurationDialog, CreateCollectionDialog
 from SCUtils import get_photo_name, find_file_case_insensitive, export_mancolist_to_excel
-
-# Localization setup
-gettext.find("StampCatalogue")
-translate = gettext.translation(
-    'StampCatalogue', localedir='locale', languages=[get_language()], fallback=True
-)
-translate.install()
-_ = translate.gettext
 
 
 class MainWindow(QMainWindow):
@@ -47,10 +45,9 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(_("StampCatalogue - Stamp Collection Manager"))
         self.resize(1200, 750)
 
-        self.base_dir = self._get_app_dir()
+        self.base_dir = get_app_dir()
         self.db_dir = self.base_dir / "Databases"
         self.icons_dir = self.base_dir / "Images"
 
@@ -69,26 +66,18 @@ class MainWindow(QMainWindow):
         self.current_collection_id = None
         self.current_country = None
         self.selected_nbr = None
+        self.has_photo = False
 
         self.available_countries = self._detect_available_countries()
 
         self._create_actions()
         self._create_menu_and_toolbar()
         self._init_ui()
+        self.retranslate_ui()
         self._load_collections()
 
-    def _get_app_dir(self) -> Path:
-        """Determine the root application directory."""
-        if getattr(sys, 'frozen', False):
-            return Path(sys.executable).resolve().parent
-        else:
-            script_dir = Path(__file__).resolve().parent
-            parent_dir = script_dir.parent
-
-            if any((parent_dir / folder).exists() for folder in ["Databases", "Images", "Photos", "Help", "locale"]):
-                return parent_dir
-
-            return script_dir
+        # Re-apply every text when the language changes
+        SCAppLanguage.add_language_listener(self.retranslate_ui)
 
     def _get_icon(self, icon_filename: str, fallback_standard_icon: QStyle.StandardPixmap) -> QIcon:
         """Fetch custom PNG icon from images directory or fall back to standard system icon."""
@@ -103,49 +92,43 @@ class MainWindow(QMainWindow):
             return []
         return sorted([f.stem for f in self.db_dir.glob("*.db") if f.stem not in ["master", "collections"]])
 
+    # ------------------------------------------------------------------ building the window
     def _create_actions(self):
-        """Create shared QActions for menus and toolbars."""
+        """Create shared QActions for menus and toolbars (texts: see retranslate_ui)."""
         # Action: New Collection
         icon_add = self._get_icon("new.png", QStyle.StandardPixmap.SP_FileDialogNewFolder)
-        self.action_new_coll = QAction(icon_add, _("New Collection..."), self)
-        self.action_new_coll.setToolTip(_("Create a new collection"))
+        self.action_new_coll = QAction(icon_add, "", self)
         self.action_new_coll.triggered.connect(self._create_collection)
 
         # Action: Delete Collection
         icon_del = self._get_icon("trash.png", QStyle.StandardPixmap.SP_TrashIcon)
-        self.action_del_coll = QAction(icon_del, _("Delete Collection"), self)
-        self.action_del_coll.setToolTip(_("Delete current collection"))
+        self.action_del_coll = QAction(icon_del, "", self)
         self.action_del_coll.triggered.connect(self._delete_collection)
 
         # Action: Export Mancolist
         icon_export = self._get_icon("export_to_csv.png", QStyle.StandardPixmap.SP_DialogSaveButton)
-        self.action_export_mancolist = QAction(icon_export, _("Export Mancolist (Excel)"), self)
-        self.action_export_mancolist.setToolTip(_("Export missing stamps to Excel"))
+        self.action_export_mancolist = QAction(icon_export, "", self)
         self.action_export_mancolist.triggered.connect(self._export_mancolist)
 
         # Action: Configuration
         icon_config = self._get_icon("config.png", QStyle.StandardPixmap.SP_FileDialogEnd)
-        self.action_config = QAction(icon_config, _("Settings..."), self)
-        self.action_config.setToolTip(_("Configure application settings"))
+        self.action_config = QAction(icon_config, "", self)
         self.action_config.triggered.connect(self._open_settings)
 
         # Action: User Manual
         icon_help = self._get_icon("help.png", QStyle.StandardPixmap.SP_DialogHelpButton)
-        self.action_manual = QAction(icon_help, _("User Manual"), self)
-        self.action_manual.setToolTip(_("Open user manual"))
+        self.action_manual = QAction(icon_help, "", self)
         self.action_manual.triggered.connect(self._open_manual)
 
         # Action: About
         icon_about = self._get_icon("about.png", QStyle.StandardPixmap.SP_MessageBoxInformation)
-        self.action_about = QAction(icon_about, _("About"), self)
-        self.action_about.setToolTip(_("About StampCatalogue"))
+        self.action_about = QAction(icon_about, "", self)
         self.action_about.triggered.connect(self._show_about)
 
         # Action: Exit Application
         icon_exit = self._get_icon("exit.png", QStyle.StandardPixmap.SP_DialogCloseButton)
-        self.action_exit = QAction(icon_exit, _("Quit"), self)
+        self.action_exit = QAction(icon_exit, "", self)
         self.action_exit.setShortcut("Ctrl+Q")
-        self.action_exit.setToolTip(_("Quit application"))
         self.action_exit.triggered.connect(self.close)
 
     def _create_menu_and_toolbar(self):
@@ -153,80 +136,87 @@ class MainWindow(QMainWindow):
         menu_bar = self.menuBar()
 
         # Collection Menu
-        collection_menu = menu_bar.addMenu(_("&Collection"))
-        collection_menu.addAction(self.action_new_coll)
-        collection_menu.addAction(self.action_del_coll)
-        collection_menu.addSeparator()
-        collection_menu.addAction(self.action_exit)
+        self.collection_menu = menu_bar.addMenu("")
+        self.collection_menu.addAction(self.action_new_coll)
+        self.collection_menu.addAction(self.action_del_coll)
+        self.collection_menu.addSeparator()
+        self.collection_menu.addAction(self.action_exit)
 
         # Tools Menu
-        tools_menu = menu_bar.addMenu(_("&Tools"))
-        tools_menu.addAction(self.action_export_mancolist)
+        self.tools_menu = menu_bar.addMenu("")
+        self.tools_menu.addAction(self.action_export_mancolist)
 
         # Settings Menu
-        config_menu = menu_bar.addMenu(_("&Configuration"))
-        config_menu.addAction(self.action_config)
+        self.config_menu = menu_bar.addMenu("")
+        self.config_menu.addAction(self.action_config)
 
         # Help Menu
-        help_menu = menu_bar.addMenu(_("&Help"))
-        help_menu.addAction(self.action_manual)
-        help_menu.addSeparator()
-        help_menu.addAction(self.action_about)
+        self.help_menu = menu_bar.addMenu("")
+        self.help_menu.addAction(self.action_manual)
+        self.help_menu.addSeparator()
+        self.help_menu.addAction(self.action_about)
 
         # Top ToolBar
-        toolbar = QToolBar(_("Main Toolbar"))
-        toolbar.setIconSize(QSize(24, 24))
-        toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, toolbar)
+        self.toolbar = QToolBar(self)
+        self.toolbar.setIconSize(QSize(24, 24))
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
 
-        toolbar.addAction(self.action_new_coll)
-        toolbar.addAction(self.action_del_coll)
-        toolbar.addSeparator()
-        toolbar.addAction(self.action_export_mancolist)
-        toolbar.addSeparator()
-        toolbar.addAction(self.action_config)
-        toolbar.addAction(self.action_manual)
+        self.toolbar.addAction(self.action_new_coll)
+        self.toolbar.addAction(self.action_del_coll)
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(self.action_export_mancolist)
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(self.action_config)
+        self.toolbar.addAction(self.action_manual)
 
     def _init_ui(self):
-        """Initialize main layout and child widgets."""
+        """Initialize main layout and child widgets (texts: see retranslate_ui)."""
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
         main_layout = QVBoxLayout(main_widget)
 
+        # Labels whose text is set in retranslate_ui: {QLabel: message id}
+        self.labels = {}
+
+        def label(msgid):
+            lbl = QLabel()
+            self.labels[lbl] = msgid
+            return lbl
+
         # Collection Selection Header
-        coll_box = QGroupBox(_("Collection Selection"))
+        self.coll_box = QGroupBox()
         coll_layout = QHBoxLayout()
 
-        coll_layout.addWidget(QLabel(_("Active Collection:")))
+        coll_layout.addWidget(label("Active Collection:"))
         self.combo_collections = QComboBox()
         self.combo_collections.currentIndexChanged.connect(self._on_collection_changed)
         coll_layout.addWidget(self.combo_collections, stretch=1)
 
-        coll_box.setLayout(coll_layout)
-        main_layout.addWidget(coll_box)
+        self.coll_box.setLayout(coll_layout)
+        main_layout.addWidget(self.coll_box)
 
         # Filter Bar
-        filter_box = QGroupBox(_("Catalogue Filters"))
+        self.filter_box = QGroupBox()
         filter_layout = QHBoxLayout()
 
-        filter_layout.addWidget(QLabel(_("Type:")))
+        filter_layout.addWidget(label("Type:"))
         self.combo_type = QComboBox()
-        self.combo_type.currentTextChanged.connect(self._refresh_table)
+        self.combo_type.currentIndexChanged.connect(self._refresh_table)
         filter_layout.addWidget(self.combo_type)
 
-        filter_layout.addWidget(QLabel(_("Year:")))
+        filter_layout.addWidget(label("Year:"))
         self.combo_year = QComboBox()
-        self.combo_year.currentTextChanged.connect(self._refresh_table)
+        self.combo_year.currentIndexChanged.connect(self._refresh_table)
         filter_layout.addWidget(self.combo_year)
 
-        filter_layout.addWidget(QLabel(_("Catalog N°:")))
+        filter_layout.addWidget(label("Catalog N°:"))
         self.edit_search_nbr = QLineEdit()
-        self.edit_search_nbr.setPlaceholderText(_("e.g. 154..."))
         self.edit_search_nbr.textChanged.connect(self._refresh_table)
         filter_layout.addWidget(self.edit_search_nbr)
 
-        filter_box.setLayout(filter_layout)
-        main_layout.addWidget(filter_box)
+        self.filter_box.setLayout(filter_layout)
+        main_layout.addWidget(self.filter_box)
 
         # Main Splitter
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -234,14 +224,6 @@ class MainWindow(QMainWindow):
         # Stamps Table
         self.table = QTableWidget()
         self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels([
-            _("Yvert N°"),
-            _("Year"),
-            _("Type"),
-            _("Value / Color"),
-            _("Description"),
-            _("Status")
-        ])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSortingEnabled(True)
@@ -253,14 +235,14 @@ class MainWindow(QMainWindow):
         right_layout = QVBoxLayout(right_panel)
 
         # Image Viewer
-        self.img_label = QLabel(_("No Photo Available"))
+        self.img_label = QLabel()
         self.img_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.img_label.setFixedSize(220, 220)
         self.img_label.setStyleSheet("border: 1px solid #cbd5e0; background: #f7fafc;")
         right_layout.addWidget(self.img_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Details Box
-        detail_box = QGroupBox(_("Stamp Details"))
+        self.detail_box = QGroupBox()
         detail_form = QFormLayout()
 
         self.lbl_year = QLabel("-")
@@ -269,32 +251,25 @@ class MainWindow(QMainWindow):
         self.lbl_desc = QLabel("-")
         self.lbl_desc.setWordWrap(True)
 
-        detail_form.addRow(_("Year:"), self.lbl_year)
-        detail_form.addRow(_("Yvert N°:"), self.lbl_yvert)
-        detail_form.addRow(_("Value / Color:"), self.lbl_valeur)
-        detail_form.addRow(_("Description 1:"), self.lbl_desc)
-        detail_box.setLayout(detail_form)
-        right_layout.addWidget(detail_box)
+        detail_form.addRow(label("Year:"), self.lbl_year)
+        detail_form.addRow(label("Yvert N°:"), self.lbl_yvert)
+        detail_form.addRow(label("Value / Color:"), self.lbl_valeur)
+        detail_form.addRow(label("Description 1:"), self.lbl_desc)
+        self.detail_box.setLayout(detail_form)
+        right_layout.addWidget(self.detail_box)
 
         # Ownership Form
-        form_box = QGroupBox(_("Collection Status"))
+        self.form_box = QGroupBox()
         form = QFormLayout()
 
+        # Items carry a language-neutral code (stored in the database) and a translated text
         self.combo_status = QComboBox()
-        self.combo_status.addItems([
-            _("Not Owned"),
-            _("Owned"),
-            _("Manco (Wanted)"),
-            _("Ordered")
-        ])
+        for code, _msgid in STATUS_LABELS:
+            self.combo_status.addItem("", code)
 
         self.combo_condition = QComboBox()
-        self.combo_condition.addItems([
-            _("Mint Never Hinged (** MNH)"),
-            _("Mint Hinged (* MH)"),
-            _("Used (Cancelled)"),
-            _("On Cover")
-        ])
+        for code, _msgid in CONDITION_LABELS:
+            self.combo_condition.addItem("", code)
 
         self.spin_qty = QSpinBox()
         self.spin_qty.setRange(1, 100)
@@ -306,44 +281,105 @@ class MainWindow(QMainWindow):
         self.txt_notes = QTextEdit()
         self.txt_notes.setMaximumHeight(60)
 
-        form.addRow(_("Status:"), self.combo_status)
-        form.addRow(_("Condition:"), self.combo_condition)
-        form.addRow(_("Quantity:"), self.spin_qty)
-        form.addRow(_("Purchase Price:"), self.spin_price)
-        form.addRow(_("Notes:"), self.txt_notes)
+        form.addRow(label("Status:"), self.combo_status)
+        form.addRow(label("Condition:"), self.combo_condition)
+        form.addRow(label("Quantity:"), self.spin_qty)
+        form.addRow(label("Purchase Price:"), self.spin_price)
+        form.addRow(label("Notes:"), self.txt_notes)
 
-        btn_save = QPushButton(_("Save to Collection"))
-        btn_save.setStyleSheet("background-color: #2b6cb0; color: white; font-weight: bold;")
-        btn_save.clicked.connect(self._save_stamp_status)
-        form.addRow(btn_save)
+        self.btn_save = QPushButton()
+        self.btn_save.setStyleSheet("background-color: #2b6cb0; color: white; font-weight: bold;")
+        self.btn_save.clicked.connect(self._save_stamp_status)
+        form.addRow(self.btn_save)
 
-        form_box.setLayout(form)
-        right_layout.addWidget(form_box)
+        self.form_box.setLayout(form)
+        right_layout.addWidget(self.form_box)
 
         splitter.addWidget(right_panel)
         splitter.setSizes([650, 350])
 
         main_layout.addWidget(splitter)
 
+    # ------------------------------------------------------------------ translation
+    def retranslate_ui(self):
+        """Set every visible text in the current language.
+        Called when the window is built and after each change of language."""
+        self.setWindowTitle(_("StampCatalogue - Stamp Collection Manager"))
+
+        # Actions (menus and toolbar)
+        for action, text, tip in (
+                (self.action_new_coll, "New Collection...", "Create a new collection"),
+                (self.action_del_coll, "Delete Collection", "Delete current collection"),
+                (self.action_export_mancolist, "Export Mancolist (Excel)", "Export missing stamps to Excel"),
+                (self.action_config, "Settings...", "Configure application settings"),
+                (self.action_manual, "User Manual", "Open user manual"),
+                (self.action_about, "About", "About StampCatalogue"),
+                (self.action_exit, "Quit", "Quit application")):
+            action.setText(_(text))
+            action.setToolTip(_(tip))
+
+        self.collection_menu.setTitle(_("&Collection"))
+        self.tools_menu.setTitle(_("&Tools"))
+        self.config_menu.setTitle(_("&Configuration"))
+        self.help_menu.setTitle(_("&Help"))
+        self.toolbar.setWindowTitle(_("Main Toolbar"))
+
+        # Group boxes, labels, fields
+        self.coll_box.setTitle(_("Collection Selection"))
+        self.filter_box.setTitle(_("Catalogue Filters"))
+        self.detail_box.setTitle(_("Stamp Details"))
+        self.form_box.setTitle(_("Collection Status"))
+        for lbl, msgid in self.labels.items():
+            lbl.setText(_(msgid))
+        self.edit_search_nbr.setPlaceholderText(_("e.g. 154..."))
+        self.btn_save.setText(_("Save to Collection"))
+        if not self.has_photo:
+            self.img_label.setText(_("No Photo Available"))
+
+        # Combo boxes: only the texts change, the selected item is kept
+        for combo, labels in ((self.combo_status, STATUS_LABELS), (self.combo_condition, CONDITION_LABELS)):
+            for i, (_code, msgid) in enumerate(labels):
+                combo.setItemText(i, _(msgid))
+        for combo in (self.combo_type, self.combo_year):
+            if combo.count() and combo.itemData(0) is None:
+                combo.blockSignals(True)
+                combo.setItemText(0, _("All"))
+                combo.blockSignals(False)
+
+        # Table: headers and the translated status column
+        self.table.setHorizontalHeaderLabels([
+            _("Yvert N°"),
+            _("Year"),
+            _("Type"),
+            _("Value / Color"),
+            _("Description"),
+            _("Status")
+        ])
+        self._refresh_table()
+
+    # ------------------------------------------------------------------ settings, help
     def _open_settings(self):
-        """Open settings dialog and save updated INI configuration."""
+        """Open settings dialog, save the INI configuration and apply the language at once."""
+        old_db_type = self.config_manager.get_db_type()
         dialog = ConfigurationDialog(
             current_lang=self.config_manager.get_language(),
-            current_db_type=self.config_manager.get_db_type(),
+            current_db_type=old_db_type,
             parent=self
         )
         if dialog.exec() == QDialog.DialogCode.Accepted:
             new_lang, new_db_type = dialog.get_settings()
             self.config_manager.set_settings(new_lang, new_db_type)
 
-            import SCAppLanguage
-            SCAppLanguage.get_language(force_reload=True)
+            # Switch the whole interface to the new language (retranslate_ui is notified)
+            if new_lang != get_language():
+                SCAppLanguage.set_language(new_lang)
 
-            QMessageBox.information(
-                self,
-                _("Settings Saved"),
-                _("Configuration saved to StampCatalogue.cfg.\nPlease restart the application to apply language changes.")
-            )
+            if new_db_type != old_db_type:
+                QMessageBox.information(
+                    self,
+                    _("Settings Saved"),
+                    _("The database type will be used the next time the application starts.")
+                )
 
     def _show_about(self):
         """Display about dialog."""
@@ -352,7 +388,7 @@ class MainWindow(QMainWindow):
 
     def _open_manual(self):
         """Open language-specific manual file."""
-        lang = self.config_manager.get_language()
+        lang = get_language()
         doc_dir = self.base_dir / "Help"
 
         if lang == "fr":
@@ -377,6 +413,7 @@ class MainWindow(QMainWindow):
                 f"{_('User manual file not found:')}\n{help_file}"
             )
 
+    # ------------------------------------------------------------------ collections
     def _load_collections(self):
         """Populate the collections dropdown."""
         self.combo_collections.blockSignals(True)
@@ -445,33 +482,37 @@ class MainWindow(QMainWindow):
             self.country_db.close()
         self.country_db = CountryCatalogueDB(self.current_country, self.db_dir)
 
+        # First item "All" carries no data (None = no filter), whatever its translated text
         self.combo_type.blockSignals(True)
         self.combo_type.clear()
-        self.combo_type.addItem(_("All"))
-        self.combo_type.addItems(self.country_db.load_types())
+        self.combo_type.addItem(_("All"), None)
+        for stamp_type in self.country_db.load_types():
+            self.combo_type.addItem(str(stamp_type), stamp_type)
         self.combo_type.blockSignals(False)
 
         self.combo_year.blockSignals(True)
         self.combo_year.clear()
-        self.combo_year.addItem(_("All"))
-        self.combo_year.addItems([str(y) for y in self.country_db.load_years()])
+        self.combo_year.addItem(_("All"), None)
+        for year in self.country_db.load_years():
+            self.combo_year.addItem(str(year), year)
         self.combo_year.blockSignals(False)
 
         self._refresh_table()
 
-    def _refresh_table(self):
+    def _refresh_table(self, *args):
         """Refresh catalogue table records based on active filters."""
         if not self.country_db or self.current_collection_id is None:
             return
 
         stamps = self.country_db.get_stamps(
-            stamp_type=self.combo_type.currentText(),
-            year=self.combo_year.currentText(),
+            stamp_type=self.combo_type.currentData(),
+            year=self.combo_year.currentData(),
             search_nbr=self.edit_search_nbr.text().strip()
         )
 
         user_items = self.central_db.get_collection_items(self.current_collection_id)
 
+        self.table.blockSignals(True)
         self.table.setSortingEnabled(False)
         self.table.setRowCount(0)
 
@@ -486,12 +527,12 @@ class MainWindow(QMainWindow):
             self.table.setItem(row_idx, 4, QTableWidgetItem(str(desc or "")))
 
             user_data = user_items.get(str(nbr))
-            status_text = user_data[0] if user_data else _("Not Owned")
-            status_item = QTableWidgetItem(status_text)
+            status_code = user_data[0] if user_data else STATUS_NOT_OWNED
+            status_item = QTableWidgetItem(status_label(status_code))
 
-            if status_text == _("Owned"):
+            if status_code == STATUS_OWNED:
                 status_item.setForeground(Qt.GlobalColor.darkGreen)
-            elif status_text == _("Manco (Wanted)"):
+            elif status_code == STATUS_WANTED:
                 status_item.setForeground(Qt.GlobalColor.red)
 
             self.table.setItem(row_idx, 5, status_item)
@@ -500,6 +541,14 @@ class MainWindow(QMainWindow):
             self.table.item(row_idx, 0).setData(Qt.ItemDataRole.UserRole, full_data)
 
         self.table.setSortingEnabled(True)
+
+        # Keep the selected stamp selected (without reloading the form being edited)
+        if self.selected_nbr is not None:
+            for row in range(self.table.rowCount()):
+                if self.table.item(row, 0).text() == str(self.selected_nbr):
+                    self.table.selectRow(row)
+                    break
+        self.table.blockSignals(False)
 
     def _on_stamp_selected(self):
         """Handle row selection inside the catalogue table."""
@@ -520,19 +569,25 @@ class MainWindow(QMainWindow):
 
         if user_data:
             status, cond, qty, price, notes = user_data
-            self.combo_status.setCurrentText(status)
-            self.combo_condition.setCurrentText(cond if cond else _("Mint Never Hinged (** MNH)"))
+            self._select_code(self.combo_status, status)
+            self._select_code(self.combo_condition, cond)
             self.spin_qty.setValue(qty if qty else 1)
             self.spin_price.setValue(price if price else 0.0)
             self.txt_notes.setPlainText(notes if notes else "")
         else:
-            self.combo_status.setCurrentText(_("Not Owned"))
+            self._select_code(self.combo_status, STATUS_NOT_OWNED)
             self.combo_condition.setCurrentIndex(0)
             self.spin_qty.setValue(1)
             self.spin_price.setValue(0.0)
             self.txt_notes.clear()
 
         self._load_stamp_image(nbr, stype, sub_nbr)
+
+    @staticmethod
+    def _select_code(combo, code):
+        """Select the combo item that carries the given code (first item if unknown)."""
+        idx = combo.findData(code)
+        combo.setCurrentIndex(idx if idx >= 0 else 0)
 
     def _load_stamp_image(self, stamp_nbr, stamp_type, stamp_sub_nbr=""):
         """Display stamp photo using case-insensitive lookup."""
@@ -561,8 +616,10 @@ class MainWindow(QMainWindow):
                     scaled_pixmap = pixmap.scaledToHeight(200)
 
                 self.img_label.setPixmap(scaled_pixmap)
+                self.has_photo = True
                 return
 
+        self.has_photo = False
         self.img_label.setText(_("No Photo Available"))
 
     def _save_stamp_status(self):
@@ -570,15 +627,15 @@ class MainWindow(QMainWindow):
         if not self.selected_nbr or self.current_collection_id is None:
             return
 
-        status = self.combo_status.currentText()
-        if status == _("Not Owned"):
+        status = self.combo_status.currentData()
+        if status == STATUS_NOT_OWNED:
             self.central_db.remove_item(self.current_collection_id, self.selected_nbr)
         else:
             self.central_db.save_item(
                 collection_id=self.current_collection_id,
                 stamp_nbr=self.selected_nbr,
                 status=status,
-                condition=self.combo_condition.currentText(),
+                condition=self.combo_condition.currentData(),
                 quantity=self.spin_qty.value(),
                 price=self.spin_price.value(),
                 notes=self.txt_notes.toPlainText().strip()
@@ -598,11 +655,11 @@ class MainWindow(QMainWindow):
         for stamp in stamps:
             nbr, year, stype, valcolor, desc, key, sub_nbr = stamp
             user_data = user_items.get(str(nbr))
-            status = user_data[0] if user_data else _("Missing")
+            status = user_data[0] if user_data else STATUS_MISSING
 
-            if not user_data or status in [_("Manco (Wanted)"), _("Missing")]:
+            if not user_data or status in (STATUS_WANTED, STATUS_MISSING):
                 notes = user_data[4] if user_data else ""
-                mancolist.append((nbr, year, stype, valcolor, desc, status, notes))
+                mancolist.append((nbr, year, stype, valcolor, desc, status_label(status), notes))
 
         if not mancolist:
             QMessageBox.information(self, _("Information"), _("No missing stamps found for this collection."))
@@ -630,10 +687,12 @@ class MainWindow(QMainWindow):
         self.lbl_yvert.setText("-")
         self.lbl_valeur.setText("-")
         self.lbl_desc.setText("-")
+        self.has_photo = False
         self.img_label.setText(_("No Photo Available"))
 
     def closeEvent(self, event):
         """Clean up active database handles upon exit."""
+        SCAppLanguage.remove_language_listener(self.retranslate_ui)
         if self.central_db:
             self.central_db.close()
         if self.country_db:
@@ -643,6 +702,8 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    # Qt's own texts (Yes / No buttons of the message boxes...) in the configured language
+    SCAppLanguage.install_qt_translator()
     window = MainWindow()
     window.show()
     sys.exit(app.exec())

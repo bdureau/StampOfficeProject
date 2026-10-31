@@ -13,8 +13,9 @@ album imported from the editor and then saved.
 Each converted album is saved as soon as it is finished, under the source name
 with the .sta extension. Stopping the batch keeps every album already converted.
 
-The converter has its own settings (language, conversion options), stored with
-QSettings under "StampAlbum/AlbumConverter"; they do not change the editor.
+The converter has its own settings (language, conversion options), stored in the
+text file AlbumConverter.cfg in the application folder (the folder that contains
+Images and Help); they do not change the editor.
 
 Author: Boris du Reau
 """
@@ -27,12 +28,12 @@ import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from PyQt6.QtCore import QLibraryInfo, QLocale, QSettings, QSize, Qt, QTimer, QTranslator, QUrl
+from PyQt6.QtCore import QLibraryInfo, QLocale, QSettings, Qt, QTimer, QTranslator, QUrl
 from PyQt6.QtGui import QAction, QActionGroup, QColor, QDesktopServices, QIcon, QKeySequence
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
     QFormLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QListWidgetItem,
-    QMainWindow, QMessageBox, QPlainTextEdit, QProgressBar, QPushButton, QSizePolicy, QStyle,
+    QMainWindow, QMessageBox, QPlainTextEdit, QProgressBar, QPushButton, QStyle,
     QTableWidget, QTableWidgetItem, QToolBar, QVBoxLayout, QWidget
 )
 
@@ -144,8 +145,41 @@ def _border_label(style):
             "greek": _("Greek (Notched)"), "dentelle": _("Dentelle (Philately)")}[style]
 
 
+CONFIG_FILE = "AlbumConverter.cfg"
+
+
+def _app_root() -> Path:
+    """Root folder of the application, with the same rule as MainWindow._get_app_dir:
+    the parent of the program folder when it holds Images, Help, locale..., otherwise
+    the program folder itself."""
+    base = _app_dir()
+    if not getattr(sys, 'frozen', False) and any(
+            (base.parent / d).exists() for d in ("Databases", "Images", "Photos", "docs", "Help", "locale")):
+        return base.parent
+    return base
+
+
+def _is_writable(path: Path) -> bool:
+    """True if the file can be written (or created in its folder)."""
+    target = path if path.exists() else path.parent
+    return os.access(str(target), os.W_OK)
+
+
+def config_file_path() -> Path:
+    """AlbumConverter.cfg in the application folder. If that folder is read-only
+    (for example under C:\\Program Files), the file goes to the user's settings folder."""
+    path = _app_root() / CONFIG_FILE
+    if _is_writable(path):
+        return path
+    from PyQt6.QtCore import QStandardPaths
+    user_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.GenericConfigLocation))
+    user_dir = user_dir / "StampAlbum"
+    user_dir.mkdir(parents=True, exist_ok=True)
+    return user_dir / CONFIG_FILE
+
+
 class Settings:
-    """Converter settings, persisted with QSettings."""
+    """Converter settings, stored in the text file AlbumConverter.cfg (INI format)."""
 
     DEFAULTS = {
         "language": None,                  # resolved by default_language()
@@ -158,8 +192,12 @@ class Settings:
         "image_dirs": [],
     }
 
-    def __init__(self):
-        self.qs = QSettings("StampAlbum", "AlbumConverter")
+    def __init__(self, path: Path = None):
+        self.path = Path(path) if path else config_file_path()
+        first_use = not self.path.exists()
+        self.qs = QSettings(str(self.path), QSettings.Format.IniFormat)
+        if first_use:
+            self._import_previous_settings()
         self.values = {}
         for key, default in self.DEFAULTS.items():
             self.values[key] = self._read(key, default)
@@ -170,6 +208,22 @@ class Settings:
         if self.values["border_style"] not in BORDER_STYLES:
             self.values["border_style"] = ""
 
+    def _import_previous_settings(self):
+        """Earlier versions kept the settings in the registry (Windows) or the user's
+        settings folder: copy them once into AlbumConverter.cfg."""
+        old = QSettings("StampAlbum", "AlbumConverter")
+        keys = old.allKeys()
+        for key in keys:
+            value = old.value(key)
+            if key == "image_dirs" and isinstance(value, str) and value.startswith("["):
+                try:
+                    value = json.loads(value)
+                except ValueError:
+                    value = []
+            self.qs.setValue(key, value)
+        if keys:
+            self.qs.sync()
+
     def _read(self, key, default):
         raw = self.qs.value(key, None)
         if raw is None:
@@ -177,11 +231,15 @@ class Settings:
         if isinstance(default, bool):
             return raw in (True, "true", "1", 1)
         if isinstance(default, list):
-            try:
-                value = json.loads(raw) if isinstance(raw, str) else list(raw)
-                return [str(v) for v in value]
-            except (ValueError, TypeError):
-                return []
+            # A list with a single entry is read back as a plain string
+            if isinstance(raw, str):
+                if raw.startswith("["):
+                    try:
+                        return [str(v) for v in json.loads(raw)]
+                    except ValueError:
+                        pass
+                return [raw] if raw else []
+            return [str(v) for v in raw]
         return str(raw)
 
     def __getitem__(self, key):
@@ -190,7 +248,7 @@ class Settings:
     def update(self, new_values: dict):
         for key, value in new_values.items():
             self.values[key] = value
-            self.qs.setValue(key, json.dumps(value) if isinstance(value, list) else value)
+            self.qs.setValue(key, list(value) if isinstance(value, list) else value)
         self.qs.sync()
 
     # Per-mode conveniences (last folders used)
@@ -199,6 +257,7 @@ class Settings:
 
     def set(self, key, value):
         self.qs.setValue(key, value)
+        self.qs.sync()
 
 
 # ============================================================================
@@ -470,6 +529,11 @@ class ConfigDialog(QDialog):
         layout = QVBoxLayout(self)
         for box in (box_general, box_conv, box_albums, box_pics):
             layout.addWidget(box)
+        path_label = QLabel(_("Configuration file: {path}").format(path=settings.path))
+        path_label.setWordWrap(True)
+        path_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        path_label.setStyleSheet("color: #5f6368;")
+        layout.addWidget(path_label)
         layout.addWidget(bb)
 
         self._load(settings.values)
@@ -806,22 +870,23 @@ class ConverterWindow(QMainWindow):
         self.menuHelp.addAction(self.actAbout)
 
     def _create_toolbar(self):
-        self.toolbar = QToolBar(self)
-        self.toolbar.setObjectName("mainToolbar")
-        self.toolbar.setMovable(False)
-        self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)    # icons only, text in tooltips
-        self.toolbar.addAction(self.actAlbumEasy)
-        self.toolbar.addAction(self.actFeuille)
-        self.toolbar.addSeparator()
-        self.toolbar.addAction(self.actStop)
-        self.toolbar.addSeparator()
-        self.toolbar.addAction(self.actConfig)
-        spacer = QWidget()
-        spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        self.toolbar.addWidget(spacer)
-        self.toolbar.addAction(self.actQuit)
-        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
+        """Toolbars built like those of the Stamp Album editor (MainWindow._createToolBars):
+        one movable toolbar per group, so each one shows its grip (double line) on the left,
+        default icon size of the Qt style, icons only."""
+        def toolbar(name, actions):
+            tb = QToolBar(self)
+            tb.setObjectName(name)
+            tb.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)    # text in the tooltips
+            for act in actions:
+                tb.addAction(act)
+            self.addToolBar(tb)
+            return tb
+
+        # Same grouping as the editor: conversion commands with Quit at the end,
+        # then help, about and settings
+        self.convToolBar = toolbar("conversionToolBar",
+                                   [self.actAlbumEasy, self.actFeuille, self.actStop, self.actQuit])
+        self.helpToolBar = toolbar("helpToolBar", [self.actManual, self.actAbout, self.actConfig])
 
     def _create_central(self):
         self.titleLabel = QLabel()
@@ -884,7 +949,8 @@ class ConverterWindow(QMainWindow):
         self.menuConfig.setTitle(_("Con&figuration"))
         self.menuLanguage.setTitle(_("&Language"))
         self.menuHelp.setTitle(_("&Help"))
-        self.toolbar.setWindowTitle(_("Toolbar"))
+        self.convToolBar.setWindowTitle(_("Conversion"))
+        self.helpToolBar.setWindowTitle(_("Help"))
 
         texts = [
             (self.actAlbumEasy, _("Convert &AlbumEasy files..."), _("AlbumEasy"),

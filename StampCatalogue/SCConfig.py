@@ -1,15 +1,18 @@
 """
 Configuration Manager Module
 ----------------------------
-Handles loading, saving, and persisting application settings to INI format.
+Handles loading, saving, and persisting the application settings
+(language, database type) in the INI file StampCatalogue.cfg.
 
 Author: Boris du Reau
-Year: 2026
+Date: 2026-10-31
 """
 
 import configparser
 from pathlib import Path
+
 from SCAppLanguage import get_language
+from SCAppPaths import read_config_into
 
 
 class ConfigManager:
@@ -23,7 +26,8 @@ class ConfigManager:
     def load(self):
         """Load configuration from file or apply default values."""
         if self.config_file.exists():
-            self.config.read(self.config_file, encoding='utf-8')
+            # UTF-8 first, then cp1252 for files written by older versions
+            read_config_into(self.config, self.config_file)
         else:
             self._set_defaults()
             self.save()
