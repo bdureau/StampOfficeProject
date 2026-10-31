@@ -26,6 +26,7 @@ from PyQt6.QtPrintSupport import QPrintPreviewDialog, QPrinter
 from Stamp import Stamp
 from CustomStampDlg import CustomStampDlg
 from AlbumEasyImporter import AlbumEasyImporter
+from XlsAlbumImporter import XlsAlbumImporter
 
 from Page import Page
 from ConfigDlg import ConfigDlg
@@ -247,6 +248,7 @@ class Window(QMainWindow):
         fileMenu.addAction(self.newAction)
         fileMenu.addAction(self.openAction)
         fileMenu.addAction(self.importAlbumEasyAction)
+        fileMenu.addAction(self.importExcelAlbumAction)
         fileMenu.addAction(self.saveAction)
         fileMenu.addAction(self.printAction)
         fileMenu.addAction(self.printPreviewCurrentPageAction)
@@ -600,6 +602,9 @@ class Window(QMainWindow):
         self.importAlbumEasyAction = QAction(_("Import AlbumEasy..."), self)
         self.importAlbumEasyAction.setIcon(self._get_icon("open.png"))
 
+        self.importExcelAlbumAction = QAction(_("Import Excel album (.xls)..."), self)
+        self.importExcelAlbumAction.setIcon(self._get_icon("open.png"))
+
         self.changePageSetupAction = QAction(_("Current page setup..."), self)
         self.changePageSetupAction.setIcon(self._get_icon("page.png"))
         self.changePageSetupAction.triggered.connect(self.changeCurrentPageSetup)
@@ -724,6 +729,7 @@ class Window(QMainWindow):
         self.changeBorderCurrentAction.triggered.connect(self.changeBorderCurrentPage)
         self.changeBorderAllAction.triggered.connect(self.changeBorderAllPages)
         self.importAlbumEasyAction.triggered.connect(self.importAlbumEasy)
+        self.importExcelAlbumAction.triggered.connect(self.importExcelAlbum)
 
 
     def closeEvent(self, event: QtGui.QCloseEvent):
@@ -2186,6 +2192,85 @@ class Window(QMainWindow):
             lines.append("")
             lines += ["  • " + n for n in report["notes"]]
         QMessageBox.information(self, _("Import AlbumEasy"), "\n".join(lines))
+
+    def importExcelAlbum(self):
+        """Convert an old Excel/VBA stamp album (.xls, one chart sheet per page) into album pages."""
+        options = QFileDialog.Option.DontUseNativeDialog
+        fileName, _filter = QFileDialog.getOpenFileName(
+            self, _("Import Excel album"), "", _("Excel albums (*.xls);;All Files (*)"), options=options
+        )
+        if not fileName:
+            return
+
+        qm = QMessageBox(self)
+        qm.setIcon(QMessageBox.Icon.Question)
+        qm.setWindowTitle(_("Import Excel album"))
+        qm.setText(_("Do you want to replace the actual album ?\n(Choose 'No' to append it)"))
+        qm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No |
+                              QMessageBox.StandardButton.Cancel)
+        for btn, label in ((QMessageBox.StandardButton.Yes, _("&Yes")),
+                           (QMessageBox.StandardButton.No, _("&No")),
+                           (QMessageBox.StandardButton.Cancel, _("&Cancel"))):
+            b = qm.button(btn)
+            if b:
+                b.setText(label)
+        ret = qm.exec()
+        if ret == QMessageBox.StandardButton.Cancel:
+            return
+
+        replace = ret == QMessageBox.StandardButton.Yes
+        if replace:
+            if not self.maybe_save():
+                return
+            self.deleteAllPages()
+        first_new_index = self.tabs.count()
+
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+        try:
+            report = XlsAlbumImporter(self, fileName).run()
+        except ImportError:
+            QApplication.restoreOverrideCursor()
+            QMessageBox.critical(self, _("Import Error"),
+                                 _("The 'olefile' module is required:\npip install olefile"))
+            if self.tabs.count() == 0:
+                self.newPage("portrait", True)
+            return
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            QApplication.restoreOverrideCursor()
+            QMessageBox.critical(self, _("Import Error"),
+                                 "{msg}\n{error}".format(msg=_("An error occurred:"), error=str(e)))
+            if self.tabs.count() == 0:
+                self.newPage("portrait", True)
+            return
+        finally:
+            if QApplication.overrideCursor() is not None:
+                QApplication.restoreOverrideCursor()
+
+        if self.tabs.count() == 0:
+            self.newPage("portrait", True)
+
+        album_lang = self.album_metadata.get("language", "fr")
+        for i in range(self.tabs.count()):
+            widget = self.tabs.widget(i)
+            if hasattr(widget, "view") and widget.view and widget.view.scene():
+                widget.view.scene().album_language = album_lang
+
+        self.renameTabs()
+        self.update_window_title()
+        self.tabs.setCurrentIndex(min(first_new_index, self.tabs.count() - 1))
+
+        lines = [_("{pages} page(s) and {stamps} stamp(s) imported.").format(
+            pages=report["pages"], stamps=report["stamps"])]
+        if report["no_image"]:
+            lines.append(_("{n} stamp(s) without image.").format(n=report["no_image"]))
+        if report["warnings"]:
+            lines.append("")
+            lines += ["  • " + w.replace("\n", " ") for w in report["warnings"]]
+        lines.append("")
+        lines.append(_("Use File > Save to store the converted album as a .sta file."))
+        QMessageBox.information(self, _("Import Excel album"), "\n".join(lines))
 
     def renameTabs(self, *args):
         """Sequentially rename all tabs, appending an asterisk indicator if modified."""
