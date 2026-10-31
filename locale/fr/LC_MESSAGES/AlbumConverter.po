@@ -1,0 +1,434 @@
+# French translation of AlbumConverter (Stamp Album)
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+
+msgid "Ask"
+msgstr "Demander"
+
+msgid "Replace"
+msgstr "Remplacer"
+
+msgid "Skip"
+msgstr "Ignorer"
+
+msgid "Rename (Album (2).sta)"
+msgstr "Renommer (Album (2).sta)"
+
+msgid "Stamp Album setting"
+msgstr "Réglage de Stamp Album"
+
+msgid "Triple (Classic)"
+msgstr "Triple (classique)"
+
+msgid "Simple (Frame)"
+msgstr "Simple (cadre)"
+
+msgid "Greek (Notched)"
+msgstr "Grec (coins découpés)"
+
+msgid "Dentelle (Philately)"
+msgstr "Dentelle (philatélie)"
+
+msgid "Pending"
+msgstr "En attente"
+
+msgid "Converting..."
+msgstr "Conversion…"
+
+msgid "Converted"
+msgstr "Converti"
+
+msgid "Converted with warnings"
+msgstr "Converti avec avertissements"
+
+msgid "Failed"
+msgstr "Échec"
+
+msgid "Skipped"
+msgstr "Ignoré"
+
+msgid "Not converted (stopped)"
+msgstr "Non converti (arrêt)"
+
+msgid "Configuration"
+msgstr "Configuration"
+
+msgid "Application language:"
+msgstr "Langue de l'application :"
+
+msgid "General"
+msgstr "Général"
+
+msgid "Save each album next to its source file"
+msgstr "Enregistrer chaque album à côté de son fichier d'origine"
+
+msgid "Save a report automatically at the end of each batch"
+msgstr "Enregistrer automatiquement un rapport à la fin de chaque lot"
+
+msgid "If the .sta file already exists:"
+msgstr "Si le fichier .sta existe déjà :"
+
+msgid "Conversion"
+msgstr "Conversion"
+
+msgid "Used when the source file names no author"
+msgstr "Utilisé si le fichier source n'indique pas d'auteur"
+
+msgid "Page border:"
+msgstr "Cadre des pages :"
+
+msgid "Author:"
+msgstr "Auteur :"
+
+msgid "Album language:"
+msgstr "Langue de l'album :"
+
+msgid "Converted albums"
+msgstr "Albums convertis"
+
+msgid "&Add folder..."
+msgstr "&Ajouter un dossier…"
+
+msgid "&Remove"
+msgstr "&Retirer"
+
+msgid "Pictures not found next to the AlbumEasy file are searched in these folders, in order."
+msgstr "Les images introuvables à côté du fichier AlbumEasy sont recherchées dans ces dossiers, dans l’ordre."
+
+msgid "AlbumEasy pictures"
+msgstr "Images AlbumEasy"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Restore defaults"
+msgstr "Valeurs par défaut"
+
+msgid "Select a picture folder"
+msgstr "Sélectionner un dossier d'images"
+
+msgid "AlbumEasy files (*.txt);;All files (*)"
+msgstr "Fichiers AlbumEasy (*.txt);;Tous les fichiers (*)"
+
+msgid "Feuille Album 4 files (*.xls);;All files (*)"
+msgstr "Fichiers Feuille Album 4 (*.xls);;Tous les fichiers (*)"
+
+msgid "&Add files..."
+msgstr "&Ajouter des fichiers…"
+
+msgid "C&lear"
+msgstr "&Vider"
+
+msgid "&Browse..."
+msgstr "&Parcourir…"
+
+msgid "Destination folder:"
+msgstr "Dossier de destination :"
+
+msgid "&Convert"
+msgstr "&Convertir"
+
+msgid "Select the files to convert"
+msgstr "Sélectionner les fichiers à convertir"
+
+msgid "Select the destination folder"
+msgstr "Sélectionner le dossier de destination"
+
+msgid "Stamp Album - Album converter"
+msgstr "Stamp Album - Convertisseur d'albums"
+
+msgid "&Conversion"
+msgstr "&Conversion"
+
+msgid "Con&figuration"
+msgstr "Con&figuration"
+
+msgid "&Language"
+msgstr "&Langue"
+
+msgid "&Help"
+msgstr "&Aide"
+
+msgid "Toolbar"
+msgstr "Barre d'outils"
+
+msgid "&Open destination folder"
+msgstr "&Ouvrir le dossier de destination"
+
+msgid "Save &report..."
+msgstr "Enregistrer le &rapport…"
+
+msgid "next to the source files"
+msgstr "à côté des fichiers d'origine"
+
+msgid "Double-click a line for details."
+msgstr "Double-cliquez sur une ligne pour le détail."
+
+msgid "%v / %m files"
+msgstr "%v / %m fichiers"
+
+msgid "&Stop"
+msgstr "&Arrêter"
+
+msgid "About the album converter"
+msgstr "À propos du convertisseur d’albums"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "File already exists"
+msgstr "Le fichier existe déjà"
+
+msgid "What do you want to do?"
+msgstr "Que voulez-vous faire ?"
+
+msgid "Replace all"
+msgstr "Remplacer tout"
+
+msgid "Rename"
+msgstr "Renommer"
+
+msgid "Skip all"
+msgstr "Ignorer tout"
+
+msgid "Stopping..."
+msgstr "Arrêt en cours…"
+
+msgid "Album conversion report"
+msgstr "Rapport de conversion d'albums"
+
+msgid "Save report"
+msgstr "Enregistrer le rapport"
+
+msgid "Text files (*.txt)"
+msgstr "Fichiers texte (*.txt)"
+
+msgid "No album page was found in this file."
+msgstr "Aucune page d'album n'a été trouvée dans ce fichier."
+
+msgid "This folder does not exist"
+msgstr "Ce dossier n'existe pas"
+
+msgid "Convert AlbumEasy files"
+msgstr "Convertir des fichiers AlbumEasy"
+
+msgid "Convert Feuille Album 4 files"
+msgstr "Convertir des fichiers Feuille Album 4"
+
+msgid "Files to convert:"
+msgstr "Fichiers à convertir :"
+
+msgid "Please add at least one file to convert."
+msgstr "Ajoutez au moins un fichier à convertir."
+
+msgid "Convert &AlbumEasy files..."
+msgstr "Convertir des fichiers &AlbumEasy…"
+
+msgid "AlbumEasy"
+msgstr "AlbumEasy"
+
+msgid "Convert AlbumEasy description files (.txt) to Stamp Album albums"
+msgstr "Convertir des fichiers de description AlbumEasy (.txt) en albums Stamp Album"
+
+msgid "Convert &Feuille Album 4 files..."
+msgstr "Convertir des fichiers &Feuille Album 4…"
+
+msgid "Feuille Album 4"
+msgstr "Feuille Album 4"
+
+msgid "Convert Feuille Album 4 Excel albums (.xls) to Stamp Album albums"
+msgstr "Convertir des albums Excel Feuille Album 4 (.xls) en albums Stamp Album"
+
+msgid "&Settings..."
+msgstr "&Paramètres…"
+
+msgid "Language and conversion options"
+msgstr "Langue et options de conversion"
+
+msgid "S&top conversion"
+msgstr "A&rrêter la conversion"
+
+msgid "Stop"
+msgstr "Arrêter"
+
+msgid "Stop after the current file (albums already converted are kept)"
+msgstr "Arrêter après le fichier en cours (les albums déjà convertis sont conservés)"
+
+msgid "&Quit"
+msgstr "&Quitter"
+
+msgid "Quit"
+msgstr "Quitter"
+
+msgid "Quit the album converter"
+msgstr "Quitter le convertisseur d’albums"
+
+msgid "User &manual"
+msgstr "&Manuel d'utilisation"
+
+msgid "User manual"
+msgstr "Manuel d'utilisation"
+
+msgid "Open the user manual (PDF)"
+msgstr "Ouvrir le manuel d'utilisation (PDF)"
+
+msgid "&About..."
+msgstr "À &propos…"
+
+msgid "About"
+msgstr "À propos"
+
+msgid "File"
+msgstr "Fichier"
+
+msgid "Status"
+msgstr "État"
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "Stamps"
+msgstr "Timbres"
+
+msgid "Details"
+msgstr "Détails"
+
+msgid "No conversion in progress"
+msgstr "Aucune conversion en cours"
+
+msgid "Use the Conversion menu or the toolbar to choose the albums to convert."
+msgstr "Utilisez le menu Conversion ou la barre d'outils pour choisir les albums à convertir."
+
+msgid "Conversion stopped"
+msgstr "Conversion arrêtée"
+
+msgid "Conversion finished"
+msgstr "Conversion terminée"
+
+msgid "{n} converted"
+msgstr "{n} converti(s)"
+
+msgid "{name} already exists"
+msgstr "{name} existe déjà"
+
+msgid "{n} warning(s) - {first}"
+msgstr "{n} avertissement(s) - {first}"
+
+msgid "Saved as {name}"
+msgstr "Enregistré sous {name}"
+
+msgid "(stopping after the current file)"
+msgstr "(arrêt après le fichier en cours)"
+
+msgid "A conversion is in progress. Stop it and quit?\nAlbums already converted are kept."
+msgstr "Une conversion est en cours. L’arrêter et quitter ?\nLes albums déjà convertis sont conservés."
+
+msgid "Do you want to quit the album converter?"
+msgstr "Voulez-vous quitter le convertisseur d’albums ?"
+
+msgid "Image not found: {path}"
+msgstr "Image introuvable : {path}"
+
+msgid "Ignored command: {cmd} ({n}x)"
+msgstr "Commande ignorée : {cmd} ({n}x)"
+
+msgid "This is not an Excel 97-2003 workbook (.xls)."
+msgstr "Ce fichier n'est pas un classeur Excel 97-2003 (.xls)."
+
+msgid "{n} stamp(s) without image"
+msgstr "{n} timbre(s) sans image"
+
+msgid "{n} file(s) selected"
+msgstr "{n} fichier(s) sélectionné(s)"
+
+msgid "Please select a destination folder."
+msgstr "Choisissez un dossier de destination."
+
+msgid "{n} album(s) saved in {dest} ({secs:.0f} s)"
+msgstr "{n} album(s) enregistré(s) dans {dest} ({secs:.0f} s)"
+
+msgid "{name} already exists in {folder}."
+msgstr "{name} existe déjà dans {folder}."
+
+msgid "File {i} of {n}: {name}"
+msgstr "Fichier {i} sur {n} : {name}"
+
+msgid "Source: {path}"
+msgstr "Source : {path}"
+
+msgid "Destination: {path}"
+msgstr "Destination : {path}"
+
+msgid "Status: {status}"
+msgstr "État : {status}"
+
+msgid "Type: {kind}"
+msgstr "Type : {kind}"
+
+msgid "Several selected files would produce the same .sta file. Remove one of them or save next to the source files:"
+msgstr "Plusieurs fichiers sélectionnés produiraient le même fichier .sta. Retirez-en un ou enregistrez à côté des fichiers d'origine :"
+
+msgid "{n} failed"
+msgstr "{n} en échec"
+
+msgid "{n} skipped"
+msgstr "{n} ignoré(s)"
+
+msgid "{n} not converted"
+msgstr "{n} non converti(s)"
+
+msgid "Report saved: {path}"
+msgstr "Rapport enregistré : {path}"
+
+msgid "The user manual was not found:"
+msgstr "Le manuel d'utilisation est introuvable :"
+
+msgid "Converting {kind} files (saved next to the source files)"
+msgstr "Conversion des fichiers {kind} (enregistrés à côté des fichiers d'origine)"
+
+msgid "Converting {kind} files to {dest}"
+msgstr "Conversion des fichiers {kind} vers {dest}"
+
+msgid "File {i} of {n}: {name} - page {page}"
+msgstr "Fichier {i} sur {n} : {name} - page {page}"
+
+msgid "{pages} page(s), {stamps} stamp(s)"
+msgstr "{pages} page(s), {stamps} timbre(s)"
+
+msgid "The 'olefile' module is required: pip install olefile"
+msgstr "Le module 'olefile' est nécessaire : pip install olefile"
+
+msgid "The folder does not exist:\n{path}\n\nCreate it?"
+msgstr "Le dossier n'existe pas :\n{path}\n\nLe créer ?"
+
+msgid "{n} with warnings"
+msgstr "{n} avec avertissements"
+
+msgid "The report could not be saved: {error}"
+msgstr "Le rapport n'a pas pu être enregistré : {error}"
+
+msgid "{n} file(s) could not be converted:"
+msgstr "{n} fichier(s) n'ont pas pu être converti(s) :"
+
+msgid "The converted albums open in Stamp Album like any other album and can then be edited and printed."
+msgstr "Les albums convertis s’ouvrent dans Stamp Album comme n’importe quel album, et peuvent ensuite être modifiés et imprimés."
+
+msgid "Each album is saved as soon as it is converted. Files that cannot be converted are reported with the reason, and a report can be saved."
+msgstr "Chaque album est enregistré dès qu’il est converti. Les fichiers qui ne peuvent pas être convertis sont signalés avec la raison, et un rapport peut être enregistré."
+
+msgid "Feuille Album 4 Excel albums (.xls), with the pictures they contain."
+msgstr "les albums Excel Feuille Album 4 (.xls), avec les images qu’ils contiennent."
+
+msgid "AlbumEasy description files (.txt), with their stamp pictures;"
+msgstr "les fichiers de description AlbumEasy (.txt), avec les images de leurs timbres ;"
+
+msgid "Converts stamp albums made with other programs into Stamp Album albums (.sta), one file or hundreds at a time:"
+msgstr "Convertit en albums Stamp Album (.sta) des albums de timbres créés avec d’autres logiciels, un fichier ou des centaines à la fois :"
+
+msgid "Version {version}"
+msgstr "Version {version}"
