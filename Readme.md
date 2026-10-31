@@ -2,13 +2,13 @@
 
 **A suite of desktop applications for stamp collectors and philatelists.**
 
-StampOfficeProject is a Python-based application suite for creating personalized stamp album pages, managing stamp collections, and maintaining stamp catalogue databases. It provides graphical tools to organize stamps, design printable album pages, track collection status, and administer catalogue records.
+StampOfficeProject is a Python-based application suite for creating personalized stamp album pages, managing stamp collections, and maintaining stamp catalogue databases. It provides graphical tools to organize stamps, design printable album pages, track collection status, administer catalogue records, process stamp images, and convert albums from third-party formats.
 
 Originally developed in VBA for Excel in the early 2000s, the project has evolved into a set of Python desktop applications built with PyQt6.
 
 ## Applications
 
-The suite consists of three complementary applications.
+The suite consists of five complementary applications:
 
 ### 1. StampAlbum — Stamp Album Creator
 
@@ -63,6 +63,33 @@ Maintain the country-specific stamp databases used by the other applications.
 
 StampDatabase is intended for catalogue maintenance rather than everyday collection tracking.
 
+### 4. StampPhoto — Stamp Photo & Scan Processor
+
+Browse, inspect, and batch-convert stamp photographs and scans into standardized resolutions without altering original files.
+
+**Features**
+
+- Browse image collections (supporting JPG, PNG, BMP, TIFF, and WEBP formats) with natural sorting.
+- Search images by filename with prefix matching and wildcard support (`*`, `?`).
+- Inspect image metadata, including dimensions, file size, format, DPI resolution, and calculated physical stamp dimensions in millimeters.
+- Batch convert images to JPG in low (800 px), medium (1,600 px), or high (2,400 px) resolutions, or generate all three sizes at once.
+- Safe file handling: detects existing destination files with options to replace, keep, or cancel; handles EXIF rotation and converts transparent backgrounds to white.
+- Non-blocking batch processing with progress tracking, pause/stop capability, and detailed failure reports.
+- Multi-language interface (English and French) switchable on the fly.
+
+### 5. AlbumConverter — Batch Album Converter
+
+Convert stamp album files created with external programs into native StampAlbum projects (`.sta`) in batch mode.
+
+**Features**
+
+- Batch convert single or multiple album projects without launching the main StampAlbum editor.
+- Support for **AlbumEasy** description files (`.txt`), retaining page setups, margins, borders, titles, text layouts, stamp alignments, and associated images.
+- Support for **Feuille Album 4** Excel workbooks (`.xls`, Excel 97–2003), mapping each page sheet, shape group, text description, and embedded picture to StampAlbum structures.
+- Flexible conflict resolution for existing destination files (ask, replace, skip, or auto-rename).
+- Generates detailed execution reports summarizing converted pages, stamps, warnings, or errors.
+- Fully compatible with the StampAlbum ecosystem, sharing its core data structures, models, and importers.
+
 ## Architecture
 
 The applications share a common set of resources and work together as a desktop suite.
@@ -74,9 +101,10 @@ StampOfficeProject/
 ├── Images/          # Application icons and graphical resources
 ├── Photos/          # Stamp photographs
 ├── locale/          # Localization resources
-├── StampAlbum/      # Album-page editor
+├── StampAlbum/      # Album-page editor and AlbumConverter utility
 ├── StampCatalogue/  # Collection and mancolist manager
 ├── StampDatabase/   # Catalogue administration
+├── StampPhoto/      # Stamp photo viewer and converter
 └── utilities/       # Supporting utilities
 ```
 
@@ -88,16 +116,18 @@ StampOfficeProject/
 | Desktop interface | PyQt6 |
 | Reference databases | SQLite / Microsoft Access |
 | Database access | `sqlite3`, optional `pyodbc` |
+| Image processing | `Pillow` (PIL) |
+| Excel binary parsing | `olefile` (for Feuille Album 4 `.xls` files) |
 | Collection export | `openpyxl` |
 | Album output | PDF through Qt printing facilities |
 | Localization | GNU gettext and Qt translations |
 
-The applications use separate Python modules for their user interfaces, database access, configuration, and application-specific functionality.
-
 ## Requirements
 
 - Python 3.8 or later.
-- PyQt6 for the graphical applications.
+- PyQt6 for graphical interfaces.
+- `Pillow` for image batch processing in StampPhoto.
+- `olefile` for Feuille Album 4 conversion in AlbumConverter.
 - `openpyxl` for Excel mancolist generation in StampCatalogue.
 - `pyodbc` and a compatible Microsoft Access ODBC driver for Microsoft Access database support.
 
@@ -115,7 +145,7 @@ cd StampOfficeProject
 ### 2. Install the Python dependencies
 
 ```bash
-python -m pip install PyQt6 openpyxl
+python -m pip install PyQt6 Pillow olefile openpyxl
 ```
 
 For Microsoft Access database support, install `pyodbc`:
@@ -144,7 +174,7 @@ The master database and country-specific catalogues must be available in the con
 
 ## Running the applications
 
-Run the following commands from the repository root.
+Run the following commands from the repository root:
 
 ### StampAlbum
 
@@ -162,6 +192,18 @@ python StampCatalogue/StampCatalogue.py
 
 ```bash
 python StampDatabase/StampDatabase.py
+```
+
+### StampPhoto
+
+```bash
+python StampPhoto/StampPhoto.py
+```
+
+### AlbumConverter
+
+```bash
+python StampAlbum/AlbumConverter.py
 ```
 
 Each application starts its own graphical interface.
@@ -197,12 +239,19 @@ This separation allows catalogue records to be reused across multiple personal c
 
 ### Creating an album
 
-1. Launch StampAlbum.
-2. Create a new album page.
+1. Launch StampAlbum (or use AlbumConverter to import existing AlbumEasy or Feuille Album 4 collections).
+2. Create or open an album page.
 3. Select stamps from the available catalogue.
 4. Arrange and align stamps on the page.
 5. Add titles, captions, images, and decorative elements.
 6. Save the album and export the pages to PDF.
+
+### Preparing pictures
+
+1. Launch StampPhoto.
+2. Select the source folder containing stamp scans or photographs.
+3. Choose the target resolution (low, medium, high, or all).
+4. Run batch conversion to produce optimized JPEG images for albums or mancolists.
 
 ### Managing a collection
 
