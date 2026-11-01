@@ -21,6 +21,7 @@ Browsing:
 Conversion rules:
   - the configured size (low/medium/high) limits the longest side of the
     picture, so portrait and landscape pictures are reduced alike;
+  - custom resolutions in pixels can be typed directly into the combo box;
   - the EXIF orientation of camera and phone pictures is applied;
   - transparent areas are filled with white (JPG has no transparency);
   - a picture that cannot be read or written is reported, the others are
@@ -55,7 +56,7 @@ from PyQt6.QtWidgets import (
     QProgressBar, QStatusBar, QToolBar, QListWidget, QListWidgetItem, QLineEdit,
     QSplitter, QAbstractItemView, QGroupBox, QFormLayout
 )
-from PyQt6.QtGui import QAction, QActionGroup, QPixmap, QIcon, QCloseEvent, QImageReader, QDesktopServices
+from PyQt6.QtGui import QAction, QActionGroup, QPixmap, QIcon, QCloseEvent, QImageReader, QDesktopServices, QIntValidator
 from PyQt6.QtCore import Qt, QLibraryInfo, QLocale, QTranslator, QUrl, QItemSelectionModel
 
 from SPAbout import SPAboutDlg
@@ -115,17 +116,12 @@ def get_image_icon(filename: str) -> QIcon:
 
 
 def get_app_icon() -> QIcon:
-    """Application icon of the title bars and the taskbar.
-
-    StampPhoto.ico (all its sizes) completed with Images/StampPhoto.png when
-    these files are found and can be read; otherwise the icon embedded in the
-    program (SPAppIcon), so that the windows always have their icon, even with
-    an executable built without these files."""
+    """Application icon of the title bars and the taskbar."""
     icon = QIcon()
     for path in (find_program_file(APP_ICON_ICO), find_resource("Images", APP_ICON_PNG)):
         if path is not None:
             icon.addFile(str(path))
-    if icon.pixmap(32, 32).isNull():            # files missing or unreadable
+    if icon.pixmap(32, 32).isNull():
         icon = embedded_app_icon()
     return icon
 
@@ -202,7 +198,7 @@ def resize_longest_side(im: Image.Image, max_side: int) -> Image.Image:
 
 def _as_float(value):
     try:
-        if isinstance(value, tuple):            # (numerator, denominator)
+        if isinstance(value, tuple):
             return float(value[0]) / float(value[1]) if value[1] else None
         return float(value)
     except (TypeError, ValueError, ZeroDivisionError):
@@ -218,17 +214,17 @@ def read_picture_info(path: str) -> dict:
         info["format"] = im.format or os.path.splitext(path)[1].lstrip(".").upper()
         width, height = im.size
         exif = im.getexif()
-        if exif.get(0x0112) in (5, 6, 7, 8):     # rotated by 90 degrees: width and height swap
+        if exif.get(0x0112) in (5, 6, 7, 8):
             width, height = height, width
         info["width"], info["height"] = width, height
 
         dpi = None
-        raw = im.info.get("dpi")                 # JPEG (JFIF), PNG (pHYs), TIFF, BMP
+        raw = im.info.get("dpi")
         if raw:
             dpi = (_as_float(raw[0]), _as_float(raw[1]))
-        elif 0x011A in exif:                     # EXIF XResolution / YResolution
+        elif 0x011A in exif:
             x, y = _as_float(exif.get(0x011A)), _as_float(exif.get(0x011B, exif.get(0x011A)))
-            unit = exif.get(0x0128, 2)           # 2 = inch, 3 = centimetre
+            unit = exif.get(0x0128, 2)
             if x and y:
                 dpi = (x * 2.54, y * 2.54) if unit == 3 else (x, y)
         if dpi and dpi[0] and dpi[1] and dpi[0] > 1 and dpi[1] > 1:
@@ -238,13 +234,20 @@ def read_picture_info(path: str) -> dict:
     return info
 
 
-def estimated_size_mm(info: dict):
-    """(width mm, height mm, dpi used, assumed?) from the pixels and the resolution.
-    When the file has no real scan resolution, ASSUMED_SCAN_DPI is used."""
+def estimated_size_mm(info: dict, override_dpi: float = None):
+    """(width mm, height mm, dpi used, assumed?, forced?) from pixels and resolution.
+    If override_dpi is provided (>0), it overrides both file DPI and default assumed values."""
+    if override_dpi and override_dpi > 0:
+        return (info["width"] / override_dpi * 25.4,
+                info["height"] / override_dpi * 25.4,
+                (override_dpi, override_dpi),
+                False,
+                True)
+
     dpi = info.get("dpi")
     assumed = not dpi or min(dpi) < MIN_REAL_DPI
     dpi_x, dpi_y = (ASSUMED_SCAN_DPI, ASSUMED_SCAN_DPI) if assumed else dpi
-    return info["width"] / dpi_x * 25.4, info["height"] / dpi_y * 25.4, (dpi_x, dpi_y), assumed
+    return info["width"] / dpi_x * 25.4, info["height"] / dpi_y * 25.4, (dpi_x, dpi_y), assumed, False
 
 
 # ============================================================================
@@ -252,19 +255,15 @@ def estimated_size_mm(info: dict):
 # ============================================================================
 
 def fold_text(text: str) -> str:
-    """Text for comparisons: lower case, without accents ("Élysée" -> "elysee")."""
     decomposed = unicodedata.normalize("NFKD", text.casefold())
     return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 
 def natural_key(name: str):
-    """Sort key of the natural alphabetical order: "timbre2" before "timbre10"."""
     return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", fold_text(name))]
 
 
 def name_starts_with(name: str, pattern: str) -> bool:
-    """True if the file name starts with the pattern (case and accents ignored).
-    The pattern may contain the wildcards * (any text) and ? (any character)."""
     pattern = fold_text(pattern.strip())
     if not pattern:
         return False
@@ -286,12 +285,9 @@ class StampPhotoApp(QMainWindow):
         self.source_dir = ""
         self.dest_dir = ""
 
-        # Picture shown in the preview, kept in memory to rescale it when the
-        # window is resized without reading the file again: (path, QPixmap)
         self._pixmap_cache = (None, QPixmap())
         self._picture_info = None
 
-        # Batch conversion state
         self._busy = False
         self._stop_requested = False
         self._close_after_batch = False
@@ -304,15 +300,12 @@ class StampPhotoApp(QMainWindow):
         self._init_ui()
         self.retranslate_ui()
 
-        # If a saved directory exists, automatically load it
         if self.source_dir and os.path.isdir(self.source_dir):
             self._load_images_from_source()
 
         self._warn_missing_resources()
 
     def _warn_missing_resources(self):
-        """Say in the status bar when the icons or the translation were not found
-        (typically a compiled StampPhoto without its Images / locale folders)."""
         missing = []
         if find_resource("Images", "exit.png") is None:
             missing.append("Images")
@@ -327,12 +320,12 @@ class StampPhotoApp(QMainWindow):
 
     # ------------------------------------------------------------------ configuration
     def _load_config(self):
-        """Initialize default values, then read StampPhoto.cfg."""
         self.config["General"] = {
             "language": "fr",
             "last_source_dir": "",
             "last_dest_dir": "",
-            "jpeg_quality": "85"
+            "jpeg_quality": "85",
+            "forced_dpi": "auto"
         }
         self.config["Resolutions"] = {
             "low_width": "800",
@@ -340,8 +333,6 @@ class StampPhotoApp(QMainWindow):
             "high_width": "2400"
         }
 
-        # File to read: the one of the application folder or, the first time,
-        # the one that earlier versions wrote in the current folder
         source = None
         legacy = Path.cwd() / CONFIG_FILE
         if self.config_path.exists():
@@ -356,12 +347,10 @@ class StampPhotoApp(QMainWindow):
         self.source_dir = self.config.get("General", "last_source_dir", fallback="")
         self.dest_dir = self.config.get("General", "last_dest_dir", fallback="")
 
-        # First start, or settings moved from the old location: write the file
         if source != self.config_path:
             self._save_config()
 
     def _read_config_file(self, path: Path):
-        """Read the INI file in UTF-8, or in cp1252 for files written by older versions."""
         for encoding in ("utf-8", "cp1252"):
             try:
                 self.config.read(path, encoding=encoding)
@@ -369,16 +358,18 @@ class StampPhotoApp(QMainWindow):
             except UnicodeDecodeError:
                 continue
             except configparser.Error:
-                return      # damaged file: keep the default values
+                return
 
     def _save_config(self):
-        """Persist settings to StampPhoto.cfg."""
         if not self.config.has_section("General"):
             self.config.add_section("General")
 
         self.config["General"]["language"] = getattr(self, "current_lang", "fr")
         self.config["General"]["last_source_dir"] = getattr(self, "source_dir", "")
         self.config["General"]["last_dest_dir"] = getattr(self, "dest_dir", "")
+        if hasattr(self, "combo_force_dpi"):
+            self.config["General"]["forced_dpi"] = self._current_forced_dpi_str()
+
         try:
             with open(self.config_path, "w", encoding="utf-8") as f:
                 self.config.write(f)
@@ -388,7 +379,6 @@ class StampPhotoApp(QMainWindow):
 
     # ------------------------------------------------------------------ language
     def _setup_translation(self):
-        """Initialize gettext translation according to current configuration."""
         try:
             translation = gettext.translation(
                 domain=GETTEXT_DOMAIN,
@@ -402,7 +392,6 @@ class StampPhotoApp(QMainWindow):
         install_qt_translator(self.current_lang)
 
     def set_language(self, lang_code: str):
-        """Update active language without needing an application restart."""
         if self.current_lang != lang_code:
             self.current_lang = lang_code
             self._save_config()
@@ -417,23 +406,21 @@ class StampPhotoApp(QMainWindow):
 
     # ------------------------------------------------------------------ user interface
     def _init_ui(self):
-        """Initialize widgets, layouts, menus, and toolbars."""
+        """Initialize widgets, layouts, menus, and separate toolbars."""
         self.setMinimumSize(880, 680)
 
-        # Top menu bar. The menu titles are text only: when a menu title has an
-        # icon, the menu bar shows the icon instead of the text (texts are set
-        # in retranslate_ui). The icons stay on the menu items.
+        # ------------------------------------------------------------------ Top menu bar
         menubar = self.menuBar()
         self.menu_file = menubar.addMenu("File")
         self.menu_config = menubar.addMenu("Config")
         self.menu_help = menubar.addMenu("Help")
 
-        # File menu items
+        # File menu
         self.action_exit = QAction(get_image_icon("exit.png"), "", self)
         self.action_exit.triggered.connect(self.close)
         self.menu_file.addAction(self.action_exit)
 
-        # Config menu items: the language in use is checked
+        # Config menu
         self.menu_lang = self.menu_config.addMenu("")
         self.lang_group = QActionGroup(self)
         self.lang_group.setExclusive(True)
@@ -449,7 +436,7 @@ class StampPhotoApp(QMainWindow):
         self.action_preferences.triggered.connect(self._open_config_dialog)
         self.menu_config.addAction(self.action_preferences)
 
-        # Help menu items
+        # Help menu
         self.action_manual = QAction(get_image_icon("manual.svg.png"), "", self)
         self.action_manual.triggered.connect(self._show_manual)
         self.action_about = QAction(get_image_icon("about.png"), "", self)
@@ -457,54 +444,56 @@ class StampPhotoApp(QMainWindow):
         self.menu_help.addAction(self.action_manual)
         self.menu_help.addAction(self.action_about)
 
-        # Main Toolbar (title translated in retranslate_ui)
-        self.toolbar = QToolBar(self)
-        self.toolbar.setObjectName("mainToolbar")
-        self.addToolBar(self.toolbar)
-
+        # ------------------------------------------------------------------ Separate toolbars with drag handles
+        # Toolbar 1: Folders
+        self.tb_folders = QToolBar(self)
+        self.tb_folders.setObjectName("tbFolders")
         self.act_source = QAction(get_image_icon("folder_source.svg.png"), "", self)
         self.act_source.triggered.connect(self._choose_source_dir)
-        self.toolbar.addAction(self.act_source)
+        self.tb_folders.addAction(self.act_source)
 
         self.act_dest = QAction(get_image_icon("folder_dest.svg.png"), "", self)
         self.act_dest.triggered.connect(self._choose_dest_dir)
-        self.toolbar.addAction(self.act_dest)
+        self.tb_folders.addAction(self.act_dest)
+        self.addToolBar(self.tb_folders)
 
-        self.toolbar.addSeparator()
-
-        # Toolbar conversion shortcuts
+        # Toolbar 2: Conversion actions
+        self.tb_conversion = QToolBar(self)
+        self.tb_conversion.setObjectName("tbConversion")
         self.act_tb_convert = QAction(get_image_icon("convert_single.svg.png"), "", self)
         self.act_tb_convert.triggered.connect(self._convert_current)
-        self.toolbar.addAction(self.act_tb_convert)
+        self.tb_conversion.addAction(self.act_tb_convert)
 
         self.act_tb_convert_all = QAction(get_image_icon("convert_all.svg.png"), "", self)
         self.act_tb_convert_all.triggered.connect(self._convert_all)
-        self.toolbar.addAction(self.act_tb_convert_all)
+        self.tb_conversion.addAction(self.act_tb_convert_all)
+        self.addToolBar(self.tb_conversion)
 
-        self.toolbar.addSeparator()
+        # Toolbar 3: Tools, manual, and about
+        self.tb_tools = QToolBar(self)
+        self.tb_tools.setObjectName("tbTools")
+        self.tb_tools.addAction(self.action_preferences)
+        self.tb_tools.addAction(self.action_manual)
+        self.tb_tools.addAction(self.action_about)
+        self.addToolBar(self.tb_tools)
 
-        # Settings and help, same actions as in the menus
-        self.toolbar.addAction(self.action_preferences)
-        self.toolbar.addAction(self.action_manual)
-        self.toolbar.addAction(self.action_about)
-
-        self.toolbar.addSeparator()
-
-        # Exit action on toolbar
+        # Toolbar 4: Exit
+        self.tb_exit = QToolBar(self)
+        self.tb_exit.setObjectName("tbExit")
         self.act_tb_exit = QAction(get_image_icon("exit.png"), "", self)
         self.act_tb_exit.triggered.connect(self.close)
-        self.toolbar.addAction(self.act_tb_exit)
+        self.tb_exit.addAction(self.act_tb_exit)
+        self.addToolBar(self.tb_exit)
 
-        # Central widget and layout
+        # ------------------------------------------------------------------ Central widget & splitter
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
 
-        # Left: pattern search and list of the pictures in alphabetical order.
-        # Right: preview, name of the current picture and navigation.
         splitter = QSplitter(Qt.Orientation.Horizontal)
         main_layout.addWidget(splitter, stretch=1)
 
+        # Left panel: Pattern search and alphabetical file list
         list_panel = QWidget()
         list_layout = QVBoxLayout(list_panel)
         list_layout.setContentsMargins(0, 0, 0, 0)
@@ -526,26 +515,27 @@ class StampPhotoApp(QMainWindow):
         self.list_images.itemSelectionChanged.connect(self._update_selection_state)
         list_layout.addWidget(self.list_images, stretch=1)
 
+        # Right panel: Preview, info panel, and navigation
         view_panel = QWidget()
         view_layout = QVBoxLayout(view_panel)
         view_layout.setContentsMargins(0, 0, 0, 0)
 
-        # Centered photo display area
+        # Preview area
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.image_label.setStyleSheet("background-color: #242424; border: 1px solid #444; "
                                        "border-radius: 4px; color: #dddddd;")
         self.image_label.setMinimumSize(200, 200)
 
-        # Information panel, on the right of the picture
+        # Information panel
         self.info_box = QGroupBox()
-        self.info_box.setFixedWidth(230)
+        self.info_box.setFixedWidth(240)
         info_form = QFormLayout(self.info_box)
         info_form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
         info_form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapAllRows)
         self.info_titles = {}
         self.info_values = {}
-        for key in ("size", "format", "width", "height", "dpi", "mm"):
+        for key in ("size", "format", "width", "height", "dpi"):
             title, value = QLabel(), QLabel("-")
             title.setStyleSheet("color: #555;")
             value.setWordWrap(True)
@@ -555,6 +545,43 @@ class StampPhotoApp(QMainWindow):
             value.setFont(value_font)
             info_form.addRow(title, value)
             self.info_titles[key], self.info_values[key] = title, value
+
+        # Force resolution input (DPI override for mm estimation)
+        self.lbl_force_dpi = QLabel()
+        self.lbl_force_dpi.setStyleSheet("color: #555;")
+        self.combo_force_dpi = QComboBox()
+        self.combo_force_dpi.setEditable(True)
+        self.combo_force_dpi.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        self.combo_force_dpi.lineEdit().setValidator(QIntValidator(10, 10000, self))
+        self.combo_force_dpi.addItem("", "auto")
+        for dpi_val in ("150", "300", "600", "1200", "2400"):
+            self.combo_force_dpi.addItem(f"{dpi_val} dpi", dpi_val)
+
+        saved_dpi = self.config.get("General", "forced_dpi", fallback="auto")
+        if saved_dpi == "auto":
+            self.combo_force_dpi.setCurrentIndex(0)
+        else:
+            idx = self.combo_force_dpi.findData(saved_dpi)
+            if idx >= 0:
+                self.combo_force_dpi.setCurrentIndex(idx)
+            else:
+                self.combo_force_dpi.setEditText(saved_dpi)
+
+        self.combo_force_dpi.currentIndexChanged.connect(self._on_forced_dpi_changed)
+        self.combo_force_dpi.lineEdit().editingFinished.connect(self._on_forced_dpi_changed)
+        info_form.addRow(self.lbl_force_dpi, self.combo_force_dpi)
+
+        # Estimated physical size (mm)
+        title_mm, value_mm = QLabel(), QLabel("-")
+        title_mm.setStyleSheet("color: #555;")
+        value_mm.setWordWrap(True)
+        value_mm.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        v_font = value_mm.font()
+        v_font.setBold(True)
+        value_mm.setFont(v_font)
+        info_form.addRow(title_mm, value_mm)
+        self.info_titles["mm"], self.info_values["mm"] = title_mm, value_mm
+
         self.lbl_mm_note = QLabel()
         self.lbl_mm_note.setWordWrap(True)
         self.lbl_mm_note.setStyleSheet("color: #8a5a00;")
@@ -565,7 +592,7 @@ class StampPhotoApp(QMainWindow):
         picture_row.addWidget(self.info_box, alignment=Qt.AlignmentFlag.AlignTop)
         view_layout.addLayout(picture_row, stretch=1)
 
-        # Name of the current picture
+        # Name of current picture
         self.lbl_name = QLabel()
         self.lbl_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lbl_name.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
@@ -580,7 +607,7 @@ class StampPhotoApp(QMainWindow):
         splitter.setStretchFactor(1, 1)
         splitter.setSizes([240, 760])
 
-        # Backward and forward navigation buttons
+        # Previous and next navigation buttons
         nav_layout = QHBoxLayout()
         self.btn_prev = QPushButton()
         self.btn_prev.setFixedHeight(36)
@@ -597,14 +624,18 @@ class StampPhotoApp(QMainWindow):
         nav_layout.addWidget(self.btn_next)
         view_layout.addLayout(nav_layout)
 
-        # Conversion options bar
+        # ------------------------------------------------------------------ Conversion options bar
         conv_layout = QHBoxLayout()
         self.lbl_res = QLabel()
         conv_layout.addWidget(self.lbl_res)
 
+        # Editable target conversion resolution combo
         self.combo_res = QComboBox()
+        self.combo_res.setEditable(True)
+        self.combo_res.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        self.combo_res.lineEdit().setValidator(QIntValidator(50, 10000, self))
         for key in ("low", "med", "high", "all"):
-            self.combo_res.addItem("", key)          # texts set in retranslate_ui
+            self.combo_res.addItem("", key)
         conv_layout.addWidget(self.combo_res)
 
         self.btn_convert = QPushButton()
@@ -624,7 +655,7 @@ class StampPhotoApp(QMainWindow):
         conv_layout.addWidget(self.btn_convert_sel)
         main_layout.addLayout(conv_layout)
 
-        # Progress bar with its Stop button, visible during a batch conversion
+        # Progress bar and stop button
         progress_layout = QHBoxLayout()
         self.progress_bar = QProgressBar()
         self.progress_bar.setVisible(False)
@@ -639,16 +670,41 @@ class StampPhotoApp(QMainWindow):
         self.status = QStatusBar()
         self.setStatusBar(self.status)
 
+    def _current_forced_dpi_str(self) -> str:
+        """Raw string value or key of the forced DPI selector."""
+        text = self.combo_force_dpi.currentText().strip()
+        data = self.combo_force_dpi.currentData()
+        if data == "auto" or text == self._("Auto (from file)"):
+            return "auto"
+        num = re.sub(r"[^\d]", "", text)
+        return num if num else "auto"
+
+    def _get_forced_dpi(self) -> float | None:
+        """Return forced DPI as float, or None if in Auto mode."""
+        val = self._current_forced_dpi_str()
+        if val == "auto":
+            return None
+        try:
+            dpi = float(val)
+            return dpi if dpi > 0 else None
+        except ValueError:
+            return None
+
+    def _on_forced_dpi_changed(self):
+        """Triggered when the user changes or enters a forced DPI."""
+        self._save_config()
+        self._show_picture_info(self._picture_info)
+
     def retranslate_ui(self):
         """Update all interface labels immediately when language changes."""
         self.setWindowTitle(self._("StampPhoto - stampOffice Suite"))
 
-        # Menu titles (text only, see _init_ui)
+        # Menu titles
         self.menu_file.setTitle(self._("&File"))
         self.menu_config.setTitle(self._("&Config"))
         self.menu_help.setTitle(self._("&Help"))
 
-        # Menu items
+        # Menu actions
         self.action_exit.setText(self._("&Exit"))
         self.menu_lang.setTitle(self._("&Language"))
         self._update_language_checks()
@@ -656,8 +712,12 @@ class StampPhotoApp(QMainWindow):
         self.action_manual.setText(self._("&Manual"))
         self.action_about.setText(self._("&About"))
 
-        # Actions and Buttons
-        self.toolbar.setWindowTitle(self._("Main Toolbar"))
+        # Separate toolbars titles
+        self.tb_folders.setWindowTitle(self._("Folders"))
+        self.tb_conversion.setWindowTitle(self._("Conversion"))
+        self.tb_tools.setWindowTitle(self._("Tools"))
+        self.tb_exit.setWindowTitle(self._("Exit"))
+
         self.act_source.setText(self._("Select Source Folder..."))
         self.act_source.setToolTip(self._("Select Source Folder..."))
         self.act_dest.setText(self._("Select Destination Folder..."))
@@ -682,24 +742,27 @@ class StampPhotoApp(QMainWindow):
                                            "(* and ? wildcards allowed)"))
         self.list_images.setToolTip(self._("Ctrl+click or Shift+click to select several pictures"))
 
-        # Toolbar buttons that share the menu actions: tooltip without the "&"
         self.action_preferences.setToolTip(self._("Preferences"))
         self.action_manual.setToolTip(self._("User manual"))
         self.action_about.setToolTip(self._("About StampPhoto"))
 
-        # Information panel
         self.info_box.setTitle(self._("Picture information"))
         for key, text in (("size", self._("File size:")), ("format", self._("Format:")),
                           ("width", self._("Width:")), ("height", self._("Height:")),
                           ("dpi", self._("Resolution:")), ("mm", self._("Estimated size:"))):
             self.info_titles[key].setText(text)
+        self.lbl_force_dpi.setText(self._("Force resolution:"))
+        self.combo_force_dpi.setItemText(0, self._("Auto (from file)"))
+
         self._update_selection_state()
         self._update_match_label()
 
-        # Resolution choices: only the texts change, the selection is kept
+        current_idx = self.combo_res.currentIndex()
         for i, text in enumerate((self._("Low Resolution"), self._("Medium Resolution"),
                                   self._("High Resolution"), self._("All Resolutions"))):
             self.combo_res.setItemText(i, text)
+        if current_idx >= 0:
+            self.combo_res.setCurrentIndex(current_idx)
 
         self._update_image_display()
 
@@ -714,7 +777,6 @@ class StampPhotoApp(QMainWindow):
                 QMessageBox.StandardButton.No
             )
             if reply == QMessageBox.StandardButton.Yes:
-                # Closed once the picture being converted is finished
                 self._close_after_batch = True
                 self._stop_requested = True
             event.ignore()
@@ -764,7 +826,7 @@ class StampPhotoApp(QMainWindow):
             self.status.showMessage(f"{self._('The folder cannot be read:')} {e}", 6000)
         names = [f for f in names
                  if f.lower().endswith(VALID_EXTENSIONS) and os.path.isfile(os.path.join(self.source_dir, f))]
-        names.sort(key=natural_key)              # natural alphabetical order
+        names.sort(key=natural_key)
         self.images = [os.path.join(self.source_dir, f) for f in names]
 
         self.list_images.blockSignals(True)
@@ -778,12 +840,10 @@ class StampPhotoApp(QMainWindow):
         self.current_index = 0 if self.images else -1
         self._pixmap_cache = (None, QPixmap())
         self._update_image_display()
-        # Keep the search active on the new folder
         self._on_search_changed()
 
     def _current_pixmap(self) -> QPixmap:
-        """Picture shown in the preview, read from disk only when it changes.
-        The EXIF orientation is applied, as for the conversion."""
+        """Picture shown in preview, cached in memory."""
         path = self.images[self.current_index]
         if self._pixmap_cache[0] != path:
             reader = QImageReader(path)
@@ -792,7 +852,7 @@ class StampPhotoApp(QMainWindow):
             try:
                 self._picture_info = read_picture_info(path)
             except Exception:
-                self._picture_info = None          # unreadable: shown as "-"
+                self._picture_info = None
         return self._pixmap_cache[1]
 
     def _update_image_display(self):
@@ -804,7 +864,6 @@ class StampPhotoApp(QMainWindow):
             self._show_picture_info(None)
             return
 
-        # Name of the picture, and the same picture highlighted in the list
         self.lbl_name.setText(os.path.basename(self.images[self.current_index]))
         if self.list_images.currentRow() != self.current_index:
             self.list_images.blockSignals(True)
@@ -831,11 +890,11 @@ class StampPhotoApp(QMainWindow):
         )
 
     def _number(self, value: float, decimals: int = 0) -> str:
-        """Number written the way of the interface language (1 234,5 / 1,234.5)."""
+        """Localized number display string."""
         return QLocale(self.current_lang).toString(float(value), 'f', decimals)
 
     def _show_picture_info(self, info):
-        """Fill the information panel on the right of the picture."""
+        """Fill the information panel with recalculation support."""
         values = self.info_values
         if not info:
             for label in values.values():
@@ -848,6 +907,7 @@ class StampPhotoApp(QMainWindow):
         values["format"].setText(info["format"])
         values["width"].setText(self._("{n} pixels").format(n=self._number(info["width"])))
         values["height"].setText(self._("{n} pixels").format(n=self._number(info["height"])))
+
         dpi = info["dpi"]
         if dpi is None:
             values["dpi"].setText(self._("not recorded in the file"))
@@ -856,17 +916,24 @@ class StampPhotoApp(QMainWindow):
         else:
             values["dpi"].setText(self._("{x} × {y} dpi").format(x=self._number(dpi[0]), y=self._number(dpi[1])))
 
-        width_mm, height_mm, used_dpi, assumed = estimated_size_mm(info)
+        forced_dpi = self._get_forced_dpi()
+        width_mm, height_mm, used_dpi, assumed, forced = estimated_size_mm(info, override_dpi=forced_dpi)
         values["mm"].setText(self._("{w} × {h} mm").format(w=self._number(width_mm, 1), h=self._number(height_mm, 1)))
-        if assumed:
+
+        if forced:
+            self.lbl_mm_note.setText(self._("Size recalculated with forced resolution ({dpi} dpi).")
+                                     .format(dpi=self._number(forced_dpi)))
+            self.lbl_mm_note.setVisible(True)
+        elif assumed:
             reason = (self._("The file records no resolution.") if dpi is None else
                       self._("{dpi} dpi is the default value of cameras and screens, not a scan resolution.")
                       .format(dpi=self._number(min(dpi))))
             self.lbl_mm_note.setText(reason + " " + self._("Size estimated for a scan at {dpi} dpi.")
                                      .format(dpi=ASSUMED_SCAN_DPI))
+            self.lbl_mm_note.setVisible(True)
         else:
             self.lbl_mm_note.setText("")
-        self.lbl_mm_note.setVisible(assumed)
+            self.lbl_mm_note.setVisible(False)
 
     def resizeEvent(self, event):
         """Maintain proper image scaling when window dimensions change."""
@@ -874,7 +941,7 @@ class StampPhotoApp(QMainWindow):
         self._update_image_display()
 
     def _on_list_current_changed(self, row: int):
-        """A picture was clicked (or reached with the arrow keys) in the list."""
+        """List selection change handler."""
         if 0 <= row < len(self.images) and row != self.current_index:
             self.current_index = row
             self._update_image_display()
@@ -884,7 +951,7 @@ class StampPhotoApp(QMainWindow):
         return [i for i, path in enumerate(self.images) if name_starts_with(os.path.basename(path), pattern)]
 
     def _on_search_changed(self, *args):
-        """Select every picture whose name starts with the pattern, and show the first one."""
+        """Select every picture whose name starts with the pattern."""
         if not self.edit_search.text().strip():
             self._update_match_label()
             return
@@ -901,7 +968,7 @@ class StampPhotoApp(QMainWindow):
         self._update_match_label()
 
     def _update_match_label(self):
-        """Result of the pattern search, or the number of selected pictures."""
+        """Update match status or selected items count."""
         pattern = self.edit_search.text().strip()
         if pattern:
             n = len(self._matching_rows())
@@ -920,7 +987,7 @@ class StampPhotoApp(QMainWindow):
         return [self.images[r] for r in rows if 0 <= r < len(self.images)]
 
     def _update_selection_state(self):
-        """Enable "Convert Selection" when pictures are selected; its text shows how many."""
+        """Enable or disable 'Convert Selection' based on current selection."""
         n = len(self.list_images.selectedItems())
         self.btn_convert_sel.setText(self._("Convert Selection ({n})").format(n=n) if n
                                      else self._("Convert Selection"))
@@ -929,34 +996,58 @@ class StampPhotoApp(QMainWindow):
             self._update_match_label()
 
     def _prev_image(self):
-        """Navigate to the previous picture."""
+        """Navigate to previous image."""
         if self.images and self.current_index > 0:
             self.current_index -= 1
             self._update_image_display()
 
     def _next_image(self):
-        """Navigate to the next picture."""
+        """Navigate to next image."""
         if self.images and self.current_index < len(self.images) - 1:
             self.current_index += 1
             self._update_image_display()
 
     # ------------------------------------------------------------------ conversion
-    def _target_sizes(self, target_key: str):
-        """[(longest side in px, file suffix)] for the chosen resolution."""
+    def _target_sizes(self, target_choice: str):
+        """[(longest side in px, file suffix)] for selected preset or typed pixel size."""
         sizes = []
-        for key, option, default, suffix in RESOLUTIONS:
-            if target_key in (key, "all"):
-                try:
-                    value = int(self.config.get("Resolutions", option, fallback=default))
-                except ValueError:
-                    value = int(default)
-                sizes.append((max(1, value), suffix))
+        # Standard presets
+        if target_choice in ("low", "med", "high", "all"):
+            for key, option, default, suffix in RESOLUTIONS:
+                if target_choice in (key, "all"):
+                    try:
+                        value = int(self.config.get("Resolutions", option, fallback=default))
+                    except ValueError:
+                        value = int(default)
+                    sizes.append((max(1, value), suffix))
+            return sizes
+
+        # Custom value entered by user (e.g. '1200' or '1200 px')
+        num_match = re.search(r"\d+", str(target_choice))
+        if num_match:
+            try:
+                custom_px = int(num_match.group(0))
+                if custom_px > 0:
+                    sizes.append((custom_px, f"_{custom_px}px"))
+            except ValueError:
+                pass
+
+        # Fallback if parsing fails
+        if not sizes:
+            sizes.append((800, "_low"))
         return sizes
 
+    def _current_resolution_choice(self) -> str:
+        """Return preset key if selected, otherwise the custom text input."""
+        text = self.combo_res.currentText().strip()
+        idx = self.combo_res.findText(text)
+        if idx >= 0:
+            data = self.combo_res.itemData(idx)
+            if data:
+                return data
+        return text
+
     def _output_base_name(self, img_path: str) -> str:
-        """Base name of the converted files. When several pictures of the source
-        folder share the same name (timbre.png, timbre.jpg), the original
-        extension is added so that they do not overwrite each other."""
         stem, ext = os.path.splitext(os.path.basename(img_path))
         same_name = Counter(os.path.splitext(os.path.basename(p))[0].lower() for p in self.images)
         if same_name[stem.lower()] > 1:
@@ -964,7 +1055,6 @@ class StampPhotoApp(QMainWindow):
         return stem
 
     def _plan_conversion(self, img_paths, target_key):
-        """[(source picture, [(longest side, destination file)])]"""
         sizes = self._target_sizes(target_key)
         plan = []
         for img_path in img_paths:
@@ -974,8 +1064,6 @@ class StampPhotoApp(QMainWindow):
         return plan
 
     def _resize_and_save_jpg(self, img_path: str, outputs):
-        """Convert the picture to JPG for each (longest side, destination file).
-        Raises an exception if the picture cannot be read or a file cannot be written."""
         try:
             quality = int(self.config.get("General", "jpeg_quality", fallback="85"))
         except ValueError:
@@ -988,7 +1076,6 @@ class StampPhotoApp(QMainWindow):
                 resize_longest_side(rgb_im, max_side).save(dest_path, "JPEG", quality=quality)
 
     def _check_paths_configured(self) -> bool:
-        """Validate source and target paths before running conversion."""
         if not self.images:
             QMessageBox.warning(self, self._("Warning"), self._("Please select a source folder with images first."))
             return False
@@ -998,7 +1085,6 @@ class StampPhotoApp(QMainWindow):
         return True
 
     def _ask_existing(self, plan):
-        """When converted files already exist: 'replace', 'skip' or None (cancel)."""
         existing = [dest for _src, outputs in plan for _size, dest in outputs if os.path.exists(dest)]
         if not existing:
             return "replace"
@@ -1022,13 +1108,16 @@ class StampPhotoApp(QMainWindow):
         return None
 
     def _set_busy(self, busy: bool, batch: bool):
-        """Lock the commands during a conversion (a second click would start
-        another conversion on top of the first one)."""
+        """Lock or unlock controls during batch conversion."""
         self._busy = busy
-        for widget in (self.act_source, self.act_dest, self.act_tb_convert, self.act_tb_convert_all,
-                       self.btn_convert, self.btn_convert_all, self.combo_res,
-                       self.action_preferences, self.menu_lang, self.edit_search, self.list_images):
+        for tb in (self.tb_folders, self.tb_conversion, self.tb_tools, self.tb_exit):
+            tb.setEnabled(not busy)
+
+        for widget in (self.btn_convert, self.btn_convert_all, self.combo_res,
+                       self.action_preferences, self.menu_lang, self.edit_search,
+                       self.list_images, self.combo_force_dpi):
             widget.setEnabled(not busy)
+
         self.btn_convert_sel.setEnabled(not busy and bool(self.list_images.selectedItems()))
         self.progress_bar.setVisible(busy and batch)
         self.btn_stop.setVisible(busy and batch)
@@ -1039,23 +1128,21 @@ class StampPhotoApp(QMainWindow):
             QApplication.restoreOverrideCursor()
 
     def _request_stop(self):
-        """Stop the batch after the picture being converted."""
         self._stop_requested = True
         self.btn_stop.setEnabled(False)
         self.status.showMessage(self._("Stopping after the current picture..."))
 
     def _run_conversion(self, img_paths, batch: bool):
-        """Convert the given pictures and report the result."""
         if self._busy or not self._check_paths_configured():
             return
-        plan = self._plan_conversion(img_paths, self.combo_res.currentData())
+        plan = self._plan_conversion(img_paths, self._current_resolution_choice())
         decision = self._ask_existing(plan)
         if decision is None:
             return
 
         total = len(plan)
         converted, skipped, failures = 0, 0, []
-        already_done = 0            # pictures whose files all exist and were kept
+        already_done = 0
         self._stop_requested = False
         self._set_busy(True, batch)
         self.progress_bar.setMaximum(total)
@@ -1076,7 +1163,7 @@ class StampPhotoApp(QMainWindow):
                     try:
                         self._resize_and_save_jpg(img_path, outputs)
                         converted += 1
-                    except Exception as e:      # unreadable picture, disk full, read-only folder...
+                    except Exception as e:
                         failures.append(f"{name}: {self._failure_reason(e)}")
                 self.progress_bar.setValue(i + 1)
                 QApplication.processEvents()
@@ -1088,11 +1175,9 @@ class StampPhotoApp(QMainWindow):
         if self._close_after_batch:
             self.close()
             return
-        # Pictures whose files were all kept are not part of the count
         self._report(total - already_done, converted, skipped, failures, stopped, batch)
 
     def _failure_reason(self, error: Exception) -> str:
-        """Short reason shown to the user (no technical message with full paths)."""
         if isinstance(error, UnidentifiedImageError):
             return self._("unreadable or damaged picture")
         if isinstance(error, PermissionError):
@@ -1102,7 +1187,6 @@ class StampPhotoApp(QMainWindow):
         return str(error) or error.__class__.__name__
 
     def _report(self, total, converted, skipped, failures, stopped, batch):
-        """Final message of a conversion (total: pictures that had to be converted)."""
         lines = []
         if stopped:
             lines.append(self._("Conversion stopped: {done} of {total} picture(s) converted.")
@@ -1126,25 +1210,21 @@ class StampPhotoApp(QMainWindow):
                                     "\n".join(lines))
 
     def _convert_current(self):
-        """Convert the currently previewed photo."""
         if self.images and self.current_index >= 0:
             self._run_conversion([self.images[self.current_index]], batch=False)
         else:
             self._check_paths_configured()
 
     def _convert_all(self):
-        """Batch convert all images located in the source directory."""
         self._run_conversion(list(self.images), batch=True)
 
     def _convert_selection(self):
-        """Batch convert the pictures selected in the list (e.g. found with the search)."""
         paths = self._selected_paths()
         if paths:
             self._run_conversion(paths, batch=True)
 
     # ------------------------------------------------------------------ dialogs
     def _open_config_dialog(self):
-        """Open the SPConfig preferences dialog."""
         dlg = SPConfigDialog(self.config, parent=self, tr_func=self._)
         if dlg.exec():
             new_lang = self.config.get("General", "language", fallback="fr")
@@ -1153,12 +1233,10 @@ class StampPhotoApp(QMainWindow):
                 self.set_language(new_lang)
 
     def _show_about(self):
-        """Display the SPAbout dialog."""
         dlg = SPAboutDlg(parent=self, lang=self.current_lang, tr_func=self._)
         dlg.exec()
 
     def _manual_path(self):
-        """The PDF manual in the current language, otherwise in the other language."""
         names = [MANUALS.get(self.current_lang)] + [n for lang, n in MANUALS.items() if lang != self.current_lang]
         for name in names:
             path = find_resource("Help", name) if name else None
@@ -1167,7 +1245,6 @@ class StampPhotoApp(QMainWindow):
         return None
 
     def _show_manual(self):
-        """Open the PDF user manual; show basic usage instructions if it is missing."""
         path = self._manual_path()
         if path is not None and QDesktopServices.openUrl(QUrl.fromLocalFile(str(path))):
             return
@@ -1182,8 +1259,6 @@ class StampPhotoApp(QMainWindow):
 
 
 def show_diagnostic(app):
-    """StampPhoto --diag: show where the icons, translations, manuals and the
-    configuration are looked for (useful for a compiled version)."""
     config = configparser.ConfigParser()
     try:
         config.read(get_config_path(), encoding="utf-8")
@@ -1203,9 +1278,9 @@ def show_diagnostic(app):
 
 
 if __name__ == "__main__":
-    set_windows_app_id()                 # before any window is created
+    set_windows_app_id()
     app = QApplication(sys.argv)
-    app.setWindowIcon(get_app_icon())    # used by every window and dialog
+    app.setWindowIcon(get_app_icon())
     if "--diag" in sys.argv:
         show_diagnostic(app)
         sys.exit(0)
