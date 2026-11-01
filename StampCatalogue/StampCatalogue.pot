@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-30 22:23+0100\n"
+"POT-Creation-Date: 2026-11-01 09:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,336 +15,155 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: StampCatalogue.py:92
-msgid "Settings"
-msgstr ""
-
-#: StampCatalogue.py:106
-msgid "Language:"
-msgstr ""
-
-#: StampCatalogue.py:113
-msgid "Database Type:"
-msgstr ""
-
-#: StampCatalogue.py:120 StampCatalogue.py:296
-msgid "OK"
-msgstr ""
-
-#: StampCatalogue.py:122 StampCatalogue.py:298
-msgid "Cancel"
-msgstr ""
-
-#: StampCatalogue.py:250 StampCatalogue.py:254 StampCatalogue.py:725
-#: StampCatalogue.py:731
-msgid "All"
-msgstr ""
-
-#: StampCatalogue.py:277
-msgid "Create New Collection"
-msgstr ""
-
-#: StampCatalogue.py:284
-msgid "e.g. France Mint 1900-1950"
-msgstr ""
-
-#: StampCatalogue.py:285
-msgid "Collection Name:"
-msgstr ""
-
-#: StampCatalogue.py:289
-msgid "Country:"
-msgstr ""
-
-#: StampCatalogue.py:313
+#: StampCatalogue.py:310
 msgid "StampCatalogue - Stamp Collection Manager"
 msgstr ""
 
-#: StampCatalogue.py:382
-msgid "New Collection..."
-msgstr ""
-
-#: StampCatalogue.py:383
-msgid "Create a new collection"
-msgstr ""
-
-#: StampCatalogue.py:388 StampCatalogue.py:699
-msgid "Delete Collection"
-msgstr ""
-
-#: StampCatalogue.py:389
-msgid "Delete current collection"
-msgstr ""
-
-#: StampCatalogue.py:394
-msgid "Export Mancolist (Excel)"
-msgstr ""
-
-#: StampCatalogue.py:395
-msgid "Export missing stamps to Excel"
-msgstr ""
-
-#: StampCatalogue.py:400
-msgid "Settings..."
-msgstr ""
-
-#: StampCatalogue.py:401
-msgid "Configure application settings"
-msgstr ""
-
-#: StampCatalogue.py:406
-msgid "User Manual"
-msgstr ""
-
-#: StampCatalogue.py:407
-msgid "Open user manual"
-msgstr ""
-
-#: StampCatalogue.py:412
-msgid "About"
-msgstr ""
-
-#: StampCatalogue.py:413
-msgid "About StampCatalogue"
-msgstr ""
-
-#: StampCatalogue.py:418
-msgid "Quit"
-msgstr ""
-
-#: StampCatalogue.py:420
-msgid "Quit application"
-msgstr ""
-
-#: StampCatalogue.py:428
+#: StampCatalogue.py:324
 msgid "&Collection"
 msgstr ""
 
-#: StampCatalogue.py:435
+#: StampCatalogue.py:325
 msgid "&Tools"
 msgstr ""
 
-#: StampCatalogue.py:439
+#: StampCatalogue.py:326
 msgid "&Configuration"
 msgstr ""
 
-#: StampCatalogue.py:443
+#: StampCatalogue.py:327
 msgid "&Help"
 msgstr ""
 
-#: StampCatalogue.py:449
+#: StampCatalogue.py:328
 msgid "Main Toolbar"
 msgstr ""
 
-#: StampCatalogue.py:468
+#: StampCatalogue.py:331
 msgid "Collection Selection"
 msgstr ""
 
-#: StampCatalogue.py:471
-msgid "Active Collection:"
-msgstr ""
-
-#: StampCatalogue.py:480
+#: StampCatalogue.py:332
 msgid "Catalogue Filters"
 msgstr ""
 
-#: StampCatalogue.py:483
-msgid "Type:"
-msgstr ""
-
-#: StampCatalogue.py:488 StampCatalogue.py:543
-msgid "Year:"
-msgstr ""
-
-#: StampCatalogue.py:493
-msgid "Catalog N°:"
-msgstr ""
-
-#: StampCatalogue.py:495
-msgid "e.g. 154..."
-msgstr ""
-
-#: StampCatalogue.py:509 StampCatalogue.py:1034
-msgid "Yvert N°"
-msgstr ""
-
-#: StampCatalogue.py:510 StampCatalogue.py:1035
-msgid "Year"
-msgstr ""
-
-#: StampCatalogue.py:511 StampCatalogue.py:1036
-msgid "Type"
-msgstr ""
-
-#: StampCatalogue.py:512 StampCatalogue.py:1037
-msgid "Value / Color"
-msgstr ""
-
-#: StampCatalogue.py:513 StampCatalogue.py:1038
-msgid "Description"
-msgstr ""
-
-#: StampCatalogue.py:514 StampCatalogue.py:1039
-msgid "Status"
-msgstr ""
-
-#: StampCatalogue.py:527 StampCatalogue.py:973 StampCatalogue.py:1067
-msgid "No Photo Available"
-msgstr ""
-
-#: StampCatalogue.py:534
+#: StampCatalogue.py:333
 msgid "Stamp Details"
 msgstr ""
 
-#: StampCatalogue.py:544
-msgid "Yvert N°:"
-msgstr ""
-
-#: StampCatalogue.py:545
-msgid "Value / Color:"
-msgstr ""
-
-#: StampCatalogue.py:546
-msgid "Description 1:"
-msgstr ""
-
-#: StampCatalogue.py:551
+#: StampCatalogue.py:334
 msgid "Collection Status"
 msgstr ""
 
-#: StampCatalogue.py:556 StampCatalogue.py:765 StampCatalogue.py:805
-#: StampCatalogue.py:980
-msgid "Not Owned"
+#: StampCatalogue.py:337
+msgid "e.g. 154..."
 msgstr ""
 
-#: StampCatalogue.py:557 StampCatalogue.py:768
-msgid "Owned"
-msgstr ""
-
-#: StampCatalogue.py:558 StampCatalogue.py:770 StampCatalogue.py:1009
-msgid "Manco (Wanted)"
-msgstr ""
-
-#: StampCatalogue.py:559
-msgid "Ordered"
-msgstr ""
-
-#: StampCatalogue.py:564 StampCatalogue.py:800
-msgid "Mint Never Hinged (** MNH)"
-msgstr ""
-
-#: StampCatalogue.py:565
-msgid "Mint Hinged (* MH)"
-msgstr ""
-
-#: StampCatalogue.py:566
-msgid "Used (Cancelled)"
-msgstr ""
-
-#: StampCatalogue.py:567
-msgid "On Cover"
-msgstr ""
-
-#: StampCatalogue.py:580
-msgid "Status:"
-msgstr ""
-
-#: StampCatalogue.py:581
-msgid "Condition:"
-msgstr ""
-
-#: StampCatalogue.py:582
-msgid "Quantity:"
-msgstr ""
-
-#: StampCatalogue.py:583
-msgid "Purchase Price:"
-msgstr ""
-
-#: StampCatalogue.py:584
-msgid "Notes:"
-msgstr ""
-
-#: StampCatalogue.py:586
+#: StampCatalogue.py:338
 msgid "Save to Collection"
 msgstr ""
 
-#: StampCatalogue.py:616
+#: StampCatalogue.py:340 StampCatalogue.py:626 StampCatalogue.py:694
+msgid "No Photo Available"
+msgstr ""
+
+#: StampCatalogue.py:349 StampCatalogue.py:491 StampCatalogue.py:498
+msgid "All"
+msgstr ""
+
+#: StampCatalogue.py:354
+msgid "Yvert N°"
+msgstr ""
+
+#: StampCatalogue.py:355
+msgid "Year"
+msgstr ""
+
+#: StampCatalogue.py:356
+msgid "Type"
+msgstr ""
+
+#: StampCatalogue.py:357
+msgid "Value / Color"
+msgstr ""
+
+#: StampCatalogue.py:358
+msgid "Description"
+msgstr ""
+
+#: StampCatalogue.py:359
+msgid "Status"
+msgstr ""
+
+#: StampCatalogue.py:383
 msgid "Settings Saved"
 msgstr ""
 
-#: StampCatalogue.py:617
-msgid ""
-"Configuration saved to StampCatalogue.cfg.\n"
-"Please restart the application to apply language changes."
+#: StampCatalogue.py:384
+msgid "The database type will be used the next time the application starts."
 msgstr ""
 
-#: StampCatalogue.py:645
+#: StampCatalogue.py:411
 msgid "Could not open manual:"
 msgstr ""
 
-#: StampCatalogue.py:645 StampCatalogue.py:680 StampCatalogue.py:690
+#: StampCatalogue.py:411 StampCatalogue.py:447 StampCatalogue.py:456
 msgid "Error"
 msgstr ""
 
-#: StampCatalogue.py:649
+#: StampCatalogue.py:415
 msgid "Manual Not Found"
 msgstr ""
 
-#: StampCatalogue.py:650
+#: StampCatalogue.py:416
 msgid "User manual file not found:"
 msgstr ""
 
-#: StampCatalogue.py:673
+#: StampCatalogue.py:440
 msgid "No country Databases found in 'Databases/'."
 msgstr ""
 
-#: StampCatalogue.py:673
+#: StampCatalogue.py:440
 msgid "Warning"
 msgstr ""
 
-#: StampCatalogue.py:680
+#: StampCatalogue.py:447
 msgid "Collection name cannot be empty."
 msgstr ""
 
-#: StampCatalogue.py:690
+#: StampCatalogue.py:456
 msgid "A collection with this name already exists."
 msgstr ""
 
-#: StampCatalogue.py:700
+#: StampCatalogue.py:465
+msgid "Delete Collection"
+msgstr ""
+
+#: StampCatalogue.py:466
 msgid "Are you sure you want to delete this collection and all its tracked stamps?"
 msgstr ""
 
-#: StampCatalogue.py:1007 StampCatalogue.py:1009
-msgid "Missing"
-msgstr ""
-
-#: StampCatalogue.py:1014
+#: StampCatalogue.py:668
 msgid "Information"
 msgstr ""
 
-#: StampCatalogue.py:1014
+#: StampCatalogue.py:668
 msgid "No missing stamps found for this collection."
 msgstr ""
 
-#: StampCatalogue.py:1021
+#: StampCatalogue.py:676
 msgid "Save Mancolist"
 msgstr ""
 
-#: StampCatalogue.py:1028
-msgid "Mancolist"
+#: StampCatalogue.py:678
+msgid "Excel Files"
 msgstr ""
 
-#: StampCatalogue.py:1040
-msgid "Notes"
+#: StampCatalogue.py:684
+msgid "Mancolist exported successfully:"
 msgstr ""
 
-#: StampCatalogue.py:1059
-msgid ""
-"Mancolist exported successfully:\n"
-msgstr ""
-
-#: StampCatalogue.py:1059
+#: StampCatalogue.py:684
 msgid "Success"
 msgstr ""
 

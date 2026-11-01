@@ -29,8 +29,13 @@ Conversion rules:
     and two pictures with the same name (timbre.png, timbre.jpg) produce
     different files.
 
+Compiled version: the icons (Images), translations (locale) and manuals (Help)
+are found next to the executable, in its parent folder, or inside the
+executable when they were bundled (see SPAppPaths and StampPhoto.spec).
+"StampPhoto --diag" shows where they are looked for.
+
 Author: Boris du Reau
-Date: 2026-10-31
+Date: 2026-11-01
 """
 
 import os
@@ -51,15 +56,20 @@ from PyQt6.QtWidgets import (
     QSplitter, QAbstractItemView, QGroupBox, QFormLayout
 )
 from PyQt6.QtGui import QAction, QActionGroup, QPixmap, QIcon, QCloseEvent, QImageReader, QDesktopServices
-from PyQt6.QtCore import Qt, QLibraryInfo, QLocale, QStandardPaths, QTranslator, QUrl, QItemSelectionModel
+from PyQt6.QtCore import Qt, QLibraryInfo, QLocale, QTranslator, QUrl, QItemSelectionModel
 
 from SPAbout import SPAboutDlg
 from SPConfig import SPConfigDialog
 
+from SPAppIcon import embedded_app_icon
+from SPAppPaths import (get_config_path as _config_path_in_app, get_images_dir,
+                        get_locale_dir, find_resource, find_program_file, diagnostic_report)
+
 CONFIG_FILE = "StampPhoto.cfg"
 APP_ICON_PNG = "StampPhoto.png"     # in the Images folder (../Images)
-APP_ICON_ICO = "StampPhoto.ico"     # next to StampPhoto.py (also used to build the .exe)
+APP_ICON_ICO = "StampPhoto.ico"     # next to StampPhoto.py / StampPhoto.exe (also used to build the .exe)
 APP_USER_MODEL_ID = "stampOffice.StampPhoto"
+GETTEXT_DOMAIN = "stampphoto"
 
 # Resolution assumed to estimate the size in mm when the file has none, or only
 # the 72/96 dpi that cameras and screens write by default (not a scan resolution)
@@ -80,70 +90,52 @@ RESOLUTIONS = [
     ("high", "high_width", "2400", "_high"),
 ]
 
-# Folders whose presence identifies the application root folder
-_RESOURCE_FOLDERS = ("Images", "locale", "Help", "Photos", "Databases", "docs")
+# Icon files used by the window (all in the Images folder)
+ICON_FILES = ("exit.png", "config.png", "manual.svg.png", "about.png", "folder_source.svg.png",
+              "folder_dest.svg.png", "convert_single.svg.png", "convert_all.svg.png", APP_ICON_PNG)
 
 
 # ============================================================================
-# Application paths
+# Application paths (see SPAppPaths: works from the sources and compiled)
 # ============================================================================
-
-def get_app_dir() -> Path:
-    """Root folder of the application.
-
-    - Executable (sys.frozen): the folder that contains the executable.
-    - Python script in a sub-folder: the parent folder when it holds one of the
-      resource folders (Images, locale...), otherwise the script folder.
-    """
-    if getattr(sys, 'frozen', False):
-        return Path(sys.executable).resolve().parent
-    script_dir = Path(__file__).resolve().parent
-    if any((script_dir.parent / folder).is_dir() for folder in _RESOURCE_FOLDERS):
-        return script_dir.parent
-    return script_dir
-
-
-def _resource_dir(name: str) -> Path:
-    """A resource folder in the application root folder, otherwise next to the script."""
-    for candidate in (get_app_dir() / name, Path(__file__).resolve().parent / name):
-        if candidate.is_dir():
-            return candidate
-    return get_app_dir() / name
-
 
 def get_config_path() -> Path:
-    """StampPhoto.cfg in the application folder; in the user's settings folder
-    when the application folder is write-protected (e.g. C:\\Program Files)."""
-    path = get_app_dir() / CONFIG_FILE
-    if os.access(str(path if path.exists() else path.parent), os.W_OK):
-        return path
-    user_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.GenericConfigLocation))
-    user_dir = user_dir / "StampPhoto"
-    user_dir.mkdir(parents=True, exist_ok=True)
-    return user_dir / CONFIG_FILE
+    """StampPhoto.cfg in the application folder (never in the temporary folder
+    of a one-file executable, which is deleted on exit)."""
+    return _config_path_in_app(CONFIG_FILE)
 
 
-IMAGES_DIR = _resource_dir("Images")
-LOCALE_DIR = str(_resource_dir("locale"))
+IMAGES_DIR = get_images_dir()
 
 
 def get_image_icon(filename: str) -> QIcon:
-    """Retrieve QIcon from the Images folder if present, otherwise return empty QIcon."""
-    icon_path = IMAGES_DIR / filename
-    if icon_path.exists():
-        return QIcon(str(icon_path))
-    return QIcon()
+    """QIcon of a file of the Images folder, or an empty QIcon if it is missing."""
+    icon_path = find_resource("Images", filename)
+    return QIcon(str(icon_path)) if icon_path is not None else QIcon()
 
 
 def get_app_icon() -> QIcon:
-    """Application icon: StampPhoto.ico (all its sizes, sharp in the title bar and
-    the taskbar) completed with Images/StampPhoto.png for the large sizes."""
+    """Application icon of the title bars and the taskbar.
+
+    StampPhoto.ico (all its sizes) completed with Images/StampPhoto.png when
+    these files are found and can be read; otherwise the icon embedded in the
+    program (SPAppIcon), so that the windows always have their icon, even with
+    an executable built without these files."""
     icon = QIcon()
-    for path in (Path(__file__).resolve().parent / APP_ICON_ICO, get_app_dir() / APP_ICON_ICO,
-                 IMAGES_DIR / APP_ICON_PNG):
-        if path.is_file():
+    for path in (find_program_file(APP_ICON_ICO), find_resource("Images", APP_ICON_PNG)):
+        if path is not None:
             icon.addFile(str(path))
+    if icon.pixmap(32, 32).isNull():            # files missing or unreadable
+        icon = embedded_app_icon()
     return icon
+
+
+def app_icon_source() -> str:
+    """Where the application icon comes from (for StampPhoto --diag)."""
+    for path in (find_program_file(APP_ICON_ICO), find_resource("Images", APP_ICON_PNG)):
+        if path is not None and not QIcon(str(path)).pixmap(32, 32).isNull():
+            return str(path)
+    return "icon embedded in the program (SPAppIcon)"
 
 
 def set_windows_app_id():
@@ -316,6 +308,23 @@ class StampPhotoApp(QMainWindow):
         if self.source_dir and os.path.isdir(self.source_dir):
             self._load_images_from_source()
 
+        self._warn_missing_resources()
+
+    def _warn_missing_resources(self):
+        """Say in the status bar when the icons or the translation were not found
+        (typically a compiled StampPhoto without its Images / locale folders)."""
+        missing = []
+        if find_resource("Images", "exit.png") is None:
+            missing.append("Images")
+        mo = Path(GETTEXT_DOMAIN + ".mo")
+        if self.current_lang != "en" and not (
+                get_locale_dir(GETTEXT_DOMAIN, self.current_lang) / self.current_lang / "LC_MESSAGES" / mo).is_file():
+            missing.append("locale")
+        if missing:
+            self.status.showMessage(
+                self._("Folder(s) not found: {folders}. Start StampPhoto with --diag for details.")
+                .format(folders=", ".join(missing)), 15000)
+
     # ------------------------------------------------------------------ configuration
     def _load_config(self):
         """Initialize default values, then read StampPhoto.cfg."""
@@ -382,8 +391,8 @@ class StampPhotoApp(QMainWindow):
         """Initialize gettext translation according to current configuration."""
         try:
             translation = gettext.translation(
-                domain="stampphoto",
-                localedir=LOCALE_DIR,
+                domain=GETTEXT_DOMAIN,
+                localedir=str(get_locale_dir(GETTEXT_DOMAIN, self.current_lang)),
                 languages=[self.current_lang],
                 fallback=True
             )
@@ -1150,11 +1159,11 @@ class StampPhotoApp(QMainWindow):
 
     def _manual_path(self):
         """The PDF manual in the current language, otherwise in the other language."""
-        help_dir = _resource_dir("Help")
         names = [MANUALS.get(self.current_lang)] + [n for lang, n in MANUALS.items() if lang != self.current_lang]
         for name in names:
-            if name and (help_dir / name).is_file():
-                return help_dir / name
+            path = find_resource("Help", name) if name else None
+            if path is not None:
+                return path
         return None
 
     def _show_manual(self):
@@ -1172,10 +1181,34 @@ class StampPhotoApp(QMainWindow):
         QMessageBox.information(self, self._("StampPhoto Manual"), manual_text)
 
 
+def show_diagnostic(app):
+    """StampPhoto --diag: show where the icons, translations, manuals and the
+    configuration are looked for (useful for a compiled version)."""
+    config = configparser.ConfigParser()
+    try:
+        config.read(get_config_path(), encoding="utf-8")
+    except (configparser.Error, UnicodeDecodeError):
+        pass
+    lang = config.get("General", "language", fallback="fr")
+    report = diagnostic_report(GETTEXT_DOMAIN, lang,
+                               [("Images", f) for f in ICON_FILES] + [("", APP_ICON_ICO)]
+                               + [("Help", f) for f in MANUALS.values()])
+    report += f"\nConfiguration file: {get_config_path()}"
+    report += f"\nWindow icon: {app_icon_source()}"
+    print(report, flush=True)
+    box = QMessageBox(QMessageBox.Icon.Information, "StampPhoto --diag", "StampPhoto resources")
+    box.setDetailedText(report)
+    box.setInformativeText(report.split("\n\n")[0])
+    box.exec()
+
+
 if __name__ == "__main__":
     set_windows_app_id()                 # before any window is created
     app = QApplication(sys.argv)
     app.setWindowIcon(get_app_icon())    # used by every window and dialog
+    if "--diag" in sys.argv:
+        show_diagnostic(app)
+        sys.exit(0)
     window = StampPhotoApp()
     window.show()
     sys.exit(app.exec())

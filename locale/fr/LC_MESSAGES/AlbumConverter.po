@@ -101,7 +101,7 @@ msgid "AlbumEasy pictures"
 msgstr "Images AlbumEasy"
 
 msgid "OK"
-msgstr "OK"
+msgstr "Confirmer"
 
 msgid "Cancel"
 msgstr "Annuler"
@@ -435,3 +435,7 @@ msgstr "Convertit en albums Stamp Album (.sta) des albums de timbres créés ave
 
 msgid "Version {version}"
 msgstr "Version {version}"
+
+#: AlbumConverter.py:1441
+msgid "Do you want to quit the album converter?"
+msgstr "Voulez vous quitter album converter?"

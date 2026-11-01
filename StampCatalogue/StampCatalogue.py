@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         self.action_config.triggered.connect(self._open_settings)
 
         # Action: User Manual
-        icon_help = self._get_icon("help.png", QStyle.StandardPixmap.SP_DialogHelpButton)
+        icon_help = self._get_icon("manual.svg.png", QStyle.StandardPixmap.SP_DialogHelpButton)
         self.action_manual = QAction(icon_help, "", self)
         self.action_manual.triggered.connect(self._open_manual)
 
@@ -169,6 +169,9 @@ class MainWindow(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(self.action_config)
         self.toolbar.addAction(self.action_manual)
+        self.toolbar.addAction(self.action_about)
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(self.action_exit)
 
     def _init_ui(self):
         """Initialize main layout and child widgets (texts: see retranslate_ui)."""

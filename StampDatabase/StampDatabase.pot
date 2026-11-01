@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-30 22:23+0100\n"
+"POT-Creation-Date: 2026-11-01 09:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,11 +35,11 @@ msgstr ""
 msgid "Confirm Overwrite"
 msgstr ""
 
-#: StampDatabase.py:145 StampDatabase.py:568
+#: StampDatabase.py:145 StampDatabase.py:569
 msgid "Success"
 msgstr ""
 
-#: StampDatabase.py:151 StampDatabase.py:536 StampDatabase.py:541
+#: StampDatabase.py:151 StampDatabase.py:537 StampDatabase.py:542
 msgid "Error"
 msgstr ""
 
@@ -255,92 +255,92 @@ msgstr ""
 msgid "Main Toolbar"
 msgstr ""
 
-#: StampDatabase.py:451
+#: StampDatabase.py:452
 msgid "Select MS Access Database"
 msgstr ""
 
-#: StampDatabase.py:463
+#: StampDatabase.py:464
 msgid "File Exists"
 msgstr ""
 
-#: StampDatabase.py:493
+#: StampDatabase.py:494
 msgid "Could not fully replicate Stamp_List table:"
 msgstr ""
 
-#: StampDatabase.py:493
+#: StampDatabase.py:494
 msgid "Table Import Notice"
 msgstr ""
 
-#: StampDatabase.py:522
+#: StampDatabase.py:523
 msgid "Import Success"
 msgstr ""
 
-#: StampDatabase.py:524
+#: StampDatabase.py:525
 msgid "Conversion Error"
 msgstr ""
 
-#: StampDatabase.py:524
+#: StampDatabase.py:525
 msgid "Error importing Access database:"
 msgstr ""
 
-#: StampDatabase.py:528
+#: StampDatabase.py:529
 msgid "Creating a new database is only supported for SQLite."
 msgstr ""
 
-#: StampDatabase.py:528
+#: StampDatabase.py:529
 msgid "SQLite Only"
 msgstr ""
 
-#: StampDatabase.py:536
+#: StampDatabase.py:537
 msgid "Collection name cannot be empty."
 msgstr ""
 
-#: StampDatabase.py:541
+#: StampDatabase.py:542
 msgid "A database for this country already exists."
 msgstr ""
 
-#: StampDatabase.py:614 StampDatabase.py:626 StampDatabase.py:725
-#: StampDatabase.py:726
+#: StampDatabase.py:615 StampDatabase.py:627 StampDatabase.py:726
+#: StampDatabase.py:727
 msgid "All"
 msgstr ""
 
-#: StampDatabase.py:719
+#: StampDatabase.py:720
 msgid "New Stamp Description"
 msgstr ""
 
-#: StampDatabase.py:759
+#: StampDatabase.py:760
 msgid "Are you sure you want to delete 1 selected stamp record?"
 msgstr ""
 
-#: StampDatabase.py:760
+#: StampDatabase.py:761
 msgid "Confirm Delete"
 msgstr ""
 
-#: StampDatabase.py:789
+#: StampDatabase.py:790
 msgid "Database changes saved successfully."
 msgstr ""
 
-#: StampDatabase.py:789
+#: StampDatabase.py:790
 msgid "Saved"
 msgstr ""
 
-#: StampDatabase.py:794
+#: StampDatabase.py:795
 msgid "Unsaved Changes"
 msgstr ""
 
-#: StampDatabase.py:795
+#: StampDatabase.py:796
 msgid "You have unsaved database changes. Do you want to save them now?"
 msgstr ""
 
-#: StampDatabase.py:878
+#: StampDatabase.py:879
 msgid "No Photo Available"
 msgstr ""
 
-#: StampDatabase.py:919
+#: StampDatabase.py:920
 msgid "Manual Error"
 msgstr ""
 
-#: StampDatabase.py:919
+#: StampDatabase.py:920
 msgid "User manual file not found."
 msgstr ""
 

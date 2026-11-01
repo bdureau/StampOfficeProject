@@ -567,7 +567,7 @@ class Window(QMainWindow):
         self.setupAppAction.setIcon(self._get_icon("config.png"))
 
         self.helpContentAction = QAction(_("&Help Content"), self)
-        self.helpContentAction.setIcon(self._get_icon("help.png"))
+        self.helpContentAction.setIcon(self._get_icon("manual.svg.png"))
 
         self.aboutAction = QAction(_("&About"), self)
         self.aboutAction.setIcon(self._get_icon("about.png"))

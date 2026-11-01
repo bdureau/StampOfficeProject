@@ -6,8 +6,11 @@ and author details in French or English (current language) with scrollable
 HTML text. The dialog is rebuilt each time it is opened, ensuring it always
 follows the active language chosen in the settings.
 
+The logo (Images/StampPhoto.png) is found through SPAppPaths, so it is also
+shown by the compiled version of StampPhoto.
+
 Author: Boris du Reau
-Date: 2026-10-31
+Date: 2026-11-01
 """
 
 from pathlib import Path
@@ -30,10 +33,18 @@ except ImportError:
         return "fr"
 
 try:
-    from SPAppPaths import get_images_dir
+    from SPAppPaths import find_resource
 except ImportError:
-    def get_images_dir() -> Path:
-        return Path(__file__).resolve().parent / "icons"
+    def find_resource(folder: str, filename: str):
+        """Fallback: the folder next to the sources or in their parent folder."""
+        base = Path(__file__).resolve().parent
+        for path in (base / folder / filename, base.parent / folder / filename):
+            if path.is_file():
+                return path
+        return None
+
+# Logo files, by order of preference, in the Images folder
+LOGO_FILES = ("StampPhoto.png", "app_icon.svg", "stamp_photo.png")
 
 
 class SPAboutDlg(QDialog):
@@ -47,9 +58,6 @@ class SPAboutDlg(QDialog):
         self.setWindowTitle(self.tr_func("About StampPhoto"))
         self.resize(580, 480)
 
-        # Image and icon resource folder
-        self.images_dir = get_images_dir()
-
         self.createDlg()
 
     def createDlg(self):
@@ -60,13 +68,16 @@ class SPAboutDlg(QDialog):
         header_layout = QHBoxLayout()
 
         logo = QLabel()
-        logo_path = self.images_dir / "app_icon.svg"
-        if not logo_path.exists():
-            logo_path = self.images_dir / "StampPhoto.png"
-        if not logo_path.exists():
-            logo_path = Path("../Images/StampPhoto.png")
+        logo_path = next((p for p in (find_resource("Images", f) for f in LOGO_FILES) if p is not None), None)
 
-        pixmap = QPixmap(str(logo_path))
+        pixmap = QPixmap(str(logo_path)) if logo_path is not None else QPixmap()
+        if pixmap.isNull():
+            # No logo file: icon embedded in the program
+            try:
+                from SPAppIcon import embedded_app_pixmap
+                pixmap = embedded_app_pixmap(256)
+            except ImportError:
+                pass
         if not pixmap.isNull():
             logo.setPixmap(pixmap.scaledToWidth(72, Qt.TransformationMode.SmoothTransformation))
         header_layout.addWidget(logo)

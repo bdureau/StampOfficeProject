@@ -1,3 +1,17 @@
+"""
+SPConfig - Preferences dialog of StampPhoto
+-------------------------------------------
+Lets the user choose the interface language, the JPEG quality of the
+converted files and the size of the low, medium and high resolutions.
+The size limits the longest side of the picture (width of a landscape
+picture, height of a portrait one), as done by the conversion.
+
+The values are written into the ConfigParser object of the main window,
+which saves them in StampPhoto.cfg.
+
+Author: Boris du Reau
+Date: 2026-11-01
+"""
 import configparser
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
@@ -37,9 +51,10 @@ class SPConfigDialog(QDialog):
         self.combo_lang.addItem(self._("French"), "fr")
         general_layout.addRow(self._("Language:"), self.combo_lang)
 
-        # JPEG Quality spin box
+        # JPEG Quality spin box (above 95 the files grow without visible gain,
+        # and the conversion limits the quality to 95)
         self.spin_quality = QSpinBox()
-        self.spin_quality.setRange(10, 100)
+        self.spin_quality.setRange(10, 95)
         self.spin_quality.setSingleStep(5)
         self.spin_quality.setSuffix(" %")
         general_layout.addRow(self._("JPEG Quality:"), self.spin_quality)
@@ -47,7 +62,7 @@ class SPConfigDialog(QDialog):
         main_layout.addWidget(general_group)
 
         # Resolutions settings group
-        res_group = QGroupBox(self._("Max Width Resolutions (px)"))
+        res_group = QGroupBox(self._("Maximum size of the longest side (px)"))
         res_layout = QFormLayout(res_group)
 
         self.spin_low = QSpinBox()

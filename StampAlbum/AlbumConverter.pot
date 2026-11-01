@@ -1,0 +1,539 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-11-01 09:14+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: AlbumConverter.py:140
+msgid "Ask"
+msgstr ""
+
+#: AlbumConverter.py:140 AlbumConverter.py:1230
+msgid "Replace"
+msgstr ""
+
+#: AlbumConverter.py:141
+msgid "Rename (Album (2).sta)"
+msgstr ""
+
+#: AlbumConverter.py:141 AlbumConverter.py:1233
+msgid "Skip"
+msgstr ""
+
+#: AlbumConverter.py:145
+msgid "Simple (Frame)"
+msgstr ""
+
+#: AlbumConverter.py:145
+msgid "Stamp Album setting"
+msgstr ""
+
+#: AlbumConverter.py:145
+msgid "Triple (Classic)"
+msgstr ""
+
+#: AlbumConverter.py:146
+msgid "Dentelle (Philately)"
+msgstr ""
+
+#: AlbumConverter.py:146
+msgid "Greek (Notched)"
+msgstr ""
+
+#: AlbumConverter.py:334
+msgid "Pending"
+msgstr ""
+
+#: AlbumConverter.py:335
+msgid "Converting..."
+msgstr ""
+
+#: AlbumConverter.py:336
+msgid "Converted"
+msgstr ""
+
+#: AlbumConverter.py:337
+msgid "Converted with warnings"
+msgstr ""
+
+#: AlbumConverter.py:338
+msgid "Failed"
+msgstr ""
+
+#: AlbumConverter.py:339
+msgid "Skipped"
+msgstr ""
+
+#: AlbumConverter.py:340
+msgid "Not converted (stopped)"
+msgstr ""
+
+#: AlbumConverter.py:456 AlbumConverter.py:965
+msgid "Configuration"
+msgstr ""
+
+#: AlbumConverter.py:465
+msgid "Application language:"
+msgstr ""
+
+#: AlbumConverter.py:466
+msgid "General"
+msgstr ""
+
+#: AlbumConverter.py:473 AlbumConverter.py:639
+msgid "Save each album next to its source file"
+msgstr ""
+
+#: AlbumConverter.py:474
+msgid "Save a report automatically at the end of each batch"
+msgstr ""
+
+#: AlbumConverter.py:476 AlbumConverter.py:657
+msgid "If the .sta file already exists:"
+msgstr ""
+
+#: AlbumConverter.py:479 AlbumConverter.py:957
+msgid "Conversion"
+msgstr ""
+
+#: AlbumConverter.py:487
+msgid "Used when the source file names no author"
+msgstr ""
+
+#: AlbumConverter.py:492
+msgid "Page border:"
+msgstr ""
+
+#: AlbumConverter.py:493
+msgid "Author:"
+msgstr ""
+
+#: AlbumConverter.py:494
+msgid "Album language:"
+msgstr ""
+
+#: AlbumConverter.py:495
+msgid "Converted albums"
+msgstr ""
+
+#: AlbumConverter.py:501
+msgid "&Add folder..."
+msgstr ""
+
+#: AlbumConverter.py:503 AlbumConverter.py:619
+msgid "&Remove"
+msgstr ""
+
+#: AlbumConverter.py:513
+msgid "Pictures not found next to the AlbumEasy file are searched in these folders, in order."
+msgstr ""
+
+#: AlbumConverter.py:518
+msgid "AlbumEasy pictures"
+msgstr ""
+
+#: AlbumConverter.py:523
+msgid "OK"
+msgstr ""
+
+#: AlbumConverter.py:524 AlbumConverter.py:661
+msgid "Cancel"
+msgstr ""
+
+#: AlbumConverter.py:525
+msgid "Restore defaults"
+msgstr ""
+
+#: AlbumConverter.py:533
+msgid "Configuration file: {path}"
+msgstr ""
+
+#: AlbumConverter.py:569
+msgid "This folder does not exist"
+msgstr ""
+
+#: AlbumConverter.py:574
+msgid "Select a picture folder"
+msgstr ""
+
+#: AlbumConverter.py:604
+msgid "Convert AlbumEasy files"
+msgstr ""
+
+#: AlbumConverter.py:606
+msgid "AlbumEasy files (*.txt);;All files (*)"
+msgstr ""
+
+#: AlbumConverter.py:608
+msgid "Convert Feuille Album 4 files"
+msgstr ""
+
+#: AlbumConverter.py:610
+msgid "Feuille Album 4 files (*.xls);;All files (*)"
+msgstr ""
+
+#: AlbumConverter.py:617
+msgid "&Add files..."
+msgstr ""
+
+#: AlbumConverter.py:621
+msgid "C&lear"
+msgstr ""
+
+#: AlbumConverter.py:643
+msgid "&Browse..."
+msgstr ""
+
+#: AlbumConverter.py:656
+msgid "Destination folder:"
+msgstr ""
+
+#: AlbumConverter.py:660
+msgid "&Convert"
+msgstr ""
+
+#: AlbumConverter.py:666
+msgid "Files to convert:"
+msgstr ""
+
+#: AlbumConverter.py:680
+msgid "{n} file(s) selected"
+msgstr ""
+
+#: AlbumConverter.py:685
+msgid "Select the files to convert"
+msgstr ""
+
+#: AlbumConverter.py:712
+msgid "Select the destination folder"
+msgstr ""
+
+#: AlbumConverter.py:719
+msgid "Please add at least one file to convert."
+msgstr ""
+
+#: AlbumConverter.py:723
+msgid "Please select a destination folder."
+msgstr ""
+
+#: AlbumConverter.py:729
+msgid ""
+"The folder does not exist:\n"
+"{path}\n"
+"\n"
+"Create it?"
+msgstr ""
+
+#: AlbumConverter.py:749
+msgid "Several selected files would produce the same .sta file. Remove one of them or save next to the source files:"
+msgstr ""
+
+#: AlbumConverter.py:952
+msgid "Stamp Album - Album converter"
+msgstr ""
+
+#: AlbumConverter.py:953
+msgid "&Conversion"
+msgstr ""
+
+#: AlbumConverter.py:954
+msgid "Con&figuration"
+msgstr ""
+
+#: AlbumConverter.py:955
+msgid "&Language"
+msgstr ""
+
+#: AlbumConverter.py:956
+msgid "&Help"
+msgstr ""
+
+#: AlbumConverter.py:958
+msgid "Help"
+msgstr ""
+
+#: AlbumConverter.py:961
+msgid "AlbumEasy"
+msgstr ""
+
+#: AlbumConverter.py:961
+msgid "Convert &AlbumEasy files..."
+msgstr ""
+
+#: AlbumConverter.py:962
+msgid "Convert AlbumEasy description files (.txt) to Stamp Album albums"
+msgstr ""
+
+#: AlbumConverter.py:963
+msgid "Convert &Feuille Album 4 files..."
+msgstr ""
+
+#: AlbumConverter.py:963
+msgid "Feuille Album 4"
+msgstr ""
+
+#: AlbumConverter.py:964
+msgid "Convert Feuille Album 4 Excel albums (.xls) to Stamp Album albums"
+msgstr ""
+
+#: AlbumConverter.py:965
+msgid "&Settings..."
+msgstr ""
+
+#: AlbumConverter.py:966
+msgid "Language and conversion options"
+msgstr ""
+
+#: AlbumConverter.py:967
+msgid "S&top conversion"
+msgstr ""
+
+#: AlbumConverter.py:967
+msgid "Stop"
+msgstr ""
+
+#: AlbumConverter.py:968
+msgid "Stop after the current file (albums already converted are kept)"
+msgstr ""
+
+#: AlbumConverter.py:969
+msgid "&Quit"
+msgstr ""
+
+#: AlbumConverter.py:969
+msgid "Quit the album converter"
+msgstr ""
+
+#: AlbumConverter.py:969 AlbumConverter.py:1441
+msgid "Quit"
+msgstr ""
+
+#: AlbumConverter.py:970
+msgid "Open the user manual (PDF)"
+msgstr ""
+
+#: AlbumConverter.py:970
+msgid "User &manual"
+msgstr ""
+
+#: AlbumConverter.py:970 AlbumConverter.py:1097
+msgid "User manual"
+msgstr ""
+
+#: AlbumConverter.py:971
+msgid "&About..."
+msgstr ""
+
+#: AlbumConverter.py:971
+msgid "About"
+msgstr ""
+
+#: AlbumConverter.py:971
+msgid "About the album converter"
+msgstr ""
+
+#: AlbumConverter.py:981 AlbumConverter.py:1033 AlbumConverter.py:1204
+msgid "&Stop"
+msgstr ""
+
+#: AlbumConverter.py:981 AlbumConverter.py:1350
+msgid "Stopping..."
+msgstr ""
+
+#: AlbumConverter.py:982
+msgid "&Open destination folder"
+msgstr ""
+
+#: AlbumConverter.py:983
+msgid "Save &report..."
+msgstr ""
+
+#: AlbumConverter.py:984
+msgid "Details"
+msgstr ""
+
+#: AlbumConverter.py:984
+msgid "File"
+msgstr ""
+
+#: AlbumConverter.py:984
+msgid "Pages"
+msgstr ""
+
+#: AlbumConverter.py:984
+msgid "Stamps"
+msgstr ""
+
+#: AlbumConverter.py:984
+msgid "Status"
+msgstr ""
+
+#: AlbumConverter.py:993
+msgid "No conversion in progress"
+msgstr ""
+
+#: AlbumConverter.py:994
+msgid "Use the Conversion menu or the toolbar to choose the albums to convert."
+msgstr ""
+
+#: AlbumConverter.py:1001
+msgid "Conversion finished"
+msgstr ""
+
+#: AlbumConverter.py:1001
+msgid "Conversion stopped"
+msgstr ""
+
+#: AlbumConverter.py:1003 AlbumConverter.py:1403
+msgid "next to the source files"
+msgstr ""
+
+#: AlbumConverter.py:1006
+msgid "{n} album(s) saved in {dest} ({secs:.0f} s)"
+msgstr ""
+
+#: AlbumConverter.py:1008
+msgid "{n} converted"
+msgstr ""
+
+#: AlbumConverter.py:1010
+msgid "{n} with warnings"
+msgstr ""
+
+#: AlbumConverter.py:1013
+msgid "{n} failed"
+msgstr ""
+
+#: AlbumConverter.py:1015
+msgid "{n} skipped"
+msgstr ""
+
+#: AlbumConverter.py:1017
+msgid "{n} not converted"
+msgstr ""
+
+#: AlbumConverter.py:1018
+msgid "Double-click a line for details."
+msgstr ""
+
+#: AlbumConverter.py:1020
+msgid "Report saved: {path}"
+msgstr ""
+
+#: AlbumConverter.py:1022
+msgid "The report could not be saved: {error}"
+msgstr ""
+
+#: AlbumConverter.py:1024 AlbumConverter.py:1215
+msgid "%v / %m files"
+msgstr ""
+
+#: AlbumConverter.py:1098
+msgid "The user manual was not found:"
+msgstr ""
+
+#: AlbumConverter.py:1208
+msgid "Converting {kind} files (saved next to the source files)"
+msgstr ""
+
+#: AlbumConverter.py:1211
+msgid "Converting {kind} files to {dest}"
+msgstr ""
+
+#: AlbumConverter.py:1227
+msgid "File already exists"
+msgstr ""
+
+#: AlbumConverter.py:1228
+msgid "{name} already exists in {folder}."
+msgstr ""
+
+#: AlbumConverter.py:1229
+msgid "What do you want to do?"
+msgstr ""
+
+#: AlbumConverter.py:1231
+msgid "Replace all"
+msgstr ""
+
+#: AlbumConverter.py:1232
+msgid "Rename"
+msgstr ""
+
+#: AlbumConverter.py:1234
+msgid "Skip all"
+msgstr ""
+
+#: AlbumConverter.py:1272
+msgid "File {i} of {n}: {name}"
+msgstr ""
+
+#: AlbumConverter.py:1277
+msgid "File {i} of {n}: {name} - page {page}"
+msgstr ""
+
+#: AlbumConverter.py:1341
+msgid "{n} file(s) could not be converted:"
+msgstr ""
+
+#: AlbumConverter.py:1351
+msgid "(stopping after the current file)"
+msgstr ""
+
+#: AlbumConverter.py:1382
+msgid "Source: {path}"
+msgstr ""
+
+#: AlbumConverter.py:1383 AlbumConverter.py:1406
+msgid "Destination: {path}"
+msgstr ""
+
+#: AlbumConverter.py:1384
+msgid "Status: {status}"
+msgstr ""
+
+#: AlbumConverter.py:1386 AlbumConverter.py:1410
+msgid "{pages} page(s), {stamps} stamp(s)"
+msgstr ""
+
+#: AlbumConverter.py:1391
+msgid "Close"
+msgstr ""
+
+#: AlbumConverter.py:1404
+msgid "Album conversion report"
+msgstr ""
+
+#: AlbumConverter.py:1405
+msgid "Type: {kind}"
+msgstr ""
+
+#: AlbumConverter.py:1421
+msgid "Text files (*.txt)"
+msgstr ""
+
+#: AlbumConverter.py:1421 AlbumConverter.py:1427
+msgid "Save report"
+msgstr ""
+
+#: AlbumConverter.py:1433
+msgid ""
+"A conversion is in progress. Stop it and quit?\n"
+"Albums already converted are kept."
+msgstr ""
+
+#: AlbumConverter.py:1441
+msgid "Do you want to quit the album converter?"
+msgstr ""
+

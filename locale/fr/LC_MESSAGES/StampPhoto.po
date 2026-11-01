@@ -263,3 +263,43 @@ msgstr "{done} photo(s) convertie(s) sur {total}."
 
 msgid "Settings could not be saved:"
 msgstr "Les paramètres n'ont pas pu être enregistrés :"
+
+#: StampPhoto.py:919
+msgid "Convert Selection ({n})"
+msgstr "Convertir la Selection ({n})"
+
+#: StampPhoto.py:920
+msgid "Convert Selection"
+msgstr "Convertir la Selection"
+
+#: StampPhoto.py:722
+msgid "Are you sure you want to exit StampPhoto?"
+msgstr "Etes vous certain de vouloir quitter StampPhoto?"
+
+#: StampPhoto.py:685
+msgid "Picture information"
+msgstr "Information de l\'image"
+
+#: StampPhoto.py:686
+msgid "File size:"
+msgstr "Taille du fichier:"
+
+#: StampPhoto.py:686
+msgid "Format:"
+msgstr "Format:"
+
+#: StampPhoto.py:687
+msgid "Height:"
+msgstr "Hauteur:"
+
+#: StampPhoto.py:687
+msgid "Width:"
+msgstr "Largeur:"
+
+#: StampPhoto.py:688
+msgid "Estimated size:"
+msgstr "Taille estimée:"
+
+#: StampPhoto.py:705 StampPhoto.py:721
+msgid "Confirm Exit"
+msgstr "Confirmer la sortie de l\'application"

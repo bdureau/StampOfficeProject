@@ -1,0 +1,346 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-11-01 09:14+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: StampPhoto.py:381
+msgid "Settings could not be saved:"
+msgstr ""
+
+#: StampPhoto.py:638
+msgid "StampPhoto - stampOffice Suite"
+msgstr ""
+
+#: StampPhoto.py:641
+msgid "&File"
+msgstr ""
+
+#: StampPhoto.py:642
+msgid "&Config"
+msgstr ""
+
+#: StampPhoto.py:643
+msgid "&Help"
+msgstr ""
+
+#: StampPhoto.py:646 StampPhoto.py:665
+msgid "&Exit"
+msgstr ""
+
+#: StampPhoto.py:647
+msgid "&Language"
+msgstr ""
+
+#: StampPhoto.py:649
+msgid "&Preferences..."
+msgstr ""
+
+#: StampPhoto.py:650
+msgid "&Manual"
+msgstr ""
+
+#: StampPhoto.py:651
+msgid "&About"
+msgstr ""
+
+#: StampPhoto.py:654
+msgid "Main Toolbar"
+msgstr ""
+
+#: StampPhoto.py:655 StampPhoto.py:656
+msgid "Select Source Folder..."
+msgstr ""
+
+#: StampPhoto.py:657 StampPhoto.py:658
+msgid "Select Destination Folder..."
+msgstr ""
+
+#: StampPhoto.py:660 StampPhoto.py:661 StampPhoto.py:671
+msgid "Convert Current"
+msgstr ""
+
+#: StampPhoto.py:662 StampPhoto.py:663 StampPhoto.py:672
+msgid "Convert All"
+msgstr ""
+
+#: StampPhoto.py:666
+msgid "Exit Application"
+msgstr ""
+
+#: StampPhoto.py:668
+msgid "◀ Previous"
+msgstr ""
+
+#: StampPhoto.py:669
+msgid "Next ▶"
+msgstr ""
+
+#: StampPhoto.py:670 StampPhoto.py:688
+msgid "Resolution:"
+msgstr ""
+
+#: StampPhoto.py:673 StampPhoto.py:1119
+msgid "Stop"
+msgstr ""
+
+#: StampPhoto.py:674
+msgid "Search: beginning of the name..."
+msgstr ""
+
+#: StampPhoto.py:675
+msgid "Selects every picture whose name starts with this text (* and ? wildcards allowed)"
+msgstr ""
+
+#: StampPhoto.py:677
+msgid "Ctrl+click or Shift+click to select several pictures"
+msgstr ""
+
+#: StampPhoto.py:680
+msgid "Preferences"
+msgstr ""
+
+#: StampPhoto.py:681
+msgid "User manual"
+msgstr ""
+
+#: StampPhoto.py:682
+msgid "About StampPhoto"
+msgstr ""
+
+#: StampPhoto.py:685
+msgid "Picture information"
+msgstr ""
+
+#: StampPhoto.py:686
+msgid "File size:"
+msgstr ""
+
+#: StampPhoto.py:686
+msgid "Format:"
+msgstr ""
+
+#: StampPhoto.py:687
+msgid "Height:"
+msgstr ""
+
+#: StampPhoto.py:687
+msgid "Width:"
+msgstr ""
+
+#: StampPhoto.py:688
+msgid "Estimated size:"
+msgstr ""
+
+#: StampPhoto.py:694
+msgid "Low Resolution"
+msgstr ""
+
+#: StampPhoto.py:694
+msgid "Medium Resolution"
+msgstr ""
+
+#: StampPhoto.py:695
+msgid "All Resolutions"
+msgstr ""
+
+#: StampPhoto.py:695
+msgid "High Resolution"
+msgstr ""
+
+#: StampPhoto.py:705 StampPhoto.py:721
+msgid "Confirm Exit"
+msgstr ""
+
+#: StampPhoto.py:706
+msgid "A conversion is in progress. Stop it and exit StampPhoto?"
+msgstr ""
+
+#: StampPhoto.py:722
+msgid "Are you sure you want to exit StampPhoto?"
+msgstr ""
+
+#: StampPhoto.py:735
+msgid "Select Source Folder"
+msgstr ""
+
+#: StampPhoto.py:745
+msgid "Select Destination Folder"
+msgstr ""
+
+#: StampPhoto.py:750
+msgid "Destination:"
+msgstr ""
+
+#: StampPhoto.py:758
+msgid "The folder cannot be read:"
+msgstr ""
+
+#: StampPhoto.py:795
+msgid "No images found in the selected folder."
+msgstr ""
+
+#: StampPhoto.py:818
+msgid "Failed to load image."
+msgstr ""
+
+#: StampPhoto.py:822
+msgid "Image {current} / {total}"
+msgstr ""
+
+#: StampPhoto.py:841
+msgid "{size} KB"
+msgstr ""
+
+#: StampPhoto.py:843 StampPhoto.py:844
+msgid "{n} pixels"
+msgstr ""
+
+#: StampPhoto.py:847
+msgid "not recorded in the file"
+msgstr ""
+
+#: StampPhoto.py:849
+msgid "{dpi} dpi"
+msgstr ""
+
+#: StampPhoto.py:851
+msgid "{x} × {y} dpi"
+msgstr ""
+
+#: StampPhoto.py:854
+msgid "{w} × {h} mm"
+msgstr ""
+
+#: StampPhoto.py:856
+msgid "The file records no resolution."
+msgstr ""
+
+#: StampPhoto.py:857
+msgid "{dpi} dpi is the default value of cameras and screens, not a scan resolution."
+msgstr ""
+
+#: StampPhoto.py:859
+msgid "Size estimated for a scan at {dpi} dpi."
+msgstr ""
+
+#: StampPhoto.py:903
+msgid "{n} picture(s) starting with \"{pattern}\""
+msgstr ""
+
+#: StampPhoto.py:905
+msgid "No picture starts with \"{pattern}\""
+msgstr ""
+
+#: StampPhoto.py:908
+msgid "{n} picture(s) selected"
+msgstr ""
+
+#: StampPhoto.py:919
+msgid "Convert Selection ({n})"
+msgstr ""
+
+#: StampPhoto.py:920
+msgid "Convert Selection"
+msgstr ""
+
+#: StampPhoto.py:987
+msgid "Please select a source folder with images first."
+msgstr ""
+
+#: StampPhoto.py:987 StampPhoto.py:990 StampPhoto.py:1117
+msgid "Warning"
+msgstr ""
+
+#: StampPhoto.py:990
+msgid "Please select a destination directory."
+msgstr ""
+
+#: StampPhoto.py:1001
+msgid "Files already exist"
+msgstr ""
+
+#: StampPhoto.py:1002
+msgid "{n} file(s) already exist in the destination folder."
+msgstr ""
+
+#: StampPhoto.py:1005
+msgid "Replace"
+msgstr ""
+
+#: StampPhoto.py:1006
+msgid "Keep existing files"
+msgstr ""
+
+#: StampPhoto.py:1007
+msgid "Cancel"
+msgstr ""
+
+#: StampPhoto.py:1039
+msgid "Stopping after the current picture..."
+msgstr ""
+
+#: StampPhoto.py:1068
+msgid "Converting {name}..."
+msgstr ""
+
+#: StampPhoto.py:1091
+msgid "unreadable or damaged picture"
+msgstr ""
+
+#: StampPhoto.py:1093
+msgid "permission denied in the destination folder"
+msgstr ""
+
+#: StampPhoto.py:1102
+msgid "Conversion stopped: {done} of {total} picture(s) converted."
+msgstr ""
+
+#: StampPhoto.py:1105
+msgid "Batch conversion completed successfully!"
+msgstr ""
+
+#: StampPhoto.py:1106
+msgid "Conversion completed successfully!"
+msgstr ""
+
+#: StampPhoto.py:1108
+msgid "{n} existing file(s) kept."
+msgstr ""
+
+#: StampPhoto.py:1111
+msgid "{done} of {total} picture(s) converted."
+msgstr ""
+
+#: StampPhoto.py:1113
+msgid "{n} picture(s) could not be converted:"
+msgstr ""
+
+#: StampPhoto.py:1119
+msgid "Success"
+msgstr ""
+
+#: StampPhoto.py:1168
+msgid ""
+"1. Click 'Select Source Folder' to browse your photo directory.\n"
+"2. Navigate between stamps using Previous and Next buttons.\n"
+"3. Choose a destination folder.\n"
+"4. Choose resolution (Low, Medium, High, or All) and click Convert.\n"
+"All converted files are exported in JPG format with resolution suffixes."
+msgstr ""
+
+#: StampPhoto.py:1175
+msgid "StampPhoto Manual"
+msgstr ""
+

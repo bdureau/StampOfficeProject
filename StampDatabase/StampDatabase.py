@@ -411,7 +411,7 @@ class MainWindow(QMainWindow):
         # Help
         help_menu = menubar.addMenu(_("&Help"))
         self.act_help = QAction(_("User Manual"), self)
-        self.act_help.setIcon(QIcon(str(self.base_dir / "Images" / "help.png")))
+        self.act_help.setIcon(QIcon(str(self.base_dir / "Images" / "manual.svg.png")))
         self.act_help.triggered.connect(self.open_manual)
         help_menu.addAction(self.act_help)
 
@@ -422,7 +422,8 @@ class MainWindow(QMainWindow):
 
     def _init_toolbar(self):
         toolbar = QToolBar(_("Main Toolbar"))
-        toolbar.setMovable(False)
+        toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        toolbar.setMovable(True)
         self.addToolBar(toolbar)
 
         toolbar.addAction(self.act_create_db)

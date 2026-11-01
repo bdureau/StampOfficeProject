@@ -27,6 +27,7 @@ import time
 import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
+from ACAboutDlg import ACAboutDlg
 
 from PyQt6.QtCore import QLibraryInfo, QLocale, QSettings, Qt, QTimer, QTranslator, QUrl
 from PyQt6.QtGui import QAction, QActionGroup, QColor, QDesktopServices, QIcon, QKeySequence
@@ -267,13 +268,13 @@ class Settings:
 ICON_FILES = {
     "albumeasy": "conv_albumeasy.png",
     "feuille": "conv_feuille.png",
-    "config": "conv_config.png",
+    "config": "config.png",
     "stop": "conv_stop.png",
-    "quit": "conv_quit.png",
+    "quit": "exit.png",
     "folder": "conv_folder.png",
     "report": "conv_report.png",
-    "help": "conv_help.png",
-    "about": "conv_about.png",
+    "help": "manual.svg.png",
+    "about": "about.png",
     "app": "conv_app.png",
 }
 # Used only when an icon file is missing, so the application keeps working
@@ -869,6 +870,9 @@ class ConverterWindow(QMainWindow):
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actAbout)
 
+
+
+
     def _create_toolbar(self):
         """Toolbars built like those of the Stamp Album editor (MainWindow._createToolBars):
         one movable toolbar per group, so each one shows its grip (double line) on the left,
@@ -885,8 +889,9 @@ class ConverterWindow(QMainWindow):
         # Same grouping as the editor: conversion commands with Quit at the end,
         # then help, about and settings
         self.convToolBar = toolbar("conversionToolBar",
-                                   [self.actAlbumEasy, self.actFeuille, self.actStop, self.actQuit])
+                                   [self.actAlbumEasy, self.actFeuille, self.actStop])
         self.helpToolBar = toolbar("helpToolBar", [self.actManual, self.actAbout, self.actConfig])
+        self.exitToolBar = toolbar("exitToolBar", [self.actQuit])
 
     def _create_central(self):
         self.titleLabel = QLabel()
@@ -1095,48 +1100,52 @@ class ConverterWindow(QMainWindow):
             return
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
 
+    # def about(self):
+    #     from PyQt6.QtCore import PYQT_VERSION_STR, QT_VERSION_STR
+    #     dlg = QDialog(self)
+    #     dlg.setWindowTitle(_("About the album converter"))
+    #     icon = QLabel()
+    #     icon.setPixmap(_app_icon().pixmap(64, 64))
+    #     icon.setAlignment(Qt.AlignmentFlag.AlignTop)
+    #
+    #     text = QLabel()
+    #     text.setWordWrap(True)
+    #     text.setTextFormat(Qt.TextFormat.RichText)
+    #     text.setOpenExternalLinks(True)
+    #     text.setText(
+    #         "<h3>" + _("Stamp Album - Album converter") + "</h3>"
+    #         + "<p>" + _("Version {version}").format(version=APP_VERSION) + "</p>"
+    #         + "<p>" + _("Converts stamp albums made with other programs into Stamp Album albums (.sta), "
+    #                     "one file or hundreds at a time:") + "</p><ul>"
+    #         + "<li>" + _("AlbumEasy description files (.txt), with their stamp pictures;") + "</li>"
+    #         + "<li>" + _("Feuille Album 4 Excel albums (.xls), with the pictures they contain.") + "</li></ul>"
+    #         + "<p>" + _("Each album is saved as soon as it is converted. Files that cannot be converted "
+    #                     "are reported with the reason, and a report can be saved.") + "</p>"
+    #         + "<p>" + _("The converted albums open in Stamp Album like any other album and can then be "
+    #                     "edited and printed.") + "</p>"
+    #         + "<p><b>" + _("Author:") + "</b> " + APP_AUTHOR + "<br>"
+    #         + "© 2026 " + APP_AUTHOR + "</p>"
+    #         + "<p><small>Python {py} · PyQt {pyqt} · Qt {qt}</small></p>".format(
+    #             py=sys.version.split()[0], pyqt=PYQT_VERSION_STR, qt=QT_VERSION_STR))
+    #
+    #     bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+    #     bb.button(QDialogButtonBox.StandardButton.Close).setText(_("Close"))
+    #     bb.rejected.connect(dlg.reject)
+    #
+    #     row = QHBoxLayout()
+    #     row.addWidget(icon)
+    #     row.addSpacing(10)
+    #     row.addWidget(text, 1)
+    #     layout = QVBoxLayout(dlg)
+    #     layout.addLayout(row)
+    #     layout.addWidget(bb)
+    #     # Fixed text width: the window then takes the height the whole text needs
+    #     text.setFixedWidth(420)
+    #     layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+    #     dlg.exec()
+
     def about(self):
-        from PyQt6.QtCore import PYQT_VERSION_STR, QT_VERSION_STR
-        dlg = QDialog(self)
-        dlg.setWindowTitle(_("About the album converter"))
-        icon = QLabel()
-        icon.setPixmap(_app_icon().pixmap(64, 64))
-        icon.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        text = QLabel()
-        text.setWordWrap(True)
-        text.setTextFormat(Qt.TextFormat.RichText)
-        text.setOpenExternalLinks(True)
-        text.setText(
-            "<h3>" + _("Stamp Album - Album converter") + "</h3>"
-            + "<p>" + _("Version {version}").format(version=APP_VERSION) + "</p>"
-            + "<p>" + _("Converts stamp albums made with other programs into Stamp Album albums (.sta), "
-                        "one file or hundreds at a time:") + "</p><ul>"
-            + "<li>" + _("AlbumEasy description files (.txt), with their stamp pictures;") + "</li>"
-            + "<li>" + _("Feuille Album 4 Excel albums (.xls), with the pictures they contain.") + "</li></ul>"
-            + "<p>" + _("Each album is saved as soon as it is converted. Files that cannot be converted "
-                        "are reported with the reason, and a report can be saved.") + "</p>"
-            + "<p>" + _("The converted albums open in Stamp Album like any other album and can then be "
-                        "edited and printed.") + "</p>"
-            + "<p><b>" + _("Author:") + "</b> " + APP_AUTHOR + "<br>"
-            + "© 2026 " + APP_AUTHOR + "</p>"
-            + "<p><small>Python {py} · PyQt {pyqt} · Qt {qt}</small></p>".format(
-                py=sys.version.split()[0], pyqt=PYQT_VERSION_STR, qt=QT_VERSION_STR))
-
-        bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
-        bb.button(QDialogButtonBox.StandardButton.Close).setText(_("Close"))
-        bb.rejected.connect(dlg.reject)
-
-        row = QHBoxLayout()
-        row.addWidget(icon)
-        row.addSpacing(10)
-        row.addWidget(text, 1)
-        layout = QVBoxLayout(dlg)
-        layout.addLayout(row)
-        layout.addWidget(bb)
-        # Fixed text width: the window then takes the height the whole text needs
-        text.setFixedWidth(420)
-        layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        dlg = ACAboutDlg(parent=self, lang=_current_language)
         dlg.exec()
 
     def batch_options(self) -> Options:
